@@ -2,27 +2,30 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build-ledger-api",
+            "label": "restore",
             "type": "process",
             "command": "dotnet",
             "args": [
-                "build",
-                "${workspaceFolder}/src/LedgerService.Api/LedgerService.Api.csproj",
-                "-c",
-                "Debug"
+                "restore",
+                "${workspaceFolder}/Swa.Analyzers.slnx"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-balance-api",
+            "label": "build",
             "type": "process",
             "command": "dotnet",
             "args": [
                 "build",
-                "${workspaceFolder}/src/BalanceService.Api/BalanceService.Api.csproj",
+                "${workspaceFolder}/Swa.Analyzers.slnx",
                 "-c",
-                "Debug"
+                "Debug",
+                "-m:1"
             ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": "$msCompile"
         },
         {
@@ -31,10 +34,15 @@
             "command": "dotnet",
             "args": [
                 "test",
-                "${workspaceFolder}",
+                "${workspaceFolder}/Swa.Analyzers.slnx",
                 "-c",
-                "Debug"
+                "Debug",
+                "-m:1"
             ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
             "problemMatcher": "$msCompile"
         }
     ]

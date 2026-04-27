@@ -1,7 +1,4 @@
 {
-  // ---------------------------------------------------------------------------
-  // Performance / qualidade de vida
-  // ---------------------------------------------------------------------------
   "files.exclude": {
     "**/bin": true,
     "**/obj": true,
@@ -12,15 +9,8 @@
     "**/obj": true,
     "**/.vs": true
   },
-  // ---------------------------------------------------------------------------
-  // .NET / C# (recomendado para .NET 10)
-  // ---------------------------------------------------------------------------
   "dotnet.defaultSolution": "Swa.Analyzers.slnx",
-  // O C# Dev Kit normalmente usa o servidor Roslyn (não OmniSharp)
   "dotnet.server.useOmnisharp": false,
-  // ---------------------------------------------------------------------------
-  // Editor
-  // ---------------------------------------------------------------------------
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
@@ -28,9 +18,6 @@
   "files.associations": {
     "*.slnx": "xml"
   },
-  // ---------------------------------------------------------------------------
-  // Markdown / Mermaid
-  // ---------------------------------------------------------------------------
   "markdown.preview.mermaid": true,
   "markdown.preview.experimental.useMermaid": true
 }
