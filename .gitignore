@@ -43,6 +43,7 @@ CodeCoverage/
 
 # MSBuild Binary and Structured Log
 *.binlog
+.dotnet-home
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

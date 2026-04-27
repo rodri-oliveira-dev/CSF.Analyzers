@@ -2,38 +2,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "LedgerService.Api (dotnet run)",
+            "name": "Swa.Analyzers.SampleApp (dotnet run)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-ledger-api",
+            "preLaunchTask": "build",
             "program": "dotnet",
             "args": [
                 "run",
                 "--project",
-                "${workspaceFolder}/src/LedgerService.Api/LedgerService.Api.csproj"
+                "${workspaceFolder}/src/Swa.Analyzers.SampleApp/Swa.Analyzers.SampleApp.csproj"
             ],
             "cwd": "${workspaceFolder}",
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "console": "integratedTerminal",
-            "stopAtEntry": false
-        },
-        {
-            "name": "BalanceService.Api (dotnet run)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-balance-api",
-            "program": "dotnet",
-            "args": [
-                "run",
-                "--project",
-                "${workspaceFolder}/src/BalanceService.Api/BalanceService.Api.csproj"
-            ],
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
             "console": "integratedTerminal",
             "stopAtEntry": false
         }
