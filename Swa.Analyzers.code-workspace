@@ -10,12 +10,15 @@
         "files.exclude": {
             "**/bin": true,
             "**/obj": true,
-            "**/.vs": true
+            "**/.vs": true,
+            "**/.dotnet-home": true
         },
         "search.exclude": {
             "**/bin": true,
             "**/obj": true,
-            "**/.vs": true
+            "**/.vs": true,
+            "**/.dotnet-home": true,
+            "**/TestResults": true
         },
         "files.associations": {
             "*.slnx": "xml"

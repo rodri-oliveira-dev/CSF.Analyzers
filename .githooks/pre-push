@@ -15,6 +15,17 @@ cd "$repo_root"
 
 results_dir="$repo_root/TestResults/pre-push"
 
+clean_pre_push_results() {
+  if [ -z "$results_dir" ] || [ "$results_dir" = "/" ]; then
+    echo "pre-push: caminho de resultados invalido para limpeza." >&2
+    exit 1
+  fi
+
+  echo "==> pre-push: limpando resultados anteriores em $results_dir"
+  rm -rf "$results_dir"
+  mkdir -p "$results_dir"
+}
+
 if command -v mktemp >/dev/null 2>&1; then
   changed_files="$(mktemp "${TMPDIR:-/tmp}/pre-push-changed.XXXXXX")"
 else
@@ -120,8 +131,7 @@ echo "==> pre-push: executando build ($CONFIGURATION)"
 dotnet build ./Swa.Analyzers.slnx --configuration "$CONFIGURATION" --no-restore -m:1
 
 echo "==> pre-push: executando testes com cobertura"
-rm -rf "$results_dir"
-mkdir -p "$results_dir"
+clean_pre_push_results
 
 dotnet test ./Swa.Analyzers.slnx \
   --configuration "$CONFIGURATION" \
