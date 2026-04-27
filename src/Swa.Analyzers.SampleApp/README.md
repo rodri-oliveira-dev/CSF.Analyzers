@@ -21,8 +21,8 @@ Os exemplos ficam separados por regra, em pastas `Arch###/`:
 - `*_Invalid.cs`: código intencionalmente não conforme (deve disparar o analyzer)
 - `*_Valid.cs`: código conforme (não deve disparar o analyzer)
 
-Algumas regras precisam de “contexto” de bibliotecas de teste (ex.: FluentAssertions, NSubstitute, xUnit). Para não depender de packages reais, o projeto inclui stubs mínimos em `Stubs/` apenas para permitir que o analyzer reconheça os símbolos.
+Algumas regras precisam de “contexto” de bibliotecas de teste ou framework (ex.: FluentAssertions, NSubstitute, xUnit, ASP.NET Core). Para não depender de packages reais, o projeto inclui stubs mínimos em `Stubs/` apenas para permitir que o analyzer reconheça os símbolos.
 
 ## Documentação das regras
 
-A explicação detalhada de cada regra (motivação, exemplos completos, limitações) está em `docs/rules/`.
+A explicação detalhada de cada regra (motivação, exemplos completos, limitações) está em [docs/rules](../../docs/rules).

@@ -9,6 +9,9 @@ dotnet_diagnostic.ARCH009.severity = warning
 dotnet_diagnostic.ARCH010.severity = warning
 dotnet_diagnostic.ARCH011.severity = warning
 dotnet_diagnostic.ARCH012.severity = warning
+dotnet_diagnostic.ARCH015.severity = warning
+dotnet_diagnostic.ARCH015.route_language = pt-BR
+dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar"]
 
 # O repositório eleva a categoria "Reliability" para error.
 # Aqui mantemos exemplos intencionalmente inválidos para demonstração.
@@ -44,3 +47,6 @@ dotnet_diagnostic.CA2016.severity = none
 dotnet_diagnostic.IDE0052.severity = none
 dotnet_diagnostic.IDE0059.severity = none
 dotnet_diagnostic.IDE0290.severity = none
+
+[Arch015/*.cs]
+dotnet_diagnostic.CA1822.severity = none
