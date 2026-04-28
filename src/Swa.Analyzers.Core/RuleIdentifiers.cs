@@ -16,4 +16,5 @@ internal static class RuleIdentifiers
     public const string PreferDateTimeOffsetOverDateTime = "ARCH012";
     public const string RestrictMockingFrameworksToNSubstitute = "ARCH013";
     public const string PreferIsEquivalentOverArgIs = "ARCH014";
+    public const string ProhibitVerbsInHttpRoutes = "ARCH015";
 }
