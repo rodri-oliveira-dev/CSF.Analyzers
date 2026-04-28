@@ -29,15 +29,13 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.props', '**/*.targets', 'Swa.Analyzers.slnx') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json') }}
 
       - name: Show .NET info
         run: dotnet --info
 
       - name: Restore
-        run: dotnet restore ./Swa.Analyzers.slnx
+        run: dotnet restore ./Swa.Analyzers.slnx --locked-mode -m:1
 
       - name: Build
         run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore -m:1
