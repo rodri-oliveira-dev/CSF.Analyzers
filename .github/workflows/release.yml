@@ -35,11 +35,14 @@ jobs:
         run: dotnet --info
 
       - name: Restore
-        run: dotnet restore ./Swa.Analyzers.slnx --locked-mode -m:1
+        run: dotnet restore ./Swa.Analyzers.slnx --locked-mode
 
       - name: Build
-        run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore -m:1
+        run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
 
+      # dotnet test against the .slnx currently fails before test discovery when
+      # MSBuild runs with multiple nodes. Keep orchestration single-node while
+      # preserving full solution test coverage.
       - name: Test
         run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
 

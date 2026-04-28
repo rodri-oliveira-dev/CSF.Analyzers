@@ -55,6 +55,6 @@ dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar", "recalcular"
 ## Como validar
 
 - **Restore**: `dotnet restore ./Swa.Analyzers.slnx`
-- **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore -m:1`
-- **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1`
+- **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore`
+- **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1` (a orquestracao do VSTest na `.slnx` falha antes da descoberta quando o MSBuild usa multiplos nos)
 - **Manual**: veja [src/Swa.Analyzers.SampleApp/README.md](src/Swa.Analyzers.SampleApp/README.md) (exemplos por regra e build com diagnosticos)

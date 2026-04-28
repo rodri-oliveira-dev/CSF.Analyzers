@@ -104,6 +104,8 @@ Use estes comandos como baseline:
 
 ```bash
 dotnet restore ./Swa.Analyzers.slnx
-dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore -m:1
+dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
 dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
 ```
+
+O `-m:1` deve ser mantido apenas nos testes enquanto `dotnet test` contra a `.slnx` falhar antes da descoberta quando o MSBuild usa multiplos nos.
