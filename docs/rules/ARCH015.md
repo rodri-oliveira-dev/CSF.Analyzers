@@ -1,12 +1,12 @@
-# ARCH015: Prohibit verbs in HTTP routes
+# ARCH015: Proiba verbos em rotas HTTP
 
-## Objective
+## Objetivo
 
-Detect command-like verbs in literal HTTP route segments declared with MVC/Web API attributes and Minimal APIs.
+Detectar verbos em estilo de comando em segmentos literais de rotas HTTP declaradas com atributos MVC/Web API e Minimal APIs.
 
-The rule focuses only on the route path. It does not validate whether the endpoint is RESTful and does not inspect controller names, action names, method names or the HTTP method itself.
+A regra se concentra apenas no caminho da rota. Ela não valida se o endpoint é RESTful e não inspeciona nomes de controllers, actions, métodos ou o próprio método HTTP.
 
-## Non-compliant Code
+## Código não conforme
 
 ```csharp
 [HttpGet("get/{id}")]
@@ -25,19 +25,19 @@ app.MapPost("/customers/create", () => Results.Ok());
 app.MapGet("/orders/get/{id}", () => Results.Ok());
 ```
 
-With `route_language = pt-BR`:
+Com `route_language = pt-BR`:
 
 ```csharp
 app.MapPost("/apolices/emitir", () => Results.Ok());
 ```
 
-With `route_language = en-US`:
+Com `route_language = en-US`:
 
 ```csharp
 app.MapPost("/policies/issue", () => Results.Ok());
 ```
 
-## Compliant Code
+## Código conforme
 
 ```csharp
 [HttpGet("{id}")]
@@ -60,23 +60,23 @@ app.MapGet("/approval-status/{id}", () => Results.Ok());
 app.MapGet("/created-at/{id}", () => Results.Ok());
 ```
 
-## Configuration
+## Configuração
 
-`route_language` selects the native verb list:
+`route_language` seleciona a lista nativa de verbos:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH015.route_language = pt-BR
 ```
 
-Accepted values are:
+Valores aceitos:
 
 - `en-US`
 - `pt-BR`
 
-When `route_language` is missing, the rule uses `en-US`. When it has an invalid value, the rule also falls back to `en-US` and does not fail the build just because the configuration is invalid.
+Quando `route_language` está ausente, a regra usa `en-US`. Quando ele tem um valor inválido, a regra também volta para `en-US` e não falha o build apenas porque a configuração é inválida.
 
-`additional_verbs` adds team-specific verbs to the native list. The value must be a JSON string array:
+`additional_verbs` adiciona verbos específicos do time a lista nativa. O valor deve ser um array JSON de strings:
 
 ```ini
 [*.cs]
@@ -90,9 +90,9 @@ dotnet_diagnostic.ARCH015.route_language = pt-BR
 dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar", "recalcular"]
 ```
 
-Additional verbs are trimmed, empty entries are ignored, and comparison is case-insensitive. If the JSON array is malformed, the rule ignores `additional_verbs` and uses only the native verbs for the configured language.
+Verbos adicionais são aparados, entradas vazias são ignoradas e a comparação não diferencia maiúsculas de minúsculas. Se o array JSON estiver malformado, a regra ignora `additional_verbs` e usa apenas os verbos nativos do idioma configurado.
 
-## Native Verb Lists
+## Listas nativas de verbos
 
 `en-US`:
 
@@ -110,33 +110,33 @@ listar, emitir, cancelar, aprovar, reprovar, validar, processar, recalcular,
 gerar, enviar, reenviar, importar, exportar
 ```
 
-The lists are intentionally conservative. Ambiguous terms are better configured by each team through `additional_verbs`.
+As listas são intencionalmente conservadoras. Termos ambíguos devem ser configurados por cada time por meio de `additional_verbs`.
 
-## Heuristic
+## Heurística
 
-The analyzer:
+O analyzer:
 
-- splits the path by `/`;
-- ignores query strings;
-- evaluates only literal route strings;
-- ignores empty segments;
-- ignores route parameters such as `{id}`, `{id:int}` and `{*path}`;
-- ignores tokens such as `[controller]` and `[action]`;
-- ignores segments with placeholders;
-- ignores version prefixes such as `v1`, `v2` and `api/v1`;
-- detects a verb when the full segment is a known verb;
-- detects known verbs in command-like kebab-case, snake_case and camelCase segments such as `create-order`, `create_order`, `createOrder`, `emitir-apolice`, `emitir_apolice` and `emitirApolice`;
-- does not report substrings inside larger words, such as `createdAt`, `approvalStatus` or `orderProcessingStatus`.
+- divide o caminho por `/`;
+- ignora query strings;
+- avalia apenas strings literais de rota;
+- ignora segmentos vazios;
+- ignora parâmetros de rota como `{id}`, `{id:int}` e `{*path}`;
+- ignora tokens como `[controller]` e `[action]`;
+- ignora segmentos com placeholders;
+- ignora prefixos de versão como `v1`, `v2` e `api/v1`;
+- detecta um verbo quando o segmento completo é um verbo conhecido;
+- detecta verbos conhecidos em segmentos command-like em kebab-case, snake_case e camelCase, como `create-order`, `create_order`, `createOrder`, `emitir-apolice`, `emitir_apolice` e `emitirApolice`;
+- não reporta substrings dentro de palavras maiores, como `createdAt`, `approvalStatus` ou `orderProcessingStatus`.
 
-## Known Limitations
+## Limitações conhecidas
 
-- Only literal route paths are analyzed. Routes built through variables, constants from another compilation unit or string interpolation are ignored.
-- The rule does not validate REST modeling or resource naming beyond detecting configured verbs.
-- The JSON parser for `additional_verbs` supports JSON string arrays and common escaped characters, but intentionally ignores malformed values instead of reporting a separate configuration diagnostic.
-- The rule reports one diagnostic per route declaration, using the first problematic segment found.
+- Apenas caminhos literais de rota são analisados. Rotas criadas por variáveis, constantes de outra unidade de compilação ou string interpolation são ignoradas.
+- A regra não valida modelagem REST nem nomes de recursos além de detectar verbos configurados.
+- O parser JSON de `additional_verbs` suporta arrays JSON de strings e caracteres escapados comuns, mas ignora valores malformados intencionalmente em vez de reportar um diagnóstico separado de configuração.
+- A regra reporta um diagnóstico por declaração de rota, usando o primeiro segmento problematico encontrado.
 
-## Expected Impact
+## Impacto esperado
 
-- More consistent resource-oriented route paths.
-- Lower noise than broad REST linters because the rule only checks conservative verb lists and literal segments.
-- Teams can tune local language and domain-specific command words through `.editorconfig`.
+- Caminhos de rota mais consistentes e orientados a recursos.
+- Menos ruído do que linters REST amplos, porque a regra verifica apenas listas conservadoras de verbos e segmentos literais.
+- Times podem ajustar idioma local e palavras de comando específicas do domínio por meio de `.editorconfig`.

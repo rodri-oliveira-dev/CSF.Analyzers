@@ -1,19 +1,19 @@
-# ARCH013: Restrict mocking frameworks to NSubstitute
+# ARCH013: Restrinjá frameworks de mock ao NSubstitute
 
-## Objective
-Detect and discourage the use of mocking frameworks other than **NSubstitute** (for example **Moq** and **FakeItEasy**) when the project policy standardizes on NSubstitute.
+## Objetivo
+Detectar e desencorajar o uso de frameworks de mock diferentes de **NSubstitute** (por exemplo **Moq** e **FakeItEasy**) quando a política do projeto padroniza NSubstitute.
 
-## Motivation
-Allowing multiple mocking frameworks in the same codebase tends to:
+## Motivação
+Permitir vários frameworks de mock na mesma base de código tende a:
 
-- increase cognitive load for developers and reviewers
-- make test utilities harder to reuse
-- fragment conventions (naming, argument matching, verification styles)
-- increase maintenance cost when upgrading test dependencies
+- aumentar a carga cognitiva para desenvolvedores e revisores
+- dificultar o reuso de utilitários de teste
+- fragmentar convenções (nomenclatura, match de argumentos, estilos de verificacao)
+- aumentar o custo de manutenção ao atualizar dependências de teste
 
-Standardizing on a single framework (NSubstitute) keeps tests more consistent.
+Padronizar em um único framework (NSubstitute) mantém os testes mais consistentes.
 
-## Non-compliant
+## Não conforme
 
 ### Moq
 
@@ -42,7 +42,7 @@ public sealed class Tests
 }
 ```
 
-## Compliant
+## Conforme
 
 ```csharp
 public sealed class Tests
@@ -54,37 +54,37 @@ public sealed class Tests
 }
 ```
 
-## Configuration
-This rule does not expose custom `.editorconfig` options in the first version.
+## Configuração
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
-Severity can be configured normally:
+A severidade pode ser configurada normalmente:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH013.severity = info
 ```
 
-Future versions may introduce an allow-list / deny-list configuration (for example, adding additional mocking frameworks to detect).
+Versóes futuras podem introduzir uma configuração de allow-list / deny-list (por exemplo, adicionar outros frameworks de mock para detectar).
 
-## Known limitations
-- **Initial detection scope is intentionally narrow**. Version 1 detects only these frameworks:
-  - Moq (root namespace: `Moq`)
-  - FakeItEasy (root namespace: `FakeItEasy`)
-- The analyzer relies on semantic symbols and the **root namespace** of the referenced symbol to avoid false positives from lookalike APIs.
-- No code fix is provided because changing a mocking framework is not deterministic and often requires rewriting test logic.
+## Limitações conhecidas
+- **O escopo inicial de detecção é intencionalmente restrito**. A versão 1 detecta apenas estes frameworks:
+  - Moq (namespace raiz: `Moq`)
+  - FakeItEasy (namespace raiz: `FakeItEasy`)
+- O analyzer depende de símbolos semânticos e do **namespace raiz** do símbolo referenciado para evitar falsos positivos de APIs parecidas.
+- Nenhum code fix é fornecido porque trocar um framework de mock não é determinístico e muitas vezes exige reescrever a lógica do teste.
 
-## When not to use
-- You intentionally allow multiple mocking frameworks (for example, during a migration period).
-- You maintain shared libraries intended to be consumed by projects that use different mocking frameworks.
+## Quando não usar
+- Você permite intencionalmente vários frameworks de mock (por exemplo, durante um periodo de migração).
+- Você mantém bibliotecas compartilhádas destinadas a projetos que usam frameworks de mock diferentes.
 
-In those cases, consider suppressing the diagnostic or disabling it via `.editorconfig`.
+Nesses casos, considere suprimir o diagnóstico ou desabilita-lo via `.editorconfig`.
 
-## Expected impact
-- More consistent tests across repositories and teams.
-- Reduced fragmentation in test utilities and conventions.
-- Clearer guidance for new code: use NSubstitute.
+## Impacto esperado
+- Testes mais consistentes entre repositórios e times.
+- Menos fragmentação em utilitários e convenções de teste.
+- Orientacao mais clara para código novo: use NSubstitute.
 
-## Notes about false positives / heuristics
-- The analyzer is designed to avoid false positives by checking **semantic namespaces** (not just text matching).
-- It reports on common usage sites (using directives, invocations, object creation, and type declarations).
-- It intentionally skips reporting inside the mocking framework namespace itself (useful for analyzer tests that stub framework APIs in source).
+## Observações sobre falsos positivos / heurísticas
+- O analyzer foi desenhado para evitar falsos positivos verificando **namespaces semânticos** (não apenas matching de texto).
+- Ele reporta em locais comuns de uso (using directives, invocações, criação de objetos e declarações de tipo).
+- Ele intencionalmente não reporta dentro do namespace do próprio framework de mock (util para testes de analyzer que criam stubs de APIs de framework em código-fonte).

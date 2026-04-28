@@ -1,18 +1,18 @@
-# ARCH002: Avoid Task.ContinueWith
+# ARCH002: Evite Task.ContinueWith
 
-## Objective
-Prevent the use of `Task.ContinueWith(...)` and encourage `await` as the preferred asynchronous flow.
+## Objetivo
+Evitar o uso de `Task.ContinueWith(...)` e incentivar `await` como fluxo assíncrono preferencial.
 
-## Motivation
-`ContinueWith` tends to produce callback-style code that is harder to read and maintain than linear `async`/`await` code.
+## Motivação
+`ContinueWith` tende a produzir código em estilo de callback, mais difícil de ler e manter do que código linear com `async`/`await`.
 
-Using `await` usually provides:
+Usar `await` normalmente oferece:
 
-- **Better readability** (code remains linear)
-- **Better exception propagation** (exceptions flow naturally through the awaited `Task`)
-- **Better maintainability** (less manual continuation wiring and fewer subtle scheduling pitfalls)
+- **Melhor legibilidade** (o código permanece linear)
+- **Melhor propagação de exceções** (exceções fluem naturalmente pela `Task` aguardada)
+- **Melhor manutenção** (menos encadeamento manual de continuações e menos armadilhas sutis de agendamento)
 
-## Non-compliant
+## Não conforme
 
 ```csharp
 using System.Threading.Tasks;
@@ -42,7 +42,7 @@ public sealed class Sample
 }
 ```
 
-## Compliant
+## Conforme
 
 ```csharp
 using System.Threading.Tasks;
@@ -72,34 +72,34 @@ public sealed class Sample
 }
 ```
 
-## Configuration
-This rule does not expose custom `.editorconfig` options in the first version.
+## Configuração
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
-Severity can be configured normally:
+A severidade pode ser configurada normalmente:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH002.severity = warning
 ```
 
-## Known limitations
-- This rule flags `ContinueWith` called on `Task` and `Task<T>`.
-- It does not attempt to validate whether a particular `ContinueWith` usage is “safe” in a given context; it always recommends `await` as the default.
-- No code fix is provided because replacing `ContinueWith` with `await` is not deterministic and may change semantics (return types, scheduling, cancellation behavior, synchronization context usage, etc.).
+## Limitações conhecidas
+- Esta regra sinaliza `ContinueWith` chamado em `Task` e `Task<T>`.
+- Ela não tenta validar se um uso específico de `ContinueWith` é "seguro" em determinado contexto; ela sempre recomenda `await` como padrão.
+- Nenhum code fix é fornecido porque substituir `ContinueWith` por `await` não é determinístico e pode alterar semântica (tipos de retorno, agendamento, comportamento de cancelamento, uso de contexto de sincronização etc.).
 
-## When not to use
-In rare cases, you may intentionally use `ContinueWith` for low-level task composition or to avoid `async` state machines in very hot paths.
+## Quando não usar
+Em casos raros, você pode usar `ContinueWith` intencionalmente para composição de tarefas de baixo nivel ou para evitar state machines `async` em caminhos muito quentes.
 
-If you keep `ContinueWith`, ensure you understand and review:
+Se mantiver `ContinueWith`, garanta que você entende e revisou:
 
-- TaskScheduler / synchronization context implications
-- Exception observation and propagation
-- Cancellation behavior
+- Implicacoes de TaskScheduler / contexto de sincronização
+- Observação e propagação de exceções
+- Comportamento de cancelamento
 
-## Expected impact
-- More consistent `async`/`await` usage across the codebase
-- Fewer continuation chains and callback-style async code
-- More predictable exception propagation patterns
+## Impacto esperado
+- Uso mais consistente de `async`/`await` em toda a base de código
+- Menos cadeias de continuação e código assíncrono em estilo callback
+- Padroes mais previsíveis de propagação de exceções
 
-## Notes about false positives / heuristics
-The analyzer uses semantic information to target only `System.Threading.Tasks.Task.ContinueWith` and `Task<T>.ContinueWith`.
+## Observações sobre falsos positivos / heurísticas
+O analyzer usa informações semânticas para mirar apenas `System.Threading.Tasks.Task.ContinueWith` e `Task<T>.ContinueWith`.

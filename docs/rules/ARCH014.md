@@ -1,19 +1,19 @@
-# ARCH014: Prefer Is.Equivalent over NSubstitute Arg.Is
+# ARCH014: Prefira Is.Equivalent em vez de NSubstitute Arg.Is
 
-## Objective
+## Objetivo
 
-Encourage the use of the team's standard assertion library (`Is.Equivalent`) instead of NSubstitute's `Arg.Is` for value matching in test assertions.
+Incentivar o uso da biblioteca padrão de asserções do time (`Is.Equivalent`) em vez de `Arg.Is` do NSubstitute para match de valores em asserções de teste.
 
-## Motivation
+## Motivação
 
-Using a standardized assertion library across the team provides several benefits:
+Usar uma biblioteca de asserções padronizada em todo o time traz vários beneficios:
 
-- **Consistency**: All tests use the same assertion patterns, making them easier to read and maintain
-- **Better error messages**: The team's standard library typically provides more descriptive failure messages
-- **Reduced coupling**: Tests become less dependent on NSubstitute-specific APIs
-- **Improved maintainability**: Centralized assertion logic is easier to update and evolve
+- **Consistência**: todos os testes usam os mesmos padrões de asserção, tornando-os mais fáceis de ler e manter
+- **Melhores mensagens de erro**: a biblioteca padrão do time normalmente fornece mensagens de falha mais descritivas
+- **Menor acoplamento**: os testes ficam menos dependentes de APIs específicas do NSubstitute
+- **Melhor manutenção**: lógica de asserção centralizada e mais fácil de atualizar e evoluir
 
-## Non-compliant Code
+## Código não conforme
 
 ```csharp
 // Using NSubstitute Arg.Is for value matching
@@ -23,7 +23,7 @@ substitute.Received().Do(NSubstitute.Arg.Is<int>(x => x > 0));
 substitute.Received().Process(NSubstitute.Arg.Is(42));
 ```
 
-## Compliant Code
+## Código conforme
 
 ```csharp
 // Using the team's standard library
@@ -33,32 +33,32 @@ substitute.Received().Do(Is.Equivalent(42));
 substitute.Received().Do(Is.Equivalent(x => x > 0));
 ```
 
-## Configuration
+## Configuração
 
-This rule does not support any configuration options.
+Esta regra não oferece opções de configuração.
 
-## Known Limitations
+## Limitações conhecidas
 
-- The rule only detects `Arg.Is` calls from the `NSubstitute` namespace
-- The rule only reports diagnostics within test types (classes that contain test methods)
-- The rule does not provide a code fix because the appropriate replacement depends on the specific use case and the team's standard library API
+- A regra detecta apenas chamadas `Arg.Is` do namespace `NSubstitute`
+- A regra reporta diagnósticos apenas dentro de tipos de teste (classes que contém métodos de teste)
+- A regra não fornece code fix porque a substituição adequada depende do caso de uso específico e da API da biblioteca padrão do time
 
-## When Not to Use
+## Quando não usar
 
-This rule may not be suitable if:
+Esta regra pode não ser adequada se:
 
-- Your team does not have a standardized assertion library
-- Your team explicitly prefers NSubstitute's `Arg.Is` API
-- You are working on legacy code where migration would be too costly
+- Seu time não tem uma biblioteca de asserções padronizada
+- Seu time prefere explícitamente a API `Arg.Is` do NSubstitute
+- Você está trabalhando em código legado onde a migração seria custosa demais
 
-## Expected Impact
+## Impacto esperado
 
-- **Code Quality**: Improved consistency and readability across test suites
-- **Maintainability**: Easier to update assertion patterns centrally
-- **Team Standards**: Enforces adoption of team-wide testing conventions
+- **Qualidade de código**: mais consistência e legibilidade entre suítes de teste
+- **Manutencao**: mais fácilidade para atualizar padrões de asserção de forma centralizada
+- **Padroes do time**: reforca a adoção de convenções de teste compartilhádas pelo time
 
-## Notes
+## Observações
 
-- This rule reports diagnostics for any `Arg.Is` usage within a test type, regardless of whether the specific method has a test attribute
-- The rule detects both `Arg.Is<T>(predicate)` and `Arg.Is(value)` overloads
-- The rule works with all common test frameworks (xUnit, NUnit, MSTest)
+- Esta regra reporta diagnósticos para qualquer uso de `Arg.Is` dentro de um tipo de teste, independentemente de o método específico ter um atributo de teste
+- A regra detecta as sobrecargas `Arg.Is<T>(predicate)` e `Arg.Is(value)`
+- A regra funciona com os frameworks de teste comuns (xUnit, NUnit, MSTest)

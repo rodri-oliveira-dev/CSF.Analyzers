@@ -1,18 +1,18 @@
-# ARCH003: Prohibit NotBeNull() in tests
+# ARCH003: Proiba NotBeNull() em testes
 
-## Objective
-Detect the use of `NotBeNull()` in tests and encourage more specific assertions when possible.
+## Objetivo
+Detectar o uso de `NotBeNull()` em testes e incentivar asserções mais específicas quando possível.
 
-## Motivation
-`NotBeNull()` is often a weak assertion: it confirms only the absence of `null`, but usually does not communicate *what* is expected (type, content, emptiness, presence of a value, etc.).
+## Motivação
+`NotBeNull()` costuma ser uma asserção fraca: confirma apenas a ausência de `null`, mas geralmente não comúnica *o que* é esperado (tipo, conteúdo, vazio, presença de valor etc.).
 
-More specific assertions tend to:
+Assercoes mais específicas tendem a:
 
-- make the test intent clearer
-- produce better failure messages
-- reduce the risk of “asserting too little”
+- tornar a intenção do teste mais clara
+- produzir mensagens de falha melhores
+- reduzir o risco de "asserir pouco demais"
 
-## Non-compliant code examples
+## Exemplos de código não conforme
 
 ```csharp
 using FluentAssertions;
@@ -25,7 +25,7 @@ public void Test()
 }
 ```
 
-## Compliant code examples
+## Exemplos de código conforme
 
 ```csharp
 using FluentAssertions;
@@ -49,29 +49,29 @@ public void Test()
 }
 ```
 
-## Configuration
-This rule does not expose custom `.editorconfig` options in the first version.
+## Configuração
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
-Severity can be configured normally:
+A severidade pode ser configurada normalmente:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH003.severity = info
 ```
 
-## Known limitations
-- The analyzer targets `NotBeNull()` from **FluentAssertions** only.
-- The analyzer is intentionally limited to **test projects** (heuristic: the compilation must reference known test-framework attributes such as `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute`, or `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
-- The analyzer reports when the invocation is inside a known test method (for example `[Fact]` / `[Theory]`) **or** inside a *test type* (a type that contains at least one known test method).
+## Limitações conhecidas
+- O analyzer mira apenas `NotBeNull()` do **FluentAssertions**.
+- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referenciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
+- O analyzer reporta quando a invocação está dentro de um método de teste conhecido (por exemplo `[Fact]` / `[Theory]`) **ou** dentro de um *tipo de teste* (um tipo que contém pelo menos um método de teste conhecido).
 
-## When not to use
-If your team intentionally standardizes on `NotBeNull()` as the only allowed null-check assertion, this rule may be too strict. Prefer to adjust severity instead of disabling the rule broadly.
+## Quando não usar
+Se seu time padroniza intencionalmente `NotBeNull()` como a única asserção permitida de checagem de nulo, esta regra pode ser rigorosa demais. Prefira ajustar a severidade em vez de desabilitar a regra amplamente.
 
-## Expected impact
-- More expressive tests
-- Less “asserting too little”
-- Better failure messages and debugging signals
+## Impacto esperado
+- Testes mais expressivos
+- Menos "asserir pouco demais"
+- Melhores mensagens de falha e sinais de depuração
 
-## Notes about false positives, heuristics, or exceptions
-- This rule intentionally does **not** provide a code fix. There is no universally safe and deterministic replacement for `NotBeNull()`.
-- The test-project detection is heuristic to avoid noise in non-test projects. If a test project uses a different framework not covered by the built-in list, this rule will not run.
+## Observações sobre falsos positivos, heurísticas ou exceções
+- Esta regra intencionalmente **não** fornece code fix. Não há substituto universalmente seguro e determinístico para `NotBeNull()`.
+- A detecção de projeto de teste é heurística para evitar ruído em projetos que não são de teste. Se um projeto de teste usa um framework diferente da lista embutida, esta regra não será executada.
