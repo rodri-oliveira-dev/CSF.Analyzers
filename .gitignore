@@ -44,6 +44,10 @@ CodeCoverage/
 # MSBuild Binary and Structured Log
 *.binlog
 .dotnet-home
+.vs
+.codex
+.agents
+AGENTS.md
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
