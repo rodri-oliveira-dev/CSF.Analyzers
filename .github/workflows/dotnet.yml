@@ -1,39 +1,20 @@
-name: .NET
+name: PR Validation
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - "src/**"
-      - "tests/**"
-      - "docs/**"
-      - ".github/workflows/dotnet.yml"
-      - "Directory.Packages.props"
-      - ".editorconfig"
-      - "README.md"
-      - "Swa.Analyzers.slnx"
   pull_request:
     branches: [ "main" ]
-    paths:
-      - "src/**"
-      - "tests/**"
-      - "docs/**"
-      - ".github/workflows/dotnet.yml"
-      - "Directory.Packages.props"
-      - ".editorconfig"
-      - "README.md"
-      - "Swa.Analyzers.slnx"
   workflow_dispatch:
 
 concurrency:
-  group: dotnet-${{ github.workflow }}-${{ github.ref }}
+  group: pr-validation-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  build-test:
+  validate:
+    name: Restore, build and test
     runs-on: ubuntu-latest
 
     steps:
@@ -45,14 +26,22 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.props', '**/*.targets', 'Swa.Analyzers.slnx') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
       - name: Show .NET info
         run: dotnet --info
 
       - name: Restore
-        run: dotnet restore Swa.Analyzers.slnx
+        run: dotnet restore ./Swa.Analyzers.slnx
 
       - name: Build
-        run: dotnet build Swa.Analyzers.slnx --configuration Release --no-restore -m:1
+        run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore -m:1
 
       - name: Test
-        run: dotnet test Swa.Analyzers.slnx --configuration Release --no-build --verbosity normal -m:1
+        run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
