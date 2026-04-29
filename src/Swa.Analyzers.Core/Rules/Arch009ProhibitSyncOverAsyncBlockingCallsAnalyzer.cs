@@ -56,6 +56,8 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
         INamedTypeSymbol? taskOfTType,
         INamedTypeSymbol? valueTaskOfTType)
     {
+        context.CancellationToken.ThrowIfCancellationRequested();
+
         var propertyReference = (IPropertyReferenceOperation)context.Operation;
 
         if (!string.Equals(propertyReference.Property.Name, "Result", StringComparison.Ordinal))
@@ -79,11 +81,12 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
         INamedTypeSymbol? valueTaskType,
         INamedTypeSymbol? valueTaskOfTType)
     {
+        context.CancellationToken.ThrowIfCancellationRequested();
+
         var invocation = (IInvocationOperation)context.Operation;
         var targetMethod = invocation.TargetMethod;
 
-        if (string.Equals(targetMethod.Name, "Wait", StringComparison.Ordinal)
-            && targetMethod.Parameters.Length <= 1)
+        if (string.Equals(targetMethod.Name, "Wait", StringComparison.Ordinal))
         {
             if (IsKnownAwaitableType(invocation.Instance, taskType, taskOfTType))
             {

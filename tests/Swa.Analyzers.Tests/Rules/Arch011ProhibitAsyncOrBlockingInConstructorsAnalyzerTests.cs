@@ -189,6 +189,53 @@ public sealed class Sample
     }
 
     [Fact]
+    public async Task Reports_Task_Wait_With_Integer_Timeout_And_CancellationToken_In_Constructor()
+    {
+        const string source = """
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Sample
+{
+    public Sample(Task task, CancellationToken cancellationToken)
+    {
+        task.Wait(1000, cancellationToken);
+    }
+}
+""";
+
+        var expected = Verifier<Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer>.Diagnostic("ARCH011")
+            .WithSpan(8, 14, 8, 18)
+            .WithArguments("synchronous blocking with .Wait()");
+
+        await Verifier<Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_Task_Wait_With_TimeSpan_Timeout_And_CancellationToken_In_Constructor()
+    {
+        const string source = """
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Sample
+{
+    public Sample(Task task, CancellationToken cancellationToken)
+    {
+        task.Wait(TimeSpan.FromSeconds(1), cancellationToken);
+    }
+}
+""";
+
+        var expected = Verifier<Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer>.Diagnostic("ARCH011")
+            .WithSpan(9, 14, 9, 18)
+            .WithArguments("synchronous blocking with .Wait()");
+
+        await Verifier<Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
     public async Task Reports_Task_Result_Via_Conditional_Access_In_Constructor()
     {
         const string source = """
