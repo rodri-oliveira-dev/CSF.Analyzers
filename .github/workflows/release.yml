@@ -46,6 +46,18 @@ jobs:
       - name: Test
         run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
 
+      - name: Pack analyzer
+        run: dotnet pack ./src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj --configuration Release --no-build --output ./artifacts/packages /p:Version=0.1.${{ github.run_number }}
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nuget-packages
+          path: |
+            artifacts/packages/*.nupkg
+            artifacts/packages/*.snupkg
+          if-no-files-found: error
+
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -55,6 +67,12 @@ jobs:
       contents: write
 
     steps:
+      - name: Download NuGet packages
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: nuget-packages
+          path: artifacts/packages
+
       - name: Prepare release tag
         id: release_tag
         shell: bash
@@ -105,3 +123,8 @@ jobs:
               target_commitish: context.sha,
               generate_release_notes: true,
             });
+
+      - name: Attach NuGet packages to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ steps.release_tag.outputs.tag }}" artifacts/packages/*.nupkg artifacts/packages/*.snupkg --clobber

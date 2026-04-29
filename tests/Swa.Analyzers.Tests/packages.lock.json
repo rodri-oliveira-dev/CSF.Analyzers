@@ -334,7 +334,7 @@
           "xunit.extensibility.core": "[2.9.3]"
         }
       },
-      "swa.analyzers.core": {
+      "Swa.Analyzers": {
         "type": "Project"
       },
       "Microsoft.CodeAnalysis.Analyzers": {
