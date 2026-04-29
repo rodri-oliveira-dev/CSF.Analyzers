@@ -18,4 +18,5 @@ internal static class RuleIdentifiers
     public const string PreferIsEquivalentOverArgIs = "ARCH014";
     public const string ProhibitVerbsInHttpRoutes = "ARCH015";
     public const string AvoidTaskRunInAspNetRequestFlow = "ARCH016";
+    public const string ProhibitFireAndForgetInRequestFlow = "ARCH017";
 }

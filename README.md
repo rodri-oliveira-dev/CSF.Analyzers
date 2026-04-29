@@ -30,6 +30,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH014 | Prefer Is.Equivalent over NSubstitute Arg.Is     | TestQuality | Info              | [ARCH014](docs/rules/ARCH014.md) |
 | ARCH015 | Prohibit verbs in HTTP routes                    | Design      | Warning           | [ARCH015](docs/rules/ARCH015.md) |
 | ARCH016 | Avoid Task.Run in ASP.NET request flow           | Performance | Warning           | [ARCH016](docs/rules/ARCH016.md) |
+| ARCH017 | Prohibit fire-and-forget in request flow         | Reliability | Warning           | [ARCH017](docs/rules/ARCH017.md) |
 
 ## Como configurar
 

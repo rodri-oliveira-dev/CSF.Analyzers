@@ -18,3 +18,4 @@
 | ARCH014 | TestQuality | Info     | Prefer Is.Equivalent over NSubstitute Arg.Is.            |
 | ARCH015 | Design      | Warning  | Prohibit verbs in HTTP route segments.                   |
 | ARCH016 | Performance | Warning  | Avoid Task.Run in ASP.NET request flows.                 |
+| ARCH017 | Reliability | Warning  | Prohibit fire-and-forget in ASP.NET request flows.       |
