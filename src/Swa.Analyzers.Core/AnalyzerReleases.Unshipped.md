@@ -23,3 +23,4 @@
 | ARCH019 | Security    | Warning  | Avoid conflicting Authorize and AllowAnonymous metadata. |
 | ARCH020 | Security    | Warning  | Require explicit authorization decision on HTTP endpoints. |
 | ARCH021 | Performance | Warning  | Prefer AsNoTracking for read-only EF Core queries.       |
+| ARCH022 | Performance | Warning  | Avoid premature query materialization before filtering or projection. |
