@@ -32,7 +32,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
 
         context.RegisterCompilationStartAction(static compilationContext =>
         {
-            var testMethodAttributes = GetKnownTestMethodAttributes(compilationContext.Compilation);
+            var testMethodAttributes = TestContextHelper.GetKnownTestMethodAttributes(compilationContext.Compilation);
             if (testMethodAttributes.IsDefaultOrEmpty)
             {
                 // Avoid noise outside test projects.
@@ -487,40 +487,6 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
         }
 
         return null;
-    }
-
-    private static ImmutableArray<INamedTypeSymbol> GetKnownTestMethodAttributes(Compilation compilation)
-    {
-        // Same “test project” gate used in other TestQuality rules.
-        var builder = ImmutableArray.CreateBuilder<INamedTypeSymbol>();
-
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Xunit.FactAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Xunit.TheoryAttribute"));
-
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.SetUpAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.TearDownAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.OneTimeSetUpAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.OneTimeTearDownAttribute"));
-
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.DataTestMethodAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanupAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.ClassInitializeAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.ClassCleanupAttribute"));
-
-        return builder.ToImmutable();
-    }
-
-    private static void AddIfNotNull(ImmutableArray<INamedTypeSymbol>.Builder builder, INamedTypeSymbol? symbol)
-    {
-        if (symbol is not null)
-        {
-            builder.Add(symbol);
-        }
     }
 
     private static ImmutableArray<DisallowedMockFramework> GetPresentDisallowedFrameworks(Compilation compilation)
