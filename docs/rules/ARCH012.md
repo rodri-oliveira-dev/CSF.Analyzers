@@ -12,6 +12,7 @@ Incentivar o uso de `DateTimeOffset` em vez de `DateTime` em declarações de ti
 
 ```csharp
 using System;
+using System.Collections.Generic;
 
 public sealed class Order
 {
@@ -24,6 +25,8 @@ public sealed class Processor
     public void Process(DateTime timestamp) { }
 
     public DateTime GetTimestamp() => DateTime.UtcNow;
+
+    public IEnumerable<DateTime> GetTimestamps() => [];
 }
 ```
 
@@ -31,6 +34,7 @@ public sealed class Processor
 
 ```csharp
 using System;
+using System.Collections.Generic;
 
 public sealed class Order
 {
@@ -43,6 +47,8 @@ public sealed class Processor
     public void Process(DateTimeOffset timestamp) { }
 
     public DateTimeOffset GetTimestamp() => DateTimeOffset.UtcNow;
+
+    public IEnumerable<DateTimeOffset> GetTimestamps() => [];
 }
 ```
 
@@ -83,4 +89,4 @@ O analyzer é intencionalmente conservador:
 - Ignora implementações de interface e overrides porque o tipo é ditado pelo contrato.
 - Ignora tipos derivados de atributos porque atributos são fortemente acoplados a serialização em runtime.
 - Ignora declarações com `var` para evitar sinalizar usos inferidos em que o desenvolvedor não escolheu explícitamente o tipo.
-- Sinaliza `DateTime[]` e `DateTime?` porque a mesma ambiguidade se aplica a arrays e wrappers nullable.
+- Sinaliza `DateTime` dentro de tipos compostos como `DateTime[]`, `DateTime?`, `List<DateTime>`, `Dictionary<string, DateTime>` e tuplas, porque a mesma ambiguidade se propaga ao contrato declarado.

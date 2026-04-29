@@ -217,16 +217,35 @@ public sealed class Arch012PreferDateTimeOffsetOverDateTimeAnalyzer : Diagnostic
             && namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T
             && namedType.TypeArguments.Length == 1)
         {
-            if (SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[0], dateTimeType))
-            {
-                return true;
-            }
+            return IsDateTimeType(namedType.TypeArguments[0], dateTimeType);
         }
 
         // DateTime[]
         if (type is IArrayTypeSymbol arrayType)
         {
             return IsDateTimeType(arrayType.ElementType, dateTimeType);
+        }
+
+        if (type is INamedTypeSymbol compositeType)
+        {
+            if (compositeType.IsTupleType)
+            {
+                foreach (var tupleElement in compositeType.TupleElements)
+                {
+                    if (IsDateTimeType(tupleElement.Type, dateTimeType))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            foreach (var typeArgument in compositeType.TypeArguments)
+            {
+                if (IsDateTimeType(typeArgument, dateTimeType))
+                {
+                    return true;
+                }
+            }
         }
 
         return false;
