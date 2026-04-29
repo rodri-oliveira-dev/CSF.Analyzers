@@ -21,7 +21,7 @@ public sealed class Arch004EnforceSutNamingInUnitTestsAnalyzer : DiagnosticAnaly
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "To improve readability and consistency across unit tests, name the primary system-under-test field '_sut'.",
-        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH004.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.EnforceSutNamingInUnitTests));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

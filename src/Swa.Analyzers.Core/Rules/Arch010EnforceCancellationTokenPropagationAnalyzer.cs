@@ -20,7 +20,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "When a CancellationToken is available in the current scope and the invoked method can accept one, the token should be passed to enable cooperative cancellation and improve responsiveness.",
-        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH010.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.EnforceCancellationTokenPropagation));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

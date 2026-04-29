@@ -21,7 +21,7 @@ public sealed class Arch003ProhibitNotBeNullInTestsAnalyzer : DiagnosticAnalyzer
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "NotBeNull() is a weak assertion that often hides intent. Prefer more specific assertions (for example NotBeNullOrEmpty, BeOfType, BeAssignableTo, HaveValue) to improve test clarity.",
-        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH003.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.ProhibitNotBeNullInTests));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

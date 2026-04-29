@@ -21,7 +21,7 @@ public sealed class Arch014PreferIsEquivalentOverArgIsAnalyzer : DiagnosticAnaly
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "Arg.Is is a matcher provided by NSubstitute. When the team has a standard library that offers Is.Equivalent, prefer using that matcher to maintain consistency and avoid unnecessary dependencies.",
-        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH014.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.PreferIsEquivalentOverArgIs));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

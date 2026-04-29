@@ -21,7 +21,7 @@ public sealed class Arch006WarnOnExcludingInBeEquivalentToAnalyzer : DiagnosticA
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "FluentAssertions equivalency exclusions (Excluding*) can hide regressions by making tests less strict. Prefer asserting precise equivalency and use exclusions only when there is an explicit, documented reason.",
-        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH006.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.WarnOnExcludingInBeEquivalentTo));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

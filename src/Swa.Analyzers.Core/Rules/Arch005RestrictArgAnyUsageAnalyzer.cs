@@ -21,7 +21,7 @@ public sealed class Arch005RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "Arg.Any() is a very broad matcher that can hide intent and make tests less precise. This rule restricts Arg.Any() usage to specific negative-assertion conventions (DidNotReceive/DidNotReceiveWithAnyArgs), where broad matching is explicitly accepted.",
-        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH005.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.RestrictArgAnyUsage));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
