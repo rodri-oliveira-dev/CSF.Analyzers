@@ -34,7 +34,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules), tambem usada co
 
 ### Requisitos
 
-- .NET SDK 10.x
+- .NET SDK 10.x, fixado pelo `global.json` do repositorio.
 
 Configure severidade via `.editorconfig` normalmente:
 
