@@ -6,20 +6,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <RepositoryRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..'))</RepositoryRoot>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
   </ItemGroup>
-
-  <Target Name="InstallGitHooks"
-          BeforeTargets="Build"
-          Condition="Exists('$(RepositoryRoot).git') And Exists('$(RepositoryRoot).githooks')">
-    <Exec Command="git config core.hooksPath .githooks"
-          WorkingDirectory="$(RepositoryRoot)"
-          StandardOutputImportance="Low" />
-  </Target>
 
 </Project>

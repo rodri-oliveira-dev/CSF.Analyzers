@@ -1,0 +1,23 @@
+<Project>
+
+  <PropertyGroup>
+    <RepositoryRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)'))</RepositoryRoot>
+  </PropertyGroup>
+
+  <Target Name="InstallGitHooks"
+          BeforeTargets="Build"
+          Condition="
+            '$(CI)' != 'true'
+            And Exists('$(RepositoryRoot).git')
+            And Exists('$(RepositoryRoot).githooks')">
+
+    <Message Text="Configurando Git hooks do repositório..."
+             Importance="Low" />
+
+    <Exec Command="git config core.hooksPath .githooks"
+          WorkingDirectory="$(RepositoryRoot)"
+          StandardOutputImportance="Low" />
+
+  </Target>
+
+</Project>
