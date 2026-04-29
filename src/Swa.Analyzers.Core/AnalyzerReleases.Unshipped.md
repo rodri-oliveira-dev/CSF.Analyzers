@@ -21,3 +21,4 @@
 | ARCH017 | Reliability | Warning  | Prohibit fire-and-forget in ASP.NET request flows.       |
 | ARCH018 | Reliability | Warning  | Avoid direct HttpClient instantiation.                   |
 | ARCH019 | Security    | Warning  | Avoid conflicting Authorize and AllowAnonymous metadata. |
+| ARCH020 | Security    | Warning  | Require explicit authorization decision on HTTP endpoints. |

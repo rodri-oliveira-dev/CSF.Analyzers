@@ -33,6 +33,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH017 | Prohibit fire-and-forget in request flow         | Reliability | Warning           | [ARCH017](docs/rules/ARCH017.md) |
 | ARCH018 | Avoid direct HttpClient instantiation            | Reliability | Warning           | [ARCH018](docs/rules/ARCH018.md) |
 | ARCH019 | Avoid Authorize with AllowAnonymous              | Security    | Warning           | [ARCH019](docs/rules/ARCH019.md) |
+| ARCH020 | Require explicit endpoint authorization          | Security    | Warning           | [ARCH020](docs/rules/ARCH020.md) |
 
 ## Como configurar
 
@@ -54,6 +55,15 @@ Algumas regras aceitam opcoes proprias via `.editorconfig`. Exemplo para `ARCH01
 [*.cs]
 dotnet_diagnostic.ARCH015.route_language = pt-BR
 dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar", "recalcular"]
+```
+
+Exemplo para `ARCH020`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH020.allowed_routes = ["/internal/status", "/diagnostics/*"]
+dotnet_diagnostic.ARCH020.allowed_methods = ["Ping"]
+dotnet_diagnostic.ARCH020.ignored_namespaces = ["Sample.PublicEndpoints"]
 ```
 
 ## Como validar
