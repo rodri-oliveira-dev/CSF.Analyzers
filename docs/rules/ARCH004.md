@@ -1,16 +1,16 @@
-# ARCH004: Enforce _sut naming in unit tests
+# ARCH004: Exija o nome _sut em testes unitários
 
-## Objective
-Enforce the `_sut` naming convention for the primary *system under test* (SUT) field in unit test types.
+## Objetivo
+Exigir a convenção de nome `_sut` para o campo principal de *system under test* (SUT) em tipos de teste unitário.
 
-## Motivation
-Using a consistent name for the main subject under test reduces cognitive load when reading tests:
+## Motivação
+Usar um nome consistente para o principal sujeito sob teste reduz a carga cognitiva ao ler testes:
 
-- `_sut` is easy to recognize quickly
-- it avoids bikeshedding on variable names for the main object under test
-- it makes test setup patterns more uniform across the codebase
+- `_sut` é fácil de reconhecer rapidamente
+- evita discussões sobre nomes de variáveis para o objeto principal sob teste
+- torna os padrões de setup de testes mais uniformes em toda a base de código
 
-## Non-compliant code examples
+## Exemplos de código não conforme
 
 ```csharp
 public sealed class Calculator { }
@@ -24,7 +24,7 @@ public sealed class CalculatorTests
 }
 ```
 
-## Compliant code examples
+## Exemplos de código conforme
 
 ```csharp
 public sealed class Calculator { }
@@ -38,35 +38,35 @@ public sealed class CalculatorTests
 }
 ```
 
-## Configuration
-This rule does not expose custom `.editorconfig` options in the first version.
+## Configuração
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
-Severity can be configured normally:
+A severidade pode ser configurada normalmente:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH004.severity = info
 ```
 
-## Known limitations
-- The analyzer is intentionally limited to **test projects** (heuristic: the compilation must reference known test-framework attributes such as `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute`, or `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
-- The analyzer is intentionally conservative to avoid noise:
-  - it only analyzes **test types** (types that contain at least one known test method)
-  - it only reports when it can infer a clear single SUT candidate field
-- SUT identification heuristic (current behavior):
-  1. Infer the expected SUT type name from the test type name by stripping a supported suffix (`Tests`, `Test`, `Specs`, `Spec`).
-     - Example: `OrderServiceTests` -> inferred SUT type name `OrderService`.
-  2. Inside that test type, find instance fields whose **type name** matches the inferred SUT type name.
-  3. If there is exactly one such field and it is not named `_sut`, report `ARCH004`.
+## Limitações conhecidas
+- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referenciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
+- O analyzer é intencionalmente conservador para evitar ruído:
+  - analisa apenas **tipos de teste** (tipos que contêm pelo menos um método de teste conhecido)
+  - reporta apenas quando consegue inferir um único campo candidato claro a SUT
+- Heurística de identificação do SUT (comportamento atual):
+  1. Inferir o nome esperado do tipo SUT a partir do nome do tipo de teste, removendo um sufixo suportado (`Tests`, `Test`, `Specs`, `Spec`).
+     - Exemplo: `OrderServiceTests` -> nome de tipo SUT inferido `OrderService`.
+  2. Dentro desse tipo de teste, encontrar campos de instância cujo **nome do tipo** corresponde ao nome de tipo SUT inferido.
+  3. Se houver exatamente um desses campos e ele não se chamar `_sut`, reportar `ARCH004`.
 
-## When not to use
-- If your team uses a different SUT naming convention (for example `sut` or `subject`).
-- If your tests intentionally involve multiple equally-important subjects under test per test type.
+## Quando não usar
+- Se seu time usa uma convenção diferente de nomenclatura de SUT (por exemplo `sut` ou `subject`).
+- Se seus testes envolvem intencionalmente vários sujeitos sob teste igualmente importantes por tipo de teste.
 
-## Expected impact
-- More uniform and easier-to-scan test code
-- Lower naming churn in code reviews
+## Impacto esperado
+- Código de teste mais uniforme e mais fácil de escanear
+- Menos churn de nomenclatura em code reviews
 
-## Notes about false positives, heuristics, or exceptions
-- This rule intentionally does **not** provide a code fix. Renaming a field may require updating many references and can be disruptive.
-- If the test class name does not follow a supported suffix convention, the analyzer stays silent.
+## Observações sobre falsos positivos, heurísticas ou exceções
+- Esta regra intencionalmente **não** fornece code fix. Renomear um campo pode exigir atualizar muitas referências e ser disruptivo.
+- Se o nome da classe de teste não seguir uma convenção de sufixo suportada, o analyzer permanece silencioso.

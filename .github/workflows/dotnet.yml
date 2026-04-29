@@ -1,58 +1,77 @@
-name: .NET
+name: PR Validation
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - "src/**"
-      - "tests/**"
-      - "docs/**"
-      - ".github/workflows/dotnet.yml"
-      - "Directory.Packages.props"
-      - ".editorconfig"
-      - "README.md"
-      - "Swa.Analyzers.slnx"
   pull_request:
-    branches: [ "main" ]
-    paths:
-      - "src/**"
-      - "tests/**"
-      - "docs/**"
-      - ".github/workflows/dotnet.yml"
-      - "Directory.Packages.props"
-      - ".editorconfig"
-      - "README.md"
-      - "Swa.Analyzers.slnx"
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
-  group: dotnet-${{ github.workflow }}-${{ github.ref }}
+  group: pr-validation-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  build-test:
+  build:
+    name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Setup .NET SDK 10
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
         with:
           dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json') }}
 
       - name: Show .NET info
         run: dotnet --info
 
       - name: Restore
-        run: dotnet restore Swa.Analyzers.slnx
+        run: dotnet restore ./Swa.Analyzers.slnx --locked-mode
 
       - name: Build
-        run: dotnet build Swa.Analyzers.slnx --configuration Release --no-restore -m:1
+        run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
 
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup .NET SDK 10
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json') }}
+
+      - name: Show .NET info
+        run: dotnet --info
+
+      - name: Restore
+        run: dotnet restore ./Swa.Analyzers.slnx --locked-mode
+
+      # dotnet test against the .slnx currently fails before test discovery when
+      # MSBuild runs with multiple nodes. Keep orchestration single-node while
+      # preserving full solution test coverage.
       - name: Test
-        run: dotnet test Swa.Analyzers.slnx --configuration Release --no-build --verbosity normal -m:1
+        run: dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1

@@ -55,6 +55,17 @@ dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar", "recalcular"
 ## Como validar
 
 - **Restore**: `dotnet restore ./Swa.Analyzers.slnx`
-- **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore -m:1`
-- **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1`
+- **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore`
+- **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1` (a orquestracao do VSTest na `.slnx` falha antes da descoberta quando o MSBuild usa multiplos nos)
 - **Manual**: veja [src/Swa.Analyzers.SampleApp/README.md](src/Swa.Analyzers.SampleApp/README.md) (exemplos por regra e build com diagnosticos)
+
+## Protecao da branch `main`
+
+O workflow [PR Validation](.github/workflows/dotnet.yml) valida Pull Requests para `main` com checks separados para build e testes. Os workflows [CodeQL](.github/workflows/codeql.yml) e [Dependency Review](.github/workflows/dependency-review.yml) tambem rodam em PRs para `main`.
+
+Para impedir merge antes da conclusao de todas as validacoes, configure Branch Protection ou Rulesets no GitHub para a branch `main` com **Require status checks to pass before merging** e marque como obrigatorios:
+
+- `Build`
+- `Test`
+- `Analyze C#`
+- `Dependency Review`

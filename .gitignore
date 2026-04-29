@@ -45,9 +45,27 @@ CodeCoverage/
 *.binlog
 .dotnet-home
 .vs
-.codex
-.agents
-AGENTS.md
+
+# Local sensitive files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*.cer
+*.der
+*.jks
+*.keystore
+secrets.*
+*.secret
+*.sqlite
+*.db
+*.bak
+*.dump
+*.dmp
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

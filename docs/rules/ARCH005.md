@@ -1,34 +1,34 @@
-# ARCH005: Restrict usage of Arg.Any()
+# ARCH005: Restrinjá o uso de Arg.Any()
 
-## Objective
-Restrict the usage of `NSubstitute.Arg.Any<T>()` in test code, allowing it only in **explicitly accepted** negative-assertion conventions.
+## Objetivo
+Restringir o uso de `NSubstitute.Arg.Any<T>()` em código de teste, permitindo-o apenas em convenções de asserção negativa **explícitamente aceitas**.
 
-## Motivation
-`Arg.Any<T>()` is a very broad argument matcher. Overuse tends to produce tests that are:
+## Motivação
+`Arg.Any<T>()` é um matcher de argumento muito amplo. O uso excessivo tende a produzir testes que são:
 
-- less expressive (the test does not communicate which argument values matter)
-- less strict (tests pass even when the system under test uses unexpected values)
-- harder to refactor safely (weak expectations can hide regressions)
+- menos expressivos (o teste não comúnica quais valores de argumento importam)
+- menos rigorosós (testes passam mesmo quando o sistema sob teste usa valores inesperados)
+- mais difíceis de refatorar com seguranca (expectativas fracas podem esconder regressões)
 
-The project convention accepts `Arg.Any<T>()` only in a narrow scenario: negative assertions using NSubstitute's `DidNotReceive()` / `DidNotReceiveWithAnyArgs()` call chain.
+A convenção do projeto aceita `Arg.Any<T>()` apenas em um cenário restrito: asserções negativas usando a cadeia de chamadas `DidNotReceive()` / `DidNotReceiveWithAnyArgs()` do NSubstitute.
 
-## Non-compliant code examples
+## Exemplos de código não conforme
 
-### Broad matcher in positive assertions
+### Matcher amplo em asserções positivas
 
 ```csharp
 substitute.Received().Do(Arg.Any<int>());
 ```
 
-### Broad matcher in normal invocation/setup
+### Matcher amplo em invocação/setup normal
 
 ```csharp
 substitute.Do(Arg.Any<int>());
 ```
 
-## Compliant code examples
+## Exemplos de código conforme
 
-### Allowed by convention: negative assertion chain
+### Permitido por convenção: cadeia de asserção negativa
 
 ```csharp
 substitute.DidNotReceive().Do(Arg.Any<int>());
@@ -38,45 +38,45 @@ substitute.DidNotReceive().Do(Arg.Any<int>());
 substitute.DidNotReceiveWithAnyArgs().Do(Arg.Any<int>());
 ```
 
-## Configuration
-This rule does not expose custom `.editorconfig` options in the first version.
+## Configuração
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
-Severity can be configured normally:
+A severidade pode ser configurada normalmente:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH005.severity = info
 ```
 
-## Known limitations
-- The analyzer is intentionally limited to **test projects** (heuristic: the compilation must reference known test-framework attributes such as `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute`, or `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
-- The analyzer is intentionally limited to **test contexts** (test methods and helper methods inside *test types*), following the same approach as other test-quality rules in this package.
+## Limitações conhecidas
+- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referenciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
+- O analyzer é intencionalmente limitado a **contextos de teste** (métodos de teste e métodos auxiliares dentro de *tipos de teste*), seguindo a mesma abordagem das outras regras de qualidade de teste deste pacote.
 
-## When not to use
-- If your team relies heavily on broad matchers as part of the test philosophy.
-- If your test codebase uses a different mocking framework or conventions.
+## Quando não usar
+- Se seu time depende fortemente de matchers amplos como parte da filosófia de testes.
+- Se sua base de testes usa outro framework de mock ou outras convenções.
 
-## Expected impact
-- Tests become more precise and intention-revealing.
-- Lower chance of accidentally allowing unexpected argument values.
+## Impacto esperado
+- Os testes se tornam mais precisos e revelam melhor a intenção.
+- Menor chánce de permitir acidentalmente valores inesperados de argumento.
 
-## Notes about false positives, heuristics, or exceptions
-### Semantic identification
-The rule uses semantic analysis to ensure it only targets `NSubstitute.Arg.Any<T>()`.
-This avoids false positives from unrelated APIs with the same name (for example `CustomSubstitute.Arg.Any<T>()`).
+## Observações sobre falsos positivos, heurísticas ou exceções
+### Identificação semântica
+A regra usa análise semântica para garantir que mira apenas `NSubstitute.Arg.Any<T>()`.
+Isso evita falsos positivos de APIs não relacionadas com o mesmo nome (por exemplo `CustomSubstitute.Arg.Any<T>()`).
 
-### Allowed exceptions (project convention)
-`Arg.Any<T>()` is allowed only when:
+### Excecoes permitidas (convenção do projeto)
+`Arg.Any<T>()` é permitido apenas quando:
 
-1. It appears as the **direct argument value** of a method invocation (implicit conversions are ignored), and
-2. That invocation is part of a call chain whose receiver is `DidNotReceive()` or `DidNotReceiveWithAnyArgs()`, and
-3. The `DidNotReceive*` method is from the **NSubstitute** namespace (to avoid allowing lookalike APIs).
+1. Aparece como o **valor direto de argumento** de uma invocação de método (conversões implícitas são ignoradas), e
+2. Essa invocação faz parte de uma cadeia de chamadas cujo receiver é `DidNotReceive()` ou `DidNotReceiveWithAnyArgs()`, e
+3. O método `DidNotReceive*` vem do namespace **NSubstitute** (para evitar permitir APIs parecidas).
 
-This means the analyzer will still report patterns like:
+Isso significa que o analyzer ainda reportara padrões como:
 
 ```csharp
 substitute.DidNotReceive().Do(Arg.Any<int>() + 1); // reported
 ```
 
-### No code fix
-This rule does not provide a code fix because replacing `Arg.Any<T>()` requires test-specific intent and is not a deterministic or universally safe transformation.
+### Sem code fix
+Esta regra não fornece code fix porque substituir `Arg.Any<T>()` exige intenção específica do teste e não é uma transformação determinística ou universalmente segura.

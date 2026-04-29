@@ -1,14 +1,14 @@
-# ARCH012: Prefer DateTimeOffset over DateTime
+# ARCH012: Prefira DateTimeOffset em vez de DateTime
 
-## Objective
-Encourage the use of `DateTimeOffset` instead of `DateTime` in type declarations that are controlled by the project, reducing ambiguity about time zone intent.
+## Objetivo
+Incentivar o uso de `DateTimeOffset` em vez de `DateTime` em declarações de tipo controladas pelo projeto, reduzindo ambiguidade sobre a intenção de fuso horário.
 
-## Motivation
-`System.DateTime` is ambiguous: it can represent local, UTC, or unspecified time, and its `Kind` property is often ignored or misinterpreted. This leads to real bugs in serialization, persistence, and distributed systems.
+## Motivação
+`System.DateTime` é ambíguo: pode representar horário local, UTC ou não especificado, e sua propriedade `Kind` muitas vezes é ignorada ou interpretada incorretamente. Isso causa bugs reais em serialização, persistência e sistemas distribuídos.
 
-`DateTimeOffset` always carries an offset relative to UTC, making the intent explicit and eliminating a common class of timezone-related defects.
+`DateTimeOffset` sempre carrega um offset relativo ao UTC, tornando a intenção explícita e eliminando uma classe comum de defeitos relacionados a fuso horário.
 
-## Non-compliant
+## Não conforme
 
 ```csharp
 using System;
@@ -27,7 +27,7 @@ public sealed class Processor
 }
 ```
 
-## Compliant
+## Conforme
 
 ```csharp
 using System;
@@ -46,41 +46,41 @@ public sealed class Processor
 }
 ```
 
-## Configuration
-This rule does not expose custom `.editorconfig` options in the first version. Future versions may support an allow-list for specific type names or namespaces where `DateTime` is intentionally used.
+## Configuração
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão. Versóes futuras podem suportar uma allow-list para nomes de tipos ou namespaces específicos em que `DateTime` é usado intencionalmente.
 
-Severity can be configured normally:
+A severidade pode ser configurada normalmente:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH012.severity = info
 ```
 
-## Known limitations
-- The analyzer does not report `DateTime` when used with `var` (e.g., `var dt = DateTime.UtcNow;`). This is intentional: without an explicit type annotation, there is no clear declaration site to flag.
-- `DateTime` inside types that derive from `System.Attribute` is not reported, because attributes often serialize values through framework mechanisms that may require `DateTime`.
-- `DateTime` in explicit interface implementations, implicit interface implementations, and overrides is not reported, because the type is imposed by an external contract.
-- `DateTime` in `this` parameters of extension methods is not reported when the `this` parameter is `DateTime` (e.g., `public static void DoWork(this DateTime dt)`), because the analyzer targets the parameter declaration only when the team controls the type choice.
-- No code fix is provided because changing `DateTime` to `DateTimeOffset` may break callers, serialization contracts, or implicit conversions.
+## Limitações conhecidas
+- O analyzer não reporta `DateTime` quando usado com `var` (por exemplo, `var dt = DateTime.UtcNow;`). Isso é intencional: sem uma anotação de tipo explícita, não há um local claro de declaração para sinalizar.
+- `DateTime` dentro de tipos que derivam de `System.Attribute` não é reportado, porque atributos costumam serializar valores por mecanismos do framework que podem exigir `DateTime`.
+- `DateTime` em implementações explícitas de interface, implementações implícitas de interface e overrides não é reportado, porque o tipo é imposto por um contrato externo.
+- `DateTime` em parâmetros `this` de extension methods não é reportado quando o parâmetro `this` é `DateTime` (por exemplo, `public static void DoWork(this DateTime dt)`), porque o analyzer mira a declaração do parâmetro apenas quando o time controla a escolha do tipo.
+- Nenhum code fix é fornecido porque alterar `DateTime` para `DateTimeOffset` pode quebrar chamadores, contratos de serialização ou conversões implícitas.
 
-## When not to use
-You may intentionally keep `DateTime` when:
+## Quando não usar
+Você pode manter `DateTime` intencionalmente quando:
 
-- A framework API or external contract explicitly requires `DateTime` (e.g., legacy Entity Framework mappings, some serializer configurations).
-- You need `DateTime` for interop with unmanaged code or specific serialization formats.
-- The codebase has a documented convention that `DateTime` is always UTC and the convention is strictly enforced by other means.
+- Uma API de framework ou contrato externo exige explícitamente `DateTime` (por exemplo, mapeamentos legados de Entity Framework, algumas configurações de serializadores).
+- Você precisa de `DateTime` para interoperabilidade com código não gerenciado ou formatos específicos de serialização.
+- A base de código tem uma convenção documentada de que `DateTime` sempre é UTC e essa convenção é estritamente aplicada por outros meios.
 
-In those cases, suppress the diagnostic with a clear justification comment.
+Nesses casos, suprima o diagnóstico com um comentário claro de justificativa.
 
-## Expected impact
-- Fewer timezone-related bugs caused by ambiguous `DateTime` values.
-- Clearer data contracts when persisting or transmitting timestamps.
-- Improved correctness in distributed systems where offset-aware values are essential.
+## Impacto esperado
+- Menos bugs relacionados a fuso horário causados por valores `DateTime` ambíguos.
+- Contratos de dados mais claros ao persistir ou transmitir timestamps.
+- Corretude maior em sistemas distribuídos em que valores com offset são essenciais.
 
-## Notes about false positives / heuristics
-The analyzer is intentionally conservative:
+## Observações sobre falsos positivos / heurísticas
+O analyzer é intencionalmente conservador:
 
-- It skips interface implementations and overrides because the type is dictated by the contract.
-- It skips attribute-derived types because attributes are tightly coupled to runtime serialization.
-- It skips `var` declarations to avoid flagging inferred usages where the developer did not explicitly choose the type.
-- It flags `DateTime[]` and `DateTime?` because the same ambiguity applies to arrays and nullable wrappers.
+- Ignora implementações de interface e overrides porque o tipo é ditado pelo contrato.
+- Ignora tipos derivados de atributos porque atributos são fortemente acoplados a serialização em runtime.
+- Ignora declarações com `var` para evitar sinalizar usos inferidos em que o desenvolvedor não escolheu explícitamente o tipo.
+- Sinaliza `DateTime[]` e `DateTime?` porque a mesma ambiguidade se aplica a arrays e wrappers nullable.

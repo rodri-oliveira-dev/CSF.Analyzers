@@ -1,12 +1,12 @@
-# ARCH001: Avoid async void outside event handlers
+# ARCH001: Evite async void fora de event handlers
 
-## Objective
-Prevent `async void` in methods, local functions and anonymous functions, except for standard event handlers.
+## Objetivo
+Evitar `async void` em métodos, funções locais e funções anônimas, exceto em event handlers padrão.
 
-## Motivation
-`async void` cannot be awaited and propagates exceptions through the synchronization context instead of through a `Task`. This makes failures harder to observe, test and compose. In application code, `async Task` is the safer default.
+## Motivação
+`async void` não pode ser aguardado com `await` e propaga exceções pelo contexto de sincronização em vez de propagá-las por uma `Task`. Isso torna falhas mais difíceis de observar, testar e compor. Em código de aplicação, `async Task` é o padrão mais seguro.
 
-## Invalid
+## Inválido
 
 ```csharp
 public async void PublishAsync()
@@ -22,7 +22,7 @@ Action action = async () =>
 };
 ```
 
-## Valid
+## Válido
 
 ```csharp
 public async Task PublishAsync()
@@ -45,10 +45,10 @@ public async void OnClick(object? sender, EventArgs e)
 }
 ```
 
-## How to configure
-This rule does not expose custom `.editorconfig` options in the first version.
+## Como configurar
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
-Severity can be configured normally:
+A severidade pode ser configurada normalmente:
 
 ```ini
 # .editorconfig
@@ -56,19 +56,19 @@ Severity can be configured normally:
 dotnet_diagnostic.ARCH001.severity = warning
 ```
 
-## Known limitations
-- The rule treats the classic `object sender, EventArgs e` pattern, including derived `EventArgs`, as an allowed event handler shape.
-- Custom delegate-based events that do not inherit from `EventArgs` are not exempted by this first version.
-- The rule intentionally does not offer a code fix because changing a return type from `void` to `Task` may require changes in callers, interfaces, overrides or delegates.
+## Limitações conhecidas
+- A regra trata o padrão clássico `object sender, EventArgs e`, incluindo tipos derivados de `EventArgs`, como um formato permitido de event handler.
+- Eventos baseados em delegates customizados que não herdam de `EventArgs` não são isentos nesta primeira versão.
+- A regra intencionalmente não oferece code fix, porque alterar o tipo de retorno de `void` para `Task` pode exigir mudanças em chamadores, interfaces, overrides ou delegates.
 
-## When not to use
-Do not disable this rule broadly. If the code truly must follow an event-handler signature, keep the event handler narrow and move the real work into an `async Task` method.
+## Quando não usar
+Não desabilite esta regra de forma ampla. Se o código realmente precisar seguir uma assinatura de event handler, mantenha o event handler pequeno e mova o trabalho real para um método `async Task`.
 
-## Expected impact
-- Fewer hidden async failures
-- Better testability
-- Cleaner async composition
-- Lower risk of fire-and-forget mistakes disguised as regular control flow
+## Impacto esperado
+- Menos falhas assíncronas ocultas
+- Melhor testabilidade
+- Composição assíncrona mais limpa
+- Menor risco de erros de fire-and-forget disfarçados como fluxo de controle comum
 
-## False positives and heuristics
-The main heuristic is the event-handler exemption. If the solution relies heavily on custom event delegates, consider extending the rule in a later version to recognize project-specific delegate patterns.
+## Falsos positivos e heurísticas
+A principal heurística é a exceção para event handlers. Se a solução depende muito de delegates de evento customizados, considere estender a regra em uma versão futura para reconhecer padrões de delegate específicos do projeto.

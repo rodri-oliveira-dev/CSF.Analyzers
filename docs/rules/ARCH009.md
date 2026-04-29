@@ -1,18 +1,18 @@
-# ARCH009: Prohibit synchronous blocking of asynchronous operations
+# ARCH009: Proiba bloqueio síncrono de operações assíncronas
 
-## Objective
-Prevent synchronous blocking of asynchronous operations by detecting the use of `.Result`, `.Wait()`, and `.GetAwaiter().GetResult()` on `Task`, `Task<T>`, `ValueTask`, and `ValueTask<T>`.
+## Objetivo
+Evitar o bloqueio síncrono de operações assíncronas detectando o uso de `.Result`, `.Wait()` e `.GetAwaiter().GetResult()` em `Task`, `Task<T>`, `ValueTask` e `ValueTask<T>`.
 
-## Motivation
-Blocking asynchronously-started work on the calling thread is a well-known source of deadlocks and scalability degradation.
+## Motivação
+Bloquear no thread chamador um trabalho iniciado de forma assíncrona é uma fonte conhecida de deadlocks e degradação de escalabilidade.
 
-- **Deadlocks**: When a blocking call runs on a thread that carries a `SynchronizationContext` (e.g., UI threads or legacy ASP.NET request threads), the awaited continuation may try to post back to the same context, which is now blocked.
-- **Thread-pool starvation**: Synchronous waits consume threads that could otherwise process new work, reducing overall throughput.
-- **Exception wrapping**: `.Result` wraps exceptions in `AggregateException`, hiding the original exception type and complicating error handling.
+- **Deadlocks**: quando uma chamada bloqueante roda em uma thread que carrega um `SynchronizationContext` (por exemplo, threads de UI ou threads de requisição do ASP.NET legado), a continuação aguardada pode tentar voltar para o mesmo contexto, que agora está bloqueado.
+- **Exaustão do thread pool**: esperas síncronas consómem threads que poderiam processar novo trabalho, reduzindo o throughput geral.
+- **Encapsulamento de exceções**: `.Result` encapsula exceções em `AggregateException`, escondendo o tipo original da exceção e complicando o tratamento de erro.
 
-Prefer `await` so the caller yields the thread and resumes naturally when the operation completes.
+Prefira `await` para que o chamador libere a thread e retome naturalmente quando a operação terminar.
 
-## Non-compliant
+## Não conforme
 
 ```csharp
 using System.Threading.Tasks;
@@ -39,7 +39,7 @@ public sealed class Sample
 }
 ```
 
-## Compliant
+## Conforme
 
 ```csharp
 using System.Threading.Tasks;
@@ -58,37 +58,37 @@ public sealed class Sample
 }
 ```
 
-## Configuration
-This rule does not expose custom `.editorconfig` options in the first version.
+## Configuração
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
-Severity can be configured normally:
+A severidade pode ser configurada normalmente:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH009.severity = warning
 ```
 
-## Known limitations
-- The analyzer targets only `System.Threading.Tasks.Task`, `Task<T>`, `ValueTask`, and `ValueTask<T>`. It does not flag blocking on custom awaitable types.
-- `.Wait()` overloads with cancellation tokens or timeouts are still reported because they retain the same blocking semantics.
-- No code fix is provided because converting blocking code to `await` often requires changing the containing method signature (return type, `async` modifier) and can affect callers.
+## Limitações conhecidas
+- O analyzer mira apenas `System.Threading.Tasks.Task`, `Task<T>`, `ValueTask` e `ValueTask<T>`. Ele não sinaliza bloqueio em tipos awaitable customizados.
+- Sobrecargas de `.Wait()` com tokens de cancelamento ou timeouts ainda são reportadas porque mantêm a mesma semântica de bloqueio.
+- Nenhum code fix é fornecido porque converter código bloqueante para `await` muitas vezes exige alterar a assinatura do método que contém o código (tipo de retorno, modificador `async`) e pode afetar chamadores.
 
-## When not to use
-In very rare scenarios you may intentionally block:
+## Quando não usar
+Em cenários muito raros, você pode bloquear intencionalmente:
 
-- Console application `Main` methods that cannot be `async` in older target frameworks.
-- Legacy third-party API boundaries where you cannot change the signature to `async`.
+- Métodos `Main` de aplicações console que não podem ser `async` em target frameworks antigos.
+- Fronteiras de APIs legadas de terceiros em que você não pode alterar a assinatura para `async`.
 
-In those cases, suppress the diagnostic with a clear comment explaining why the block is unavoidable.
+Nesses casos, suprima o diagnóstico com um comentário claro explicando por que o bloqueio é inevitável.
 
-## Expected impact
-- Fewer deadlocks in UI and legacy web applications.
-- Better thread-pool utilization and scalability.
-- Cleaner exception handling (no `AggregateException` wrapping).
+## Impacto esperado
+- Menos deadlocks em aplicações de UI e web legadas.
+- Melhor uso do thread pool e melhor escalabilidade.
+- Tratamento de exceções mais limpo (sem encapsulamento em `AggregateException`).
 
-## Notes about false positives / heuristics
-The analyzer uses semantic information to ensure it reports only on members defined by the genuine BCL task types. It stays silent for:
+## Observações sobre falsos positivos / heurísticas
+O analyzer usa informações semânticas para garantir que reporta apenas membros definidos pelos tipos reais de task da BCL. Ele permanece silencioso para:
 
-- Custom types that happen to define a `.Result` property.
-- Custom types that happen to define a `.Wait()` method.
-- Custom awaitables with `.GetAwaiter().GetResult()` that are not `Task`/`ValueTask`.
+- Tipos customizados que por acaso definem uma propriedade `.Result`.
+- Tipos customizados que por acaso definem um método `.Wait()`.
+- Awaitables customizados com `.GetAwaiter().GetResult()` que não são `Task`/`ValueTask`.
