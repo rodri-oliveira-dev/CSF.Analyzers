@@ -77,25 +77,50 @@ namespace Microsoft.AspNetCore.Mvc
     }
 }
 
+namespace Microsoft.AspNetCore.Authorization
+{
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+    public class AuthorizeAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class AllowAnonymousAttribute : Attribute
+    {
+    }
+}
+
 namespace Microsoft.AspNetCore.Builder
 {
     public interface IEndpointRouteBuilder : Microsoft.AspNetCore.Routing.IEndpointRouteBuilder
     {
     }
 
+    public interface IEndpointConventionBuilder
+    {
+    }
+
     public static class EndpointRouteBuilderExtensions
     {
-        public static IEndpointRouteBuilder MapGet(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => endpoints;
+        public static IEndpointConventionBuilder MapGet(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => new EndpointConventionBuilder();
 
-        public static IEndpointRouteBuilder MapPost(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => endpoints;
+        public static IEndpointConventionBuilder MapPost(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => new EndpointConventionBuilder();
 
-        public static IEndpointRouteBuilder MapPut(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => endpoints;
+        public static IEndpointConventionBuilder MapPut(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => new EndpointConventionBuilder();
 
-        public static IEndpointRouteBuilder MapPatch(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => endpoints;
+        public static IEndpointConventionBuilder MapPatch(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => new EndpointConventionBuilder();
 
-        public static IEndpointRouteBuilder MapDelete(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => endpoints;
+        public static IEndpointConventionBuilder MapDelete(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => new EndpointConventionBuilder();
 
-        public static IEndpointRouteBuilder MapMethods(this IEndpointRouteBuilder endpoints, string pattern, string[] methods, Action handler) => endpoints;
+        public static IEndpointConventionBuilder MapMethods(this IEndpointRouteBuilder endpoints, string pattern, string[] methods, Action handler) => new EndpointConventionBuilder();
+
+        public static IEndpointConventionBuilder RequireAuthorization(this IEndpointConventionBuilder builder) => builder;
+
+        public static IEndpointConventionBuilder AllowAnonymous(this IEndpointConventionBuilder builder) => builder;
+
+        private sealed class EndpointConventionBuilder : IEndpointConventionBuilder
+        {
+        }
     }
 }
 

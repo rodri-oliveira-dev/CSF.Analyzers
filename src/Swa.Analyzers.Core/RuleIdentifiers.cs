@@ -20,4 +20,5 @@ internal static class RuleIdentifiers
     public const string AvoidTaskRunInAspNetRequestFlow = "ARCH016";
     public const string ProhibitFireAndForgetInRequestFlow = "ARCH017";
     public const string AvoidDirectHttpClientInstantiation = "ARCH018";
+    public const string AvoidAuthorizeWithAllowAnonymous = "ARCH019";
 }

@@ -32,6 +32,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH016 | Avoid Task.Run in ASP.NET request flow           | Performance | Warning           | [ARCH016](docs/rules/ARCH016.md) |
 | ARCH017 | Prohibit fire-and-forget in request flow         | Reliability | Warning           | [ARCH017](docs/rules/ARCH017.md) |
 | ARCH018 | Avoid direct HttpClient instantiation            | Reliability | Warning           | [ARCH018](docs/rules/ARCH018.md) |
+| ARCH019 | Avoid Authorize with AllowAnonymous              | Security    | Warning           | [ARCH019](docs/rules/ARCH019.md) |
 
 ## Como configurar
 
