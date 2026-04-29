@@ -127,4 +127,16 @@ jobs:
       - name: Attach NuGet packages to release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ steps.release_tag.outputs.tag }}" artifacts/packages/*.nupkg artifacts/packages/*.snupkg --clobber
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+
+          files=(artifacts/packages/*.nupkg artifacts/packages/*.snupkg)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "Nenhum pacote .nupkg ou .snupkg encontrado em artifacts/packages"
+            exit 1
+          fi
+
+          gh release upload "${{ steps.release_tag.outputs.tag }}" "${files[@]}" --clobber
