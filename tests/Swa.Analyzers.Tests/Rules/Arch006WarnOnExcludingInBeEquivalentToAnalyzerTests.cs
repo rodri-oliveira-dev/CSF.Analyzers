@@ -118,6 +118,84 @@ public sealed class SampleTests
     }
 
     [Fact]
+    public async Task Reports_all_Excluding_calls_in_same_BeEquivalentTo_options_chain()
+    {
+        const string source = """
+using System;
+using FluentAssertions;
+
+namespace Xunit
+{
+    public sealed class FactAttribute : Attribute { }
+}
+
+namespace FluentAssertions
+{
+    public static class AssertionExtensions
+    {
+        public static ObjectAssertions Should(this object? value) => new(value);
+    }
+
+    public sealed class ObjectAssertions
+    {
+        public ObjectAssertions(object? value) { }
+        public void BeEquivalentTo(object? expected, Func<Equivalency.EquivalencyAssertionOptions, Equivalency.EquivalencyAssertionOptions> config)
+        {
+        }
+    }
+
+    namespace Equivalency
+    {
+        public sealed class EquivalencyAssertionOptions
+        {
+            public EquivalencyAssertionOptions Excluding(Func<object, bool> predicate) => this;
+            public EquivalencyAssertionOptions ExcludingMissingMembers() => this;
+            public EquivalencyAssertionOptions ExcludingNestedObjects() => this;
+        }
+    }
+}
+
+public sealed class SampleTests
+{
+    [Xunit.Fact]
+    public void Test()
+    {
+        var actual = new { A = 1, B = 2, C = new { D = 3 } };
+        var expected = new { A = 1 };
+
+        actual.Should().BeEquivalentTo(
+            expected,
+            options => options
+                .{|#0:Excluding|}(x => true)
+                .{|#1:ExcludingMissingMembers|}()
+                .{|#2:ExcludingNestedObjects|}());
+    }
+}
+""";
+
+        var excluding = Verifier<Arch006WarnOnExcludingInBeEquivalentToAnalyzer>.Diagnostic("ARCH006")
+            .WithLocation(0)
+            .WithArguments("Excluding")
+            .WithMessage("Avoid using 'Excluding' in BeEquivalentTo() options. Exclusions can reduce test precision.");
+
+        var excludingMissingMembers = Verifier<Arch006WarnOnExcludingInBeEquivalentToAnalyzer>.Diagnostic("ARCH006")
+            .WithLocation(1)
+            .WithArguments("ExcludingMissingMembers")
+            .WithMessage("Avoid using 'ExcludingMissingMembers' in BeEquivalentTo() options. Exclusions can reduce test precision.");
+
+        var excludingNestedObjects = Verifier<Arch006WarnOnExcludingInBeEquivalentToAnalyzer>.Diagnostic("ARCH006")
+            .WithLocation(2)
+            .WithArguments("ExcludingNestedObjects")
+            .WithMessage("Avoid using 'ExcludingNestedObjects' in BeEquivalentTo() options. Exclusions can reduce test precision.");
+
+        await Verifier<Arch006WarnOnExcludingInBeEquivalentToAnalyzer>.VerifyAnalyzerAsync(
+            source,
+            excluding,
+            excludingMissingMembers,
+            excludingNestedObjects);
+    }
+
+    [Fact]
     public async Task Does_not_report_when_no_excluding_is_used()
     {
         const string source = """
