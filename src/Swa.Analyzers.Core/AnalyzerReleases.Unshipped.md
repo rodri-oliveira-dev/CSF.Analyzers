@@ -22,3 +22,4 @@
 | ARCH018 | Reliability | Warning  | Avoid direct HttpClient instantiation.                   |
 | ARCH019 | Security    | Warning  | Avoid conflicting Authorize and AllowAnonymous metadata. |
 | ARCH020 | Security    | Warning  | Require explicit authorization decision on HTTP endpoints. |
+| ARCH021 | Performance | Warning  | Prefer AsNoTracking for read-only EF Core queries.       |

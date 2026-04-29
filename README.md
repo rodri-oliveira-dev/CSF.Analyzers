@@ -34,6 +34,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH018 | Avoid direct HttpClient instantiation            | Reliability | Warning           | [ARCH018](docs/rules/ARCH018.md) |
 | ARCH019 | Avoid Authorize with AllowAnonymous              | Security    | Warning           | [ARCH019](docs/rules/ARCH019.md) |
 | ARCH020 | Require explicit endpoint authorization          | Security    | Warning           | [ARCH020](docs/rules/ARCH020.md) |
+| ARCH021 | Prefer AsNoTracking for read-only EF queries    | Performance | Warning           | [ARCH021](docs/rules/ARCH021.md) |
 
 ## Como configurar
 
