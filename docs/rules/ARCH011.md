@@ -3,6 +3,8 @@
 ## Objetivo
 Evitar que construtores contenham operações bloqueantes (`.Result`, `.Wait()`, `.GetAwaiter().GetResult()`) ou chamadas assíncronas não aguardadas (retorno `Task`/`ValueTask` descartado). Construtores devem permanecer rápidos e não bloqueantes.
 
+Esta regra é mais específica que [ARCH009](ARCH009.md) para bloqueios síncronos dentro de construtores. Para evitar diagnósticos duplicados no mesmo local, ARCH009 ignora esses casos e ARCH011 reporta `.Result`, `.Wait()` e `.GetAwaiter().GetResult()` em construtores.
+
 ## Motivação
 Executar trabalho bloqueante ou assíncrono dentro de um construtor causa vários problemas de engenhária:
 

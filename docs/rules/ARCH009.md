@@ -3,6 +3,8 @@
 ## Objetivo
 Evitar o bloqueio síncrono de operações assíncronas detectando o uso de `.Result`, `.Wait()` e `.GetAwaiter().GetResult()` em `Task`, `Task<T>`, `ValueTask` e `ValueTask<T>`.
 
+Esta regra cobre bloqueios fora de construtores. Quando o mesmo padrão aparece dentro de um construtor, a regra mais específica [ARCH011](ARCH011.md) é responsável pelo diagnóstico.
+
 ## Motivação
 Bloquear no thread chamador um trabalho iniciado de forma assíncrona é uma fonte conhecida de deadlocks e degradação de escalabilidade.
 
@@ -70,6 +72,7 @@ dotnet_diagnostic.ARCH009.severity = warning
 
 ## Limitações conhecidas
 - O analyzer mira apenas `System.Threading.Tasks.Task`, `Task<T>`, `ValueTask` e `ValueTask<T>`. Ele não sinaliza bloqueio em tipos awaitable customizados.
+- Chamadas bloqueantes dentro de construtores não são reportadas por esta regra para evitar duplicidade com ARCH011.
 - Sobrecargas de `.Wait()` com tokens de cancelamento ou timeouts ainda são reportadas porque mantêm a mesma semântica de bloqueio.
 - Nenhum code fix é fornecido porque converter código bloqueante para `await` muitas vezes exige alterar a assinatura do método que contém o código (tipo de retorno, modificador `async`) e pode afetar chamadores.
 

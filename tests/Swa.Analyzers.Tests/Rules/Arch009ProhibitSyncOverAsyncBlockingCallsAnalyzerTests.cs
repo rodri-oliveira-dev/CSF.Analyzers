@@ -279,6 +279,33 @@ public sealed class Sample
     #region Valid scenarios
 
     [Fact]
+    public async Task Does_not_report_blocking_calls_inside_constructors()
+    {
+        const string source = """
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Sample
+{
+    public Sample(
+        Task task,
+        Task<int> taskOfInt,
+        CancellationToken cancellationToken)
+    {
+        var value = taskOfInt.Result;
+        task.Wait();
+        task.Wait(TimeSpan.FromSeconds(1));
+        task.Wait(TimeSpan.FromSeconds(1), cancellationToken);
+        task.GetAwaiter().GetResult();
+    }
+}
+""";
+
+        await Verifier<Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer>.VerifyAnalyzerAsync(source);
+    }
+
+    [Fact]
     public async Task Does_not_report_await_usage()
     {
         const string source = """

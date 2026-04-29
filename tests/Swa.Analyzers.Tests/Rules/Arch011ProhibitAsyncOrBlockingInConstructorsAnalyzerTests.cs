@@ -7,6 +7,42 @@ public sealed class Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzerTests
     #region Invalid scenarios
 
     [Fact]
+    public async Task Reports_Blocking_Calls_In_Constructors_Because_ARCH011_Is_More_Specific()
+    {
+        const string source = """
+using System.Threading.Tasks;
+
+public sealed class Sample
+{
+    public Sample(Task task, Task<int> taskOfInt)
+    {
+        var value = taskOfInt.Result;
+        task.Wait();
+        task.GetAwaiter().GetResult();
+    }
+}
+""";
+
+        var resultDiagnostic = Verifier<Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer>.Diagnostic("ARCH011")
+            .WithSpan(7, 31, 7, 37)
+            .WithArguments("synchronous blocking with .Result");
+
+        var waitDiagnostic = Verifier<Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer>.Diagnostic("ARCH011")
+            .WithSpan(8, 14, 8, 18)
+            .WithArguments("synchronous blocking with .Wait()");
+
+        var getResultDiagnostic = Verifier<Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer>.Diagnostic("ARCH011")
+            .WithSpan(9, 27, 9, 36)
+            .WithArguments("synchronous blocking with .GetAwaiter().GetResult()");
+
+        await Verifier<Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer>.VerifyAnalyzerAsync(
+            source,
+            resultDiagnostic,
+            waitDiagnostic,
+            getResultDiagnostic);
+    }
+
+    [Fact]
     public async Task Reports_Task_Result_In_Constructor()
     {
         const string source = """

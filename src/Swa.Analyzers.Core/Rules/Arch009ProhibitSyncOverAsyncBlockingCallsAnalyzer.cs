@@ -58,6 +58,11 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
     {
         context.CancellationToken.ThrowIfCancellationRequested();
 
+        if (IsInsideConstructor(context.ContainingSymbol))
+        {
+            return;
+        }
+
         var propertyReference = (IPropertyReferenceOperation)context.Operation;
 
         if (!string.Equals(propertyReference.Property.Name, "Result", StringComparison.Ordinal))
@@ -82,6 +87,11 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
         INamedTypeSymbol? valueTaskOfTType)
     {
         context.CancellationToken.ThrowIfCancellationRequested();
+
+        if (IsInsideConstructor(context.ContainingSymbol))
+        {
+            return;
+        }
 
         var invocation = (IInvocationOperation)context.Operation;
         var targetMethod = invocation.TargetMethod;
@@ -111,6 +121,11 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
 
             return;
         }
+    }
+
+    private static bool IsInsideConstructor(ISymbol? symbol)
+    {
+        return symbol is IMethodSymbol { MethodKind: MethodKind.Constructor or MethodKind.SharedConstructor };
     }
 
     private static bool IsKnownAwaitableType(IOperation? instance, params INamedTypeSymbol?[] expectedTypes)
