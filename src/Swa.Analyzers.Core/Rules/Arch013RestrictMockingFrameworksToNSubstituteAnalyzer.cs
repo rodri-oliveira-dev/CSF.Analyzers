@@ -333,22 +333,40 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
             return false;
         }
 
-        // Arrays (e.g., Mock<T>[])
+        if (TryGetDisallowedFrameworkName(type.ContainingNamespace, frameworksByRootNamespace, out frameworkName))
+        {
+            return true;
+        }
+
+        // Arrays (e.g., Mock<T>[] or List<Mock<T>>[])
         if (type is IArrayTypeSymbol arrayType)
         {
             return TryGetDisallowedFrameworkName(arrayType.ElementType, frameworksByRootNamespace, out frameworkName);
         }
 
-        // Nullable<T>
-        if (type is INamedTypeSymbol namedType
-            && namedType.IsGenericType
-            && namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T
-            && namedType.TypeArguments.Length == 1)
+        if (type is INamedTypeSymbol compositeType)
         {
-            return TryGetDisallowedFrameworkName(namedType.TypeArguments[0], frameworksByRootNamespace, out frameworkName);
+            if (compositeType.IsTupleType)
+            {
+                foreach (var tupleElement in compositeType.TupleElements)
+                {
+                    if (TryGetDisallowedFrameworkName(tupleElement.Type, frameworksByRootNamespace, out frameworkName))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            foreach (var typeArgument in compositeType.TypeArguments)
+            {
+                if (TryGetDisallowedFrameworkName(typeArgument, frameworksByRootNamespace, out frameworkName))
+                {
+                    return true;
+                }
+            }
         }
 
-        return TryGetDisallowedFrameworkName(type.ContainingNamespace, frameworksByRootNamespace, out frameworkName);
+        return false;
     }
 
     private static bool TryGetDisallowedFrameworkName(

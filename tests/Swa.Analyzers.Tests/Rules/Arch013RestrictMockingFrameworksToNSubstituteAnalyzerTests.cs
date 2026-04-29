@@ -181,6 +181,227 @@ public sealed class SampleTests
         await Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.VerifyAnalyzerAsync(source, expected);
     }
 
+    [Fact]
+    public async Task Reports_disallowed_framework_type_inside_generic_field_declaration()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+namespace Xunit
+{
+    public sealed class FactAttribute : Attribute { }
+}
+
+namespace Moq
+{
+    public sealed class Mock<T> { }
+}
+
+public interface IFoo { }
+
+public sealed class SampleTests
+{
+    private {|#0:List<Moq.Mock<IFoo>>|} _mocks = new();
+
+    [Xunit.Fact]
+    public void Test() { }
+}
+""";
+
+        var expected = Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.Diagnostic("ARCH013")
+            .WithLocation(0)
+            .WithArguments("Moq");
+
+        await Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_disallowed_framework_type_inside_generic_property_declaration()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+namespace Xunit
+{
+    public sealed class FactAttribute : Attribute { }
+}
+
+namespace FakeItEasy
+{
+    public interface IFakeObjectCall { }
+
+    public static class A
+    {
+        public static T Fake<T>() => default!;
+    }
+}
+
+public sealed class SampleTests
+{
+    public {|#0:IEnumerable<FakeItEasy.IFakeObjectCall>|} Calls { get; } = [];
+
+    [Xunit.Fact]
+    public void Test() { }
+}
+""";
+
+        var expected = Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.Diagnostic("ARCH013")
+            .WithLocation(0)
+            .WithArguments("FakeItEasy");
+
+        await Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_disallowed_framework_type_inside_generic_parameter_declaration()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+namespace Xunit
+{
+    public sealed class FactAttribute : Attribute { }
+}
+
+namespace Moq
+{
+    public sealed class Mock<T> { }
+}
+
+public interface IFoo { }
+
+public sealed class SampleTests
+{
+    [Xunit.Fact]
+    public void Test()
+    {
+    }
+
+    public void Execute({|#0:Dictionary<string, Moq.Mock<IFoo>>|} mocks)
+    {
+    }
+}
+""";
+
+        var expected = Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.Diagnostic("ARCH013")
+            .WithLocation(0)
+            .WithArguments("Moq");
+
+        await Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_disallowed_framework_type_inside_delegate_return_declaration()
+    {
+        const string source = """
+using System;
+
+namespace Xunit
+{
+    public sealed class FactAttribute : Attribute { }
+}
+
+namespace Moq
+{
+    public sealed class Mock<T> { }
+}
+
+public interface IFoo { }
+
+public sealed class SampleTests
+{
+    [Xunit.Fact]
+    public void Test()
+    {
+    }
+
+    public {|#0:Func<Moq.Mock<IFoo>>|} CreateMock()
+    {
+        return default!;
+    }
+}
+""";
+
+        var expected = Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.Diagnostic("ARCH013")
+            .WithLocation(0)
+            .WithArguments("Moq");
+
+        await Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_disallowed_framework_type_inside_generic_local_declaration()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+namespace Xunit
+{
+    public sealed class FactAttribute : Attribute { }
+}
+
+namespace Moq
+{
+    public sealed class Mock<T> { }
+}
+
+public interface IFoo { }
+
+public sealed class SampleTests
+{
+    [Xunit.Fact]
+    public void Test()
+    {
+        {|#0:List<Moq.Mock<IFoo>>|} mocks = default!;
+    }
+}
+""";
+
+        var expected = Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.Diagnostic("ARCH013")
+            .WithLocation(0)
+            .WithArguments("Moq");
+
+        await Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_disallowed_framework_type_inside_tuple_declaration()
+    {
+        const string source = """
+using System;
+
+namespace Xunit
+{
+    public sealed class FactAttribute : Attribute { }
+}
+
+namespace Moq
+{
+    public sealed class Mock<T> { }
+}
+
+public interface IFoo { }
+
+public sealed class SampleTests
+{
+    private {|#0:(Moq.Mock<IFoo> Mock, string Name)|} _namedMock;
+
+    [Xunit.Fact]
+    public void Test() { }
+}
+""";
+
+        var expected = Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.Diagnostic("ARCH013")
+            .WithLocation(0)
+            .WithArguments("Moq");
+
+        await Verifier<Arch013RestrictMockingFrameworksToNSubstituteAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
     #endregion
 
     #region Edge cases
@@ -321,6 +542,7 @@ public sealed class Sample
     {
         const string source = """
 using System;
+using System.Collections.Generic;
 
 namespace Xunit
 {
@@ -340,6 +562,8 @@ namespace MyCompany.Moq
 
 public sealed class SampleTests
 {
+    private List<MyCompany.Moq.Mock> _mocks = new();
+
     [Xunit.Fact]
     public void Test()
     {

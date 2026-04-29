@@ -86,5 +86,5 @@ Nesses casos, considere suprimir o diagnóstico ou desabilita-lo via `.editorcon
 
 ## Observações sobre falsos positivos / heurísticas
 - O analyzer foi desenhado para evitar falsos positivos verificando **namespaces semânticos** (não apenas matching de texto).
-- Ele reporta em locais comuns de uso (using directives, invocações, criação de objetos e declarações de tipo).
+- Ele reporta em locais comuns de uso (using directives, invocações, criação de objetos e declarações de tipo), incluindo tipos compostos como genéricos, arrays, tuplas, delegates e tipos anuláveis.
 - Ele intencionalmente não reporta dentro do namespace do próprio framework de mock (util para testes de analyzer que criam stubs de APIs de framework em código-fonte).
