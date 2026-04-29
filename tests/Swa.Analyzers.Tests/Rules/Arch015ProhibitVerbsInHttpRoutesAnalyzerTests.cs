@@ -122,6 +122,94 @@ public static class Routes
     }
 
     [Fact]
+    public async Task Does_not_report_internal_method_named_map_get()
+    {
+        const string source = """
+public sealed class InternalRouter
+{
+    public void Map()
+    {
+        MapGet("/orders/create");
+    }
+
+    private static void MapGet(string route) { }
+}
+""";
+
+        await VerifyAsync(source, EnglishEditorConfig);
+    }
+
+    [Fact]
+    public async Task Does_not_report_custom_class_method_named_map_post()
+    {
+        const string source = """
+public sealed class CustomRouter
+{
+    public void MapPost(string route) { }
+}
+
+public static class Routes
+{
+    public static void Map(CustomRouter router)
+    {
+        router.MapPost("/orders/create");
+    }
+}
+""";
+
+        await VerifyAsync(source, EnglishEditorConfig);
+    }
+
+    [Fact]
+    public async Task Does_not_report_custom_extension_named_map_delete()
+    {
+        const string source = """
+using CustomRouting;
+
+namespace CustomRouting
+{
+    public sealed class CustomEndpointRouteBuilder
+    {
+    }
+
+    public static class CustomEndpointRouteBuilderExtensions
+    {
+        public static CustomEndpointRouteBuilder MapDelete(this CustomEndpointRouteBuilder endpoints, string pattern, System.Action handler) => endpoints;
+    }
+}
+
+public static class Routes
+{
+    public static void Map(CustomEndpointRouteBuilder app)
+    {
+        app.MapDelete("/orders/delete", () => { });
+    }
+}
+""";
+
+        await VerifyAsync(source, EnglishEditorConfig);
+    }
+
+    [Fact]
+    public async Task Reports_invalid_route_group_minimal_api_routes()
+    {
+        const string source = """
+using Microsoft.AspNetCore.Builder;
+
+public static class Routes
+{
+    public static void Map(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/orders");
+        group.MapGet({|#0:"/create"|}, () => { });
+    }
+}
+""";
+
+        await VerifyMinimalApiAsync(source, EnglishEditorConfig, Expected(0, "create", "create", "en-US"));
+    }
+
+    [Fact]
     public async Task Reports_portuguese_verbs_when_language_is_pt_br()
     {
         const string source = """
@@ -455,7 +543,11 @@ namespace Microsoft.AspNetCore.Mvc
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public interface IEndpointRouteBuilder
+    public interface IEndpointRouteBuilder : Microsoft.AspNetCore.Routing.IEndpointRouteBuilder
+    {
+    }
+
+    public sealed class RouteGroupBuilder : IEndpointRouteBuilder
     {
     }
 
@@ -467,6 +559,14 @@ namespace Microsoft.AspNetCore.Builder
         public static IEndpointRouteBuilder MapPatch(this IEndpointRouteBuilder endpoints, string pattern, System.Action handler) => endpoints;
         public static IEndpointRouteBuilder MapDelete(this IEndpointRouteBuilder endpoints, string pattern, System.Action handler) => endpoints;
         public static IEndpointRouteBuilder MapMethods(this IEndpointRouteBuilder endpoints, string pattern, string[] methods, System.Action handler) => endpoints;
+        public static RouteGroupBuilder MapGroup(this IEndpointRouteBuilder endpoints, string prefix) => new RouteGroupBuilder();
+    }
+}
+
+namespace Microsoft.AspNetCore.Routing
+{
+    public interface IEndpointRouteBuilder
+    {
     }
 }
 """;

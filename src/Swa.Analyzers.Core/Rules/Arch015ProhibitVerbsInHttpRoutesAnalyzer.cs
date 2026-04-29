@@ -142,7 +142,7 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
     {
         var invocation = (IInvocationOperation)context.Operation;
 
-        if (!KnownMinimalApiMethodNames.Contains(invocation.TargetMethod.Name))
+        if (!IsKnownMinimalApiInvocation(invocation))
         {
             return;
         }
@@ -305,6 +305,69 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         }
 
         return false;
+    }
+
+    private static bool IsKnownMinimalApiInvocation(IInvocationOperation invocation)
+    {
+        var targetMethod = invocation.TargetMethod;
+
+        if (!KnownMinimalApiMethodNames.Contains(targetMethod.Name))
+        {
+            return false;
+        }
+
+        var originalDefinition = targetMethod.ReducedFrom ?? targetMethod;
+
+        if (!IsKnownAspNetCoreBuilderNamespace(originalDefinition.ContainingNamespace))
+        {
+            return false;
+        }
+
+        var receiverType = invocation.Instance?.Type ?? GetExtensionReceiverType(originalDefinition);
+
+        return IsEndpointRouteBuilderCompatible(receiverType);
+    }
+
+    private static ITypeSymbol? GetExtensionReceiverType(IMethodSymbol method)
+    {
+        return method.IsExtensionMethod && method.Parameters.Length > 0
+            ? method.Parameters[0].Type
+            : null;
+    }
+
+    private static bool IsKnownAspNetCoreBuilderNamespace(INamespaceSymbol? namespaceSymbol)
+    {
+        return string.Equals(namespaceSymbol?.ToDisplayString(), "Microsoft.AspNetCore.Builder", StringComparison.Ordinal);
+    }
+
+    private static bool IsEndpointRouteBuilderCompatible(ITypeSymbol? type)
+    {
+        if (type is null)
+        {
+            return false;
+        }
+
+        if (IsEndpointRouteBuilder(type))
+        {
+            return true;
+        }
+
+        foreach (var interfaceType in type.AllInterfaces)
+        {
+            if (IsEndpointRouteBuilder(interfaceType))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsEndpointRouteBuilder(ITypeSymbol type)
+    {
+        return string.Equals(type.Name, "IEndpointRouteBuilder", StringComparison.Ordinal)
+            && (string.Equals(type.ContainingNamespace?.ToDisplayString(), "Microsoft.AspNetCore.Routing", StringComparison.Ordinal)
+                || string.Equals(type.ContainingNamespace?.ToDisplayString(), "Microsoft.AspNetCore.Builder", StringComparison.Ordinal));
     }
 
     private static string RemoveAttributeSuffix(string name)
