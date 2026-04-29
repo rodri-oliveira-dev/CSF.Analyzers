@@ -42,16 +42,6 @@
           "System.Composition": "9.0.0"
         }
       },
-      "Microsoft.CodeAnalysis.Testing.Verifiers.XUnit": {
-        "type": "Direct",
-        "requested": "[1.1.2, )",
-        "resolved": "1.1.2",
-        "contentHash": "D/jXnfCf7ryNIW/jit6AvpAPov3cj2v0ygj4tnCvQ6F2Z/FDhFE1hVcMNfZsFw6osKHdgHEUg5jzUkkWuMTunw==",
-        "dependencies": {
-          "Microsoft.CodeAnalysis.Analyzer.Testing": "[1.1.2]",
-          "xunit.assert": "2.3.0"
-        }
-      },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[18.5.1, )",
@@ -334,7 +324,7 @@
           "xunit.extensibility.core": "[2.9.3]"
         }
       },
-      "swa.analyzers.core": {
+      "Swa.Analyzers": {
         "type": "Project"
       },
       "Microsoft.CodeAnalysis.Analyzers": {

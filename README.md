@@ -8,7 +8,7 @@ Analyzers Roslyn reutilizaveis para .NET, focados em convencoes de arquitetura, 
 - `tests/Swa.Analyzers.Tests`: testes automatizados dos analyzers.
 - `src/Swa.Analyzers.SampleApp`: exemplos manuais validos e invalidos para cada regra.
 
-Cada regra tem documentacao propria em [docs/rules](docs/rules), tambem usada como *help link* dos diagnosticos.
+Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos publicados pelo pacote usam *help links* absolutos para estes arquivos no repositorio publico, facilitando o acesso quando o analyzer e distribuido via NuGet.
 
 ## Regras existentes
 
@@ -34,7 +34,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules), tambem usada co
 
 ### Requisitos
 
-- .NET SDK 10.x
+- .NET SDK 10.x, fixado pelo `global.json` do repositorio.
 
 Configure severidade via `.editorconfig` normalmente:
 
@@ -58,14 +58,3 @@ dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar", "recalcular"
 - **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore`
 - **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1` (a orquestracao do VSTest na `.slnx` falha antes da descoberta quando o MSBuild usa multiplos nos)
 - **Manual**: veja [src/Swa.Analyzers.SampleApp/README.md](src/Swa.Analyzers.SampleApp/README.md) (exemplos por regra e build com diagnosticos)
-
-## Protecao da branch `main`
-
-O workflow [PR Validation](.github/workflows/dotnet.yml) valida Pull Requests para `main` com checks separados para build e testes. Os workflows [CodeQL](.github/workflows/codeql.yml) e [Dependency Review](.github/workflows/dependency-review.yml) tambem rodam em PRs para `main`.
-
-Para impedir merge antes da conclusao de todas as validacoes, configure Branch Protection ou Rulesets no GitHub para a branch `main` com **Require status checks to pass before merging** e marque como obrigatorios:
-
-- `Build`
-- `Test`
-- `Analyze C#`
-- `Dependency Review`

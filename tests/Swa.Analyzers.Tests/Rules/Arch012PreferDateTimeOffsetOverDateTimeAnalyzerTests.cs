@@ -194,6 +194,141 @@ public interface IDateTimeProvider
         await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source, expected);
     }
 
+    [Fact]
+    public async Task Reports_DateTime_In_List_Property()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+public sealed class Sample
+{
+    public List<DateTime> CreatedAt { get; set; } = [];
+}
+""";
+
+        var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
+            .WithSpan(6, 12, 6, 26);
+
+        await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_DateTime_In_IEnumerable_Property()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+public sealed class Sample
+{
+    public IEnumerable<DateTime> CreatedAt { get; set; } = [];
+}
+""";
+
+        var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
+            .WithSpan(6, 12, 6, 33);
+
+        await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_DateTime_In_Dictionary_Property()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+public sealed class Sample
+{
+    public Dictionary<string, DateTime> CreatedAt { get; set; } = [];
+}
+""";
+
+        var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
+            .WithSpan(6, 12, 6, 40);
+
+        await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_DateTime_In_List_Parameter()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+public sealed class Sample
+{
+    public void Process(List<DateTime> values) { }
+}
+""";
+
+        var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
+            .WithSpan(6, 25, 6, 39);
+
+        await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_DateTime_In_IEnumerable_Return()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+public sealed class Sample
+{
+    public IEnumerable<DateTime> GetValues() => [];
+}
+""";
+
+        var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
+            .WithSpan(6, 12, 6, 33);
+
+        await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_DateTime_In_Explicit_List_Local_Variable()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+public sealed class Sample
+{
+    public void Process()
+    {
+        List<DateTime> values = [];
+    }
+}
+""";
+
+        var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
+            .WithSpan(8, 9, 8, 23);
+
+        await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_DateTime_In_Tuple_Property()
+    {
+        const string source = """
+using System;
+
+public sealed class Sample
+{
+    public (DateTime StartedAt, string Name) Metadata { get; set; }
+}
+""";
+
+        var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
+            .WithSpan(5, 12, 5, 45);
+
+        await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
     #endregion
 
     #region Valid scenarios
@@ -222,6 +357,22 @@ using System;
 public sealed class Sample
 {
     public DateTimeOffset CreatedAt { get; set; }
+}
+""";
+
+        await Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.VerifyAnalyzerAsync(source);
+    }
+
+    [Fact]
+    public async Task Does_not_report_DateTimeOffset_In_Generic_Property()
+    {
+        const string source = """
+using System;
+using System.Collections.Generic;
+
+public sealed class Sample
+{
+    public List<DateTimeOffset> CreatedAt { get; set; } = [];
 }
 """;
 

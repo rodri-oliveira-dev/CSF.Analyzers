@@ -6,7 +6,24 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <RepositoryRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..'))</RepositoryRoot>
+    <PackageId>Swa.Analyzers</PackageId>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>Rodrigo Oliveira</Authors>
+    <Company>Rodrigo Oliveira</Company>
+    <Description>Roslyn analyzers for .NET architecture, reliability, performance and test quality conventions.</Description>
+    <PackageTags>roslyn;analyzers;architecture;reliability;performance;testing</PackageTags>
+    <RepositoryUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,12 +31,10 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
-  <Target Name="InstallGitHooks"
-          BeforeTargets="Build"
-          Condition="Exists('$(RepositoryRoot).git') And Exists('$(RepositoryRoot).githooks')">
-    <Exec Command="git config core.hooksPath .githooks"
-          WorkingDirectory="$(RepositoryRoot)"
-          StandardOutputImportance="Low" />
-  </Target>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+    <None Include="$(OutputPath)$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" />
+  </ItemGroup>
 
 </Project>

@@ -20,7 +20,7 @@ public sealed class Arch008ProhibitManualPathCompositionAnalyzer : DiagnosticAna
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "Manually composing file system paths with string concatenation or interpolated strings is error-prone and can break cross-platform compatibility. Prefer System.IO.Path.Combine/Path.Join (or other path APIs) when building paths.",
-        helpLinkUri: "docs/rules/ARCH008.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.ProhibitManualPathComposition));
 
     private static readonly ImmutableHashSet<string> PathParameterNames = ImmutableHashSet.Create(
         StringComparer.OrdinalIgnoreCase,

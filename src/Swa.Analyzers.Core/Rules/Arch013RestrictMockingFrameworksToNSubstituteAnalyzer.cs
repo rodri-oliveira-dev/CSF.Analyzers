@@ -21,7 +21,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "To keep tests consistent and reduce maintenance cost, teams often standardize on a single mocking framework. This rule reports usages of known alternative mocking frameworks when the policy standard is NSubstitute.",
-        helpLinkUri: "docs/rules/ARCH013.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.RestrictMockingFrameworksToNSubstitute));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -32,7 +32,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
 
         context.RegisterCompilationStartAction(static compilationContext =>
         {
-            var testMethodAttributes = GetKnownTestMethodAttributes(compilationContext.Compilation);
+            var testMethodAttributes = TestContextHelper.GetKnownTestMethodAttributes(compilationContext.Compilation);
             if (testMethodAttributes.IsDefaultOrEmpty)
             {
                 // Avoid noise outside test projects.
@@ -333,22 +333,40 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
             return false;
         }
 
-        // Arrays (e.g., Mock<T>[])
+        if (TryGetDisallowedFrameworkName(type.ContainingNamespace, frameworksByRootNamespace, out frameworkName))
+        {
+            return true;
+        }
+
+        // Arrays (e.g., Mock<T>[] or List<Mock<T>>[])
         if (type is IArrayTypeSymbol arrayType)
         {
             return TryGetDisallowedFrameworkName(arrayType.ElementType, frameworksByRootNamespace, out frameworkName);
         }
 
-        // Nullable<T>
-        if (type is INamedTypeSymbol namedType
-            && namedType.IsGenericType
-            && namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T
-            && namedType.TypeArguments.Length == 1)
+        if (type is INamedTypeSymbol compositeType)
         {
-            return TryGetDisallowedFrameworkName(namedType.TypeArguments[0], frameworksByRootNamespace, out frameworkName);
+            if (compositeType.IsTupleType)
+            {
+                foreach (var tupleElement in compositeType.TupleElements)
+                {
+                    if (TryGetDisallowedFrameworkName(tupleElement.Type, frameworksByRootNamespace, out frameworkName))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            foreach (var typeArgument in compositeType.TypeArguments)
+            {
+                if (TryGetDisallowedFrameworkName(typeArgument, frameworksByRootNamespace, out frameworkName))
+                {
+                    return true;
+                }
+            }
         }
 
-        return TryGetDisallowedFrameworkName(type.ContainingNamespace, frameworksByRootNamespace, out frameworkName);
+        return false;
     }
 
     private static bool TryGetDisallowedFrameworkName(
@@ -469,40 +487,6 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
         }
 
         return null;
-    }
-
-    private static ImmutableArray<INamedTypeSymbol> GetKnownTestMethodAttributes(Compilation compilation)
-    {
-        // Same “test project” gate used in other TestQuality rules.
-        var builder = ImmutableArray.CreateBuilder<INamedTypeSymbol>();
-
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Xunit.FactAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Xunit.TheoryAttribute"));
-
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.TestAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.TestCaseSourceAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.SetUpAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.TearDownAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.OneTimeSetUpAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("NUnit.Framework.OneTimeTearDownAttribute"));
-
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.DataTestMethodAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanupAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.ClassInitializeAttribute"));
-        AddIfNotNull(builder, compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.ClassCleanupAttribute"));
-
-        return builder.ToImmutable();
-    }
-
-    private static void AddIfNotNull(ImmutableArray<INamedTypeSymbol>.Builder builder, INamedTypeSymbol? symbol)
-    {
-        if (symbol is not null)
-        {
-            builder.Add(symbol);
-        }
     }
 
     private static ImmutableArray<DisallowedMockFramework> GetPresentDisallowedFrameworks(Compilation compilation)

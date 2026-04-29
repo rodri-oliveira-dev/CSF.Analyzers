@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Text;
 
@@ -26,16 +27,18 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "HTTP route paths should describe resources. This rule detects conservative command-like verbs in literal route segments for MVC/Web API attributes and Minimal APIs.",
-        helpLinkUri: "docs/rules/ARCH015.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.ProhibitVerbsInHttpRoutes));
 
-    private static readonly ImmutableHashSet<string> KnownRouteAttributeNames = ImmutableHashSet.Create(
+    private static readonly ImmutableHashSet<string> KnownMvcRouteAttributeTypeNames = ImmutableHashSet.Create(
         StringComparer.Ordinal,
-        "Route",
-        "HttpGet",
-        "HttpPost",
-        "HttpPut",
-        "HttpPatch",
-        "HttpDelete");
+        "RouteAttribute",
+        "HttpGetAttribute",
+        "HttpPostAttribute",
+        "HttpPutAttribute",
+        "HttpPatchAttribute",
+        "HttpDeleteAttribute",
+        "HttpHeadAttribute",
+        "HttpOptionsAttribute");
 
     private static readonly ImmutableHashSet<string> KnownMinimalApiMethodNames = ImmutableHashSet.Create(
         StringComparer.Ordinal,
@@ -103,11 +106,21 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 
-        context.RegisterSyntaxNodeAction(AnalyzeAttribute, SyntaxKind.Attribute);
-        context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
+        context.RegisterCompilationStartAction(static compilationContext =>
+        {
+            var optionsCache = new RouteRuleOptionsCache(compilationContext.Options.AnalyzerConfigOptionsProvider);
+
+            compilationContext.RegisterSyntaxNodeAction(
+                context => AnalyzeAttribute(context, optionsCache),
+                SyntaxKind.Attribute);
+
+            compilationContext.RegisterOperationAction(
+                context => AnalyzeInvocation(context, optionsCache),
+                OperationKind.Invocation);
+        });
     }
 
-    private static void AnalyzeAttribute(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeAttribute(SyntaxNodeAnalysisContext context, RouteRuleOptionsCache optionsCache)
     {
         var attribute = (AttributeSyntax)context.Node;
 
@@ -133,16 +146,16 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
                 continue;
             }
 
-            AnalyzeRoute(context, route, argument.Expression.GetLocation());
+            AnalyzeRoute(context, route, argument.Expression.GetLocation(), optionsCache);
             return;
         }
     }
 
-    private static void AnalyzeInvocation(OperationAnalysisContext context)
+    private static void AnalyzeInvocation(OperationAnalysisContext context, RouteRuleOptionsCache optionsCache)
     {
         var invocation = (IInvocationOperation)context.Operation;
 
-        if (!KnownMinimalApiMethodNames.Contains(invocation.TargetMethod.Name))
+        if (!IsKnownMinimalApiInvocation(invocation))
         {
             return;
         }
@@ -154,20 +167,28 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
                 continue;
             }
 
-            AnalyzeRoute(context, route, argument.Value.Syntax.GetLocation());
+            AnalyzeRoute(context, route, argument.Value.Syntax.GetLocation(), optionsCache);
             return;
         }
     }
 
-    private static void AnalyzeRoute(SyntaxNodeAnalysisContext context, string route, Location location)
+    private static void AnalyzeRoute(
+        SyntaxNodeAnalysisContext context,
+        string route,
+        Location location,
+        RouteRuleOptionsCache optionsCache)
     {
-        var options = RouteRuleOptions.Create(context.Options.AnalyzerConfigOptionsProvider, context.Node.SyntaxTree);
+        var options = optionsCache.Get(context.Node.SyntaxTree);
         AnalyzeRoute(context.ReportDiagnostic, route, location, options);
     }
 
-    private static void AnalyzeRoute(OperationAnalysisContext context, string route, Location location)
+    private static void AnalyzeRoute(
+        OperationAnalysisContext context,
+        string route,
+        Location location,
+        RouteRuleOptionsCache optionsCache)
     {
-        var options = RouteRuleOptions.Create(context.Options.AnalyzerConfigOptionsProvider, context.Operation.Syntax.SyntaxTree);
+        var options = optionsCache.Get(context.Operation.Syntax.SyntaxTree);
         AnalyzeRoute(context.ReportDiagnostic, route, location, options);
     }
 
@@ -296,7 +317,7 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
 
         while (attributeType is not null)
         {
-            if (KnownRouteAttributeNames.Contains(RemoveAttributeSuffix(attributeType.Name)))
+            if (IsKnownAspNetCoreMvcRouteAttribute(attributeType))
             {
                 return true;
             }
@@ -307,12 +328,73 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         return false;
     }
 
-    private static string RemoveAttributeSuffix(string name)
+    private static bool IsKnownAspNetCoreMvcRouteAttribute(INamedTypeSymbol attributeType)
     {
-        const string suffix = "Attribute";
-        return name.EndsWith(suffix, StringComparison.Ordinal)
-            ? name.Substring(0, name.Length - suffix.Length)
-            : name;
+        return KnownMvcRouteAttributeTypeNames.Contains(attributeType.MetadataName)
+            && string.Equals(attributeType.ContainingNamespace?.ToDisplayString(), "Microsoft.AspNetCore.Mvc", StringComparison.Ordinal);
+    }
+
+    private static bool IsKnownMinimalApiInvocation(IInvocationOperation invocation)
+    {
+        var targetMethod = invocation.TargetMethod;
+
+        if (!KnownMinimalApiMethodNames.Contains(targetMethod.Name))
+        {
+            return false;
+        }
+
+        var originalDefinition = targetMethod.ReducedFrom ?? targetMethod;
+
+        if (!IsKnownAspNetCoreBuilderNamespace(originalDefinition.ContainingNamespace))
+        {
+            return false;
+        }
+
+        var receiverType = invocation.Instance?.Type ?? GetExtensionReceiverType(originalDefinition);
+
+        return IsEndpointRouteBuilderCompatible(receiverType);
+    }
+
+    private static ITypeSymbol? GetExtensionReceiverType(IMethodSymbol method)
+    {
+        return method.IsExtensionMethod && method.Parameters.Length > 0
+            ? method.Parameters[0].Type
+            : null;
+    }
+
+    private static bool IsKnownAspNetCoreBuilderNamespace(INamespaceSymbol? namespaceSymbol)
+    {
+        return string.Equals(namespaceSymbol?.ToDisplayString(), "Microsoft.AspNetCore.Builder", StringComparison.Ordinal);
+    }
+
+    private static bool IsEndpointRouteBuilderCompatible(ITypeSymbol? type)
+    {
+        if (type is null)
+        {
+            return false;
+        }
+
+        if (IsEndpointRouteBuilder(type))
+        {
+            return true;
+        }
+
+        foreach (var interfaceType in type.AllInterfaces)
+        {
+            if (IsEndpointRouteBuilder(interfaceType))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsEndpointRouteBuilder(ITypeSymbol type)
+    {
+        return string.Equals(type.Name, "IEndpointRouteBuilder", StringComparison.Ordinal)
+            && (string.Equals(type.ContainingNamespace?.ToDisplayString(), "Microsoft.AspNetCore.Routing", StringComparison.Ordinal)
+                || string.Equals(type.ContainingNamespace?.ToDisplayString(), "Microsoft.AspNetCore.Builder", StringComparison.Ordinal));
     }
 
     private static bool TryGetStringConstant(
@@ -368,6 +450,27 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         }
 
         return current ?? operation;
+    }
+
+    private sealed class RouteRuleOptionsCache
+    {
+        private readonly AnalyzerConfigOptionsProvider _provider;
+        private readonly ConcurrentDictionary<SyntaxTree, RouteRuleOptions> _optionsBySyntaxTree = new();
+
+        public RouteRuleOptionsCache(AnalyzerConfigOptionsProvider provider)
+        {
+            _provider = provider;
+        }
+
+        public RouteRuleOptions Get(SyntaxTree syntaxTree)
+        {
+            return _optionsBySyntaxTree.GetOrAdd(syntaxTree, CreateOptions);
+        }
+
+        private RouteRuleOptions CreateOptions(SyntaxTree syntaxTree)
+        {
+            return RouteRuleOptions.Create(_provider, syntaxTree);
+        }
     }
 
     private readonly struct RouteRuleOptions

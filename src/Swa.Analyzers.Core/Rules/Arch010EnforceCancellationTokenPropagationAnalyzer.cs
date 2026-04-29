@@ -20,7 +20,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "When a CancellationToken is available in the current scope and the invoked method can accept one, the token should be passed to enable cooperative cancellation and improve responsiveness.",
-        helpLinkUri: "docs/rules/ARCH010.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.EnforceCancellationTokenPropagation));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -53,28 +53,36 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
             return;
         }
 
+        // Check if the invoked method has an optional/unsupplied CancellationToken parameter,
+        // or if there's an overload that accepts CancellationToken before inspecting arguments.
+        if (!CanAcceptCancellationToken(targetMethod, invocation, cancellationTokenType))
+        {
+            return;
+        }
+
         // Skip if the invocation already passes a CancellationToken.
         if (HasCancellationTokenArgument(invocation, targetMethod, semanticModel, cancellationTokenType, context.CancellationToken))
         {
             return;
         }
 
-        // Check if the invoked method has an optional/unsupplied CancellationToken parameter,
-        // or if there's an overload that accepts CancellationToken.
-        if (!HasUnsuppliedCancellationTokenParameter(targetMethod, invocation, semanticModel, cancellationTokenType, context.CancellationToken)
-            && !HasOverloadWithCancellationToken(targetMethod, cancellationTokenType))
-        {
-            return;
-        }
-
         // Check if a CancellationToken is available in the current scope.
-        if (!HasAvailableCancellationTokenInScope(semanticModel, invocation.SpanStart, cancellationTokenType))
+        if (!HasAvailableCancellationTokenInScope(context, invocation, cancellationTokenType))
         {
             return;
         }
 
         var location = GetMethodNameLocation(invocation);
         context.ReportDiagnostic(Diagnostic.Create(Rule, location, targetMethod.Name));
+    }
+
+    private static bool CanAcceptCancellationToken(
+        IMethodSymbol targetMethod,
+        InvocationExpressionSyntax invocation,
+        INamedTypeSymbol cancellationTokenType)
+    {
+        return HasUnsuppliedCancellationTokenParameter(targetMethod, invocation, cancellationTokenType)
+            || HasOverloadWithCancellationToken(targetMethod, cancellationTokenType);
     }
 
     private static bool HasCancellationTokenArgument(
@@ -103,7 +111,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
             }
 
             // Also check if this argument maps to a CancellationToken parameter.
-            var parameter = GetParameterForArgument(targetMethod, invocation, i, semanticModel, cancellationToken);
+            var parameter = GetParameterForArgument(targetMethod, invocation, i);
             if (parameter is not null && SymbolEqualityComparer.Default.Equals(parameter.Type, cancellationTokenType))
             {
                 return true;
@@ -116,9 +124,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
     private static IParameterSymbol? GetParameterForArgument(
         IMethodSymbol method,
         InvocationExpressionSyntax invocation,
-        int argumentIndex,
-        SemanticModel semanticModel,
-        CancellationToken cancellationToken)
+        int argumentIndex)
     {
         var argument = invocation.ArgumentList!.Arguments[argumentIndex];
 
@@ -155,9 +161,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
     private static bool HasUnsuppliedCancellationTokenParameter(
         IMethodSymbol method,
         InvocationExpressionSyntax invocation,
-        SemanticModel semanticModel,
-        INamedTypeSymbol cancellationTokenType,
-        CancellationToken cancellationToken)
+        INamedTypeSymbol cancellationTokenType)
     {
         foreach (var parameter in method.Parameters)
         {
@@ -166,7 +170,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
                 continue;
             }
 
-            bool supplied = IsParameterSupplied(parameter, method, invocation, semanticModel, cancellationToken);
+            bool supplied = IsParameterSupplied(parameter, method, invocation);
             if (!supplied)
             {
                 return true;
@@ -179,9 +183,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
     private static bool IsParameterSupplied(
         IParameterSymbol parameter,
         IMethodSymbol method,
-        InvocationExpressionSyntax invocation,
-        SemanticModel semanticModel,
-        CancellationToken cancellationToken)
+        InvocationExpressionSyntax invocation)
     {
         if (invocation.ArgumentList is null)
         {
@@ -192,7 +194,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
 
         for (int i = 0; i < arguments.Count; i++)
         {
-            var mappedParameter = GetParameterForArgument(method, invocation, i, semanticModel, cancellationToken);
+            var mappedParameter = GetParameterForArgument(method, invocation, i);
             if (mappedParameter is not null && SymbolEqualityComparer.Default.Equals(mappedParameter, parameter))
             {
                 return true;
@@ -252,9 +254,23 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
         return false;
     }
 
-    private static bool HasAvailableCancellationTokenInScope(SemanticModel semanticModel, int position, INamedTypeSymbol cancellationTokenType)
+    private static bool HasAvailableCancellationTokenInScope(
+        SyntaxNodeAnalysisContext context,
+        InvocationExpressionSyntax invocation,
+        INamedTypeSymbol cancellationTokenType)
     {
-        var symbols = semanticModel.LookupSymbols(position);
+        var semanticModel = context.SemanticModel;
+
+        if (HasCancellationTokenParameterInEnclosingDeclaration(
+            invocation,
+            semanticModel,
+            cancellationTokenType,
+            context.CancellationToken))
+        {
+            return true;
+        }
+
+        var symbols = semanticModel.LookupSymbols(invocation.SpanStart);
 
         foreach (var symbol in symbols)
         {
@@ -274,6 +290,72 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
             }
 
             if (symbol is IPropertySymbol property && SymbolEqualityComparer.Default.Equals(property.Type, cancellationTokenType))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool HasCancellationTokenParameterInEnclosingDeclaration(
+        InvocationExpressionSyntax invocation,
+        SemanticModel semanticModel,
+        INamedTypeSymbol cancellationTokenType,
+        CancellationToken cancellationToken)
+    {
+        foreach (var ancestor in invocation.Ancestors())
+        {
+            switch (ancestor)
+            {
+                case MethodDeclarationSyntax methodDeclaration
+                    when HasCancellationTokenParameter(
+                        methodDeclaration.ParameterList.Parameters,
+                        semanticModel,
+                        cancellationTokenType,
+                        cancellationToken):
+                case LocalFunctionStatementSyntax localFunction
+                    when HasCancellationTokenParameter(
+                        localFunction.ParameterList.Parameters,
+                        semanticModel,
+                        cancellationTokenType,
+                        cancellationToken):
+                case ParenthesizedLambdaExpressionSyntax parenthesizedLambda
+                    when HasCancellationTokenParameter(
+                        parenthesizedLambda.ParameterList.Parameters,
+                        semanticModel,
+                        cancellationTokenType,
+                        cancellationToken):
+                case SimpleLambdaExpressionSyntax simpleLambda
+                    when HasCancellationTokenParameter(
+                        SyntaxFactory.SingletonSeparatedList(simpleLambda.Parameter),
+                        semanticModel,
+                        cancellationTokenType,
+                        cancellationToken):
+                case AnonymousMethodExpressionSyntax anonymousMethod
+                    when anonymousMethod.ParameterList is not null
+                        && HasCancellationTokenParameter(
+                            anonymousMethod.ParameterList.Parameters,
+                            semanticModel,
+                            cancellationTokenType,
+                            cancellationToken):
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool HasCancellationTokenParameter(
+        SeparatedSyntaxList<ParameterSyntax> parameters,
+        SemanticModel semanticModel,
+        INamedTypeSymbol cancellationTokenType,
+        CancellationToken cancellationToken)
+    {
+        foreach (var parameter in parameters)
+        {
+            if (semanticModel.GetDeclaredSymbol(parameter, cancellationToken) is IParameterSymbol parameterSymbol
+                && SymbolEqualityComparer.Default.Equals(parameterSymbol.Type, cancellationTokenType))
             {
                 return true;
             }

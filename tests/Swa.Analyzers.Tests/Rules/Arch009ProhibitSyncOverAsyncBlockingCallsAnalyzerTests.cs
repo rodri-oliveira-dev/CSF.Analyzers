@@ -162,6 +162,53 @@ public sealed class Sample
     }
 
     [Fact]
+    public async Task Reports_Task_Wait_with_integer_timeout_and_cancellation_token()
+    {
+        const string source = """
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Sample
+{
+    public void Execute(Task task, CancellationToken cancellationToken)
+    {
+        task.Wait(1000, cancellationToken);
+    }
+}
+""";
+
+        var expected = Verifier<Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer>.Diagnostic("ARCH009")
+            .WithSpan(8, 14, 8, 18)
+            .WithArguments(".Wait()");
+
+        await Verifier<Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
+    public async Task Reports_Task_Wait_with_TimeSpan_timeout_and_cancellation_token()
+    {
+        const string source = """
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Sample
+{
+    public void Execute(Task task, CancellationToken cancellationToken)
+    {
+        task.Wait(TimeSpan.FromSeconds(1), cancellationToken);
+    }
+}
+""";
+
+        var expected = Verifier<Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer>.Diagnostic("ARCH009")
+            .WithSpan(9, 14, 9, 18)
+            .WithArguments(".Wait()");
+
+        await Verifier<Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
     public async Task Reports_via_conditional_access_Result()
     {
         const string source = """
@@ -230,6 +277,33 @@ public sealed class Sample
     #endregion
 
     #region Valid scenarios
+
+    [Fact]
+    public async Task Does_not_report_blocking_calls_inside_constructors()
+    {
+        const string source = """
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Sample
+{
+    public Sample(
+        Task task,
+        Task<int> taskOfInt,
+        CancellationToken cancellationToken)
+    {
+        var value = taskOfInt.Result;
+        task.Wait();
+        task.Wait(TimeSpan.FromSeconds(1));
+        task.Wait(TimeSpan.FromSeconds(1), cancellationToken);
+        task.GetAwaiter().GetResult();
+    }
+}
+""";
+
+        await Verifier<Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer>.VerifyAnalyzerAsync(source);
+    }
 
     [Fact]
     public async Task Does_not_report_await_usage()

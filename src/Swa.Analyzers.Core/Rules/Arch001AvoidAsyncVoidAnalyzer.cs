@@ -21,7 +21,7 @@ public sealed class Arch001AvoidAsyncVoidAnalyzer : DiagnosticAnalyzer
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Async void methods and anonymous functions cannot be awaited and propagate exceptions differently. Prefer async Task, except for event handlers with a standard event signature.",
-        helpLinkUri: "docs/rules/ARCH001.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.AvoidAsyncVoid));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

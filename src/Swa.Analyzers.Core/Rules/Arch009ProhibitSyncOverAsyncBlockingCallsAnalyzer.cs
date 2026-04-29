@@ -20,7 +20,7 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Blocking on asynchronous operations using .Result, .Wait(), or .GetAwaiter().GetResult() risks deadlocks and degrades application scalability. Use 'await' instead.",
-        helpLinkUri: "docs/rules/ARCH009.md");
+        helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.ProhibitSyncOverAsyncBlockingCalls));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -56,6 +56,13 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
         INamedTypeSymbol? taskOfTType,
         INamedTypeSymbol? valueTaskOfTType)
     {
+        context.CancellationToken.ThrowIfCancellationRequested();
+
+        if (IsInsideConstructor(context.ContainingSymbol))
+        {
+            return;
+        }
+
         var propertyReference = (IPropertyReferenceOperation)context.Operation;
 
         if (!string.Equals(propertyReference.Property.Name, "Result", StringComparison.Ordinal))
@@ -79,11 +86,17 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
         INamedTypeSymbol? valueTaskType,
         INamedTypeSymbol? valueTaskOfTType)
     {
+        context.CancellationToken.ThrowIfCancellationRequested();
+
+        if (IsInsideConstructor(context.ContainingSymbol))
+        {
+            return;
+        }
+
         var invocation = (IInvocationOperation)context.Operation;
         var targetMethod = invocation.TargetMethod;
 
-        if (string.Equals(targetMethod.Name, "Wait", StringComparison.Ordinal)
-            && targetMethod.Parameters.Length <= 1)
+        if (string.Equals(targetMethod.Name, "Wait", StringComparison.Ordinal))
         {
             if (IsKnownAwaitableType(invocation.Instance, taskType, taskOfTType))
             {
@@ -108,6 +121,11 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
 
             return;
         }
+    }
+
+    private static bool IsInsideConstructor(ISymbol? symbol)
+    {
+        return symbol is IMethodSymbol { MethodKind: MethodKind.Constructor or MethodKind.SharedConstructor };
     }
 
     private static bool IsKnownAwaitableType(IOperation? instance, params INamedTypeSymbol?[] expectedTypes)

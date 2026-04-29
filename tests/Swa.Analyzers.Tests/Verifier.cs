@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
 using Microsoft.CodeAnalysis.Text;
 
 using System.Text;
@@ -11,8 +10,11 @@ namespace Swa.Analyzers.Tests;
 internal static class Verifier<TAnalyzer>
     where TAnalyzer : DiagnosticAnalyzer, new()
 {
+    // Microsoft.CodeAnalysis.Testing 1.1.2 exposes reference assemblies up to .NET 9.
+    private static readonly ReferenceAssemblies TargetReferenceAssemblies = ReferenceAssemblies.Net.Net90;
+
     public static DiagnosticResult Diagnostic(string diagnosticId) =>
-        CSharpAnalyzerVerifier<TAnalyzer, XUnitVerifier>.Diagnostic(diagnosticId);
+        CSharpAnalyzerVerifier<TAnalyzer, DefaultVerifier>.Diagnostic(diagnosticId);
 
     public static Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
     {
@@ -21,15 +23,39 @@ internal static class Verifier<TAnalyzer>
 
     public static Task VerifyAnalyzerAsync(string source, string? editorConfig, params DiagnosticResult[] expected)
     {
-        var test = new CSharpAnalyzerTest<TAnalyzer, XUnitVerifier>
+        var test = new CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
         {
             TestCode = source,
-            ReferenceAssemblies = ReferenceAssemblies.Net.Net80,
+            ReferenceAssemblies = TargetReferenceAssemblies,
         };
 
         if (editorConfig is not null)
         {
             test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", SourceText.From(editorConfig, Encoding.UTF8)));
+        }
+
+        test.ExpectedDiagnostics.AddRange(expected);
+        return test.RunAsync();
+    }
+
+    public static Task VerifyAnalyzerAsync(
+        IEnumerable<(string FileName, string Source)> sources,
+        IEnumerable<(string FileName, string Source)> analyzerConfigFiles,
+        params DiagnosticResult[] expected)
+    {
+        var test = new CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
+        {
+            ReferenceAssemblies = TargetReferenceAssemblies,
+        };
+
+        foreach (var source in sources)
+        {
+            test.TestState.Sources.Add((source.FileName, SourceText.From(source.Source, Encoding.UTF8)));
+        }
+
+        foreach (var analyzerConfigFile in analyzerConfigFiles)
+        {
+            test.TestState.AnalyzerConfigFiles.Add((analyzerConfigFile.FileName, SourceText.From(analyzerConfigFile.Source, Encoding.UTF8)));
         }
 
         test.ExpectedDiagnostics.AddRange(expected);
