@@ -28,14 +28,16 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         description: "HTTP route paths should describe resources. This rule detects conservative command-like verbs in literal route segments for MVC/Web API attributes and Minimal APIs.",
         helpLinkUri: "docs/rules/ARCH015.md");
 
-    private static readonly ImmutableHashSet<string> KnownRouteAttributeNames = ImmutableHashSet.Create(
+    private static readonly ImmutableHashSet<string> KnownMvcRouteAttributeTypeNames = ImmutableHashSet.Create(
         StringComparer.Ordinal,
-        "Route",
-        "HttpGet",
-        "HttpPost",
-        "HttpPut",
-        "HttpPatch",
-        "HttpDelete");
+        "RouteAttribute",
+        "HttpGetAttribute",
+        "HttpPostAttribute",
+        "HttpPutAttribute",
+        "HttpPatchAttribute",
+        "HttpDeleteAttribute",
+        "HttpHeadAttribute",
+        "HttpOptionsAttribute");
 
     private static readonly ImmutableHashSet<string> KnownMinimalApiMethodNames = ImmutableHashSet.Create(
         StringComparer.Ordinal,
@@ -296,7 +298,7 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
 
         while (attributeType is not null)
         {
-            if (KnownRouteAttributeNames.Contains(RemoveAttributeSuffix(attributeType.Name)))
+            if (IsKnownAspNetCoreMvcRouteAttribute(attributeType))
             {
                 return true;
             }
@@ -305,6 +307,12 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         }
 
         return false;
+    }
+
+    private static bool IsKnownAspNetCoreMvcRouteAttribute(INamedTypeSymbol attributeType)
+    {
+        return KnownMvcRouteAttributeTypeNames.Contains(attributeType.MetadataName)
+            && string.Equals(attributeType.ContainingNamespace?.ToDisplayString(), "Microsoft.AspNetCore.Mvc", StringComparison.Ordinal);
     }
 
     private static bool IsKnownMinimalApiInvocation(IInvocationOperation invocation)
@@ -368,14 +376,6 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         return string.Equals(type.Name, "IEndpointRouteBuilder", StringComparison.Ordinal)
             && (string.Equals(type.ContainingNamespace?.ToDisplayString(), "Microsoft.AspNetCore.Routing", StringComparison.Ordinal)
                 || string.Equals(type.ContainingNamespace?.ToDisplayString(), "Microsoft.AspNetCore.Builder", StringComparison.Ordinal));
-    }
-
-    private static string RemoveAttributeSuffix(string name)
-    {
-        const string suffix = "Attribute";
-        return name.EndsWith(suffix, StringComparison.Ordinal)
-            ? name.Substring(0, name.Length - suffix.Length)
-            : name;
     }
 
     private static bool TryGetStringConstant(

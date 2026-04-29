@@ -76,6 +76,112 @@ public sealed class CustomersController
     }
 
     [Fact]
+    public async Task Reports_invalid_real_asp_net_core_mvc_route_attributes()
+    {
+        const string source = """
+using Microsoft.AspNetCore.Mvc;
+
+[Route({|#0:"orders/create"|})]
+public sealed class OrdersController
+{
+    [HttpGet({|#1:"orders/create"|})]
+    public void Create() { }
+}
+""";
+
+        await VerifyMvcAsync(
+            source,
+            EnglishEditorConfig,
+            Expected(0, "create", "create", "en-US"),
+            Expected(1, "create", "create", "en-US"));
+    }
+
+    [Fact]
+    public async Task Does_not_report_custom_route_attributes_named_like_asp_net_core_mvc()
+    {
+        const string source = """
+using CustomRouting;
+
+[Route("orders/create")]
+public sealed class OrdersController
+{
+    [HttpGet("orders/create")]
+    public void Create() { }
+}
+
+namespace CustomRouting
+{
+    [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Method, AllowMultiple = true)]
+    public sealed class RouteAttribute : System.Attribute
+    {
+        public RouteAttribute(string template) { }
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Method, AllowMultiple = true)]
+    public sealed class HttpGetAttribute : System.Attribute
+    {
+        public HttpGetAttribute(string template) { }
+    }
+}
+""";
+
+        await VerifyAsync(source, EnglishEditorConfig);
+    }
+
+    [Fact]
+    public async Task Does_not_report_custom_route_attribute_derived_from_custom_attribute()
+    {
+        const string source = """
+using CustomRouting;
+
+public sealed class CommandRouteAttribute : RouteAttribute
+{
+    public CommandRouteAttribute(string template) : base(template) { }
+}
+
+public sealed class OrdersController
+{
+    [CommandRoute("orders/create")]
+    public void Create() { }
+}
+
+namespace CustomRouting
+{
+    public class RouteAttribute : System.Attribute
+    {
+        public RouteAttribute(string template) { }
+    }
+}
+""";
+
+        await VerifyAsync(source, EnglishEditorConfig);
+    }
+
+    [Fact]
+    public async Task Does_not_report_custom_attribute_with_similar_http_route_name()
+    {
+        const string source = """
+using CustomRouting;
+
+public sealed class OrdersController
+{
+    [HttpPostRoute("orders/create")]
+    public void Create() { }
+}
+
+namespace CustomRouting
+{
+    public sealed class HttpPostRouteAttribute : System.Attribute
+    {
+        public HttpPostRouteAttribute(string template) { }
+    }
+}
+""";
+
+        await VerifyAsync(source, EnglishEditorConfig);
+    }
+
+    [Fact]
     public async Task Reports_invalid_minimal_api_routes()
     {
         const string source = """
@@ -535,6 +641,34 @@ namespace Microsoft.AspNetCore.Mvc
     {
         public HttpPutAttribute() { }
         public HttpPutAttribute(string template) { }
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Method, AllowMultiple = true)]
+    public class HttpDeleteAttribute : System.Attribute
+    {
+        public HttpDeleteAttribute() { }
+        public HttpDeleteAttribute(string template) { }
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Method, AllowMultiple = true)]
+    public class HttpPatchAttribute : System.Attribute
+    {
+        public HttpPatchAttribute() { }
+        public HttpPatchAttribute(string template) { }
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Method, AllowMultiple = true)]
+    public class HttpHeadAttribute : System.Attribute
+    {
+        public HttpHeadAttribute() { }
+        public HttpHeadAttribute(string template) { }
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Method, AllowMultiple = true)]
+    public class HttpOptionsAttribute : System.Attribute
+    {
+        public HttpOptionsAttribute() { }
+        public HttpOptionsAttribute(string template) { }
     }
 }
 """;
