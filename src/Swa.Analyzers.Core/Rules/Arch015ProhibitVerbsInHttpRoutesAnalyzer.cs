@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Text;
 
@@ -105,11 +106,21 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 
-        context.RegisterSyntaxNodeAction(AnalyzeAttribute, SyntaxKind.Attribute);
-        context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
+        context.RegisterCompilationStartAction(static compilationContext =>
+        {
+            var optionsCache = new RouteRuleOptionsCache(compilationContext.Options.AnalyzerConfigOptionsProvider);
+
+            compilationContext.RegisterSyntaxNodeAction(
+                context => AnalyzeAttribute(context, optionsCache),
+                SyntaxKind.Attribute);
+
+            compilationContext.RegisterOperationAction(
+                context => AnalyzeInvocation(context, optionsCache),
+                OperationKind.Invocation);
+        });
     }
 
-    private static void AnalyzeAttribute(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeAttribute(SyntaxNodeAnalysisContext context, RouteRuleOptionsCache optionsCache)
     {
         var attribute = (AttributeSyntax)context.Node;
 
@@ -135,12 +146,12 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
                 continue;
             }
 
-            AnalyzeRoute(context, route, argument.Expression.GetLocation());
+            AnalyzeRoute(context, route, argument.Expression.GetLocation(), optionsCache);
             return;
         }
     }
 
-    private static void AnalyzeInvocation(OperationAnalysisContext context)
+    private static void AnalyzeInvocation(OperationAnalysisContext context, RouteRuleOptionsCache optionsCache)
     {
         var invocation = (IInvocationOperation)context.Operation;
 
@@ -156,20 +167,28 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
                 continue;
             }
 
-            AnalyzeRoute(context, route, argument.Value.Syntax.GetLocation());
+            AnalyzeRoute(context, route, argument.Value.Syntax.GetLocation(), optionsCache);
             return;
         }
     }
 
-    private static void AnalyzeRoute(SyntaxNodeAnalysisContext context, string route, Location location)
+    private static void AnalyzeRoute(
+        SyntaxNodeAnalysisContext context,
+        string route,
+        Location location,
+        RouteRuleOptionsCache optionsCache)
     {
-        var options = RouteRuleOptions.Create(context.Options.AnalyzerConfigOptionsProvider, context.Node.SyntaxTree);
+        var options = optionsCache.Get(context.Node.SyntaxTree);
         AnalyzeRoute(context.ReportDiagnostic, route, location, options);
     }
 
-    private static void AnalyzeRoute(OperationAnalysisContext context, string route, Location location)
+    private static void AnalyzeRoute(
+        OperationAnalysisContext context,
+        string route,
+        Location location,
+        RouteRuleOptionsCache optionsCache)
     {
-        var options = RouteRuleOptions.Create(context.Options.AnalyzerConfigOptionsProvider, context.Operation.Syntax.SyntaxTree);
+        var options = optionsCache.Get(context.Operation.Syntax.SyntaxTree);
         AnalyzeRoute(context.ReportDiagnostic, route, location, options);
     }
 
@@ -431,6 +450,27 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         }
 
         return current ?? operation;
+    }
+
+    private sealed class RouteRuleOptionsCache
+    {
+        private readonly AnalyzerConfigOptionsProvider _provider;
+        private readonly ConcurrentDictionary<SyntaxTree, RouteRuleOptions> _optionsBySyntaxTree = new();
+
+        public RouteRuleOptionsCache(AnalyzerConfigOptionsProvider provider)
+        {
+            _provider = provider;
+        }
+
+        public RouteRuleOptions Get(SyntaxTree syntaxTree)
+        {
+            return _optionsBySyntaxTree.GetOrAdd(syntaxTree, CreateOptions);
+        }
+
+        private RouteRuleOptions CreateOptions(SyntaxTree syntaxTree)
+        {
+            return RouteRuleOptions.Create(_provider, syntaxTree);
+        }
     }
 
     private readonly struct RouteRuleOptions

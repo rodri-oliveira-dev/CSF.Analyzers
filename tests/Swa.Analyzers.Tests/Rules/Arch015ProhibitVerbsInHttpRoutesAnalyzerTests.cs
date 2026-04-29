@@ -358,6 +358,66 @@ public static class Routes
     }
 
     [Fact]
+    public async Task Respects_file_specific_editorconfig_options()
+    {
+        const string englishEditorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH015.route_language = en-US
+""";
+
+        const string portugueseEditorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH015.route_language = pt-BR
+dotnet_diagnostic.ARCH015.additional_verbs = ["arquivar"]
+""";
+
+        const string englishSource = """
+using Microsoft.AspNetCore.Builder;
+
+public static class EnglishRoutes
+{
+    public static void Map(IEndpointRouteBuilder app)
+    {
+        app.MapPost({|#0:"/orders/create"|}, () => { });
+        app.MapPost("/apolices/emitir", () => { });
+    }
+}
+""";
+
+        const string portugueseSource = """
+using Microsoft.AspNetCore.Builder;
+
+public static class PortugueseRoutes
+{
+    public static void Map(IEndpointRouteBuilder app)
+    {
+        app.MapPost({|#1:"/apolices/emitir"|}, () => { });
+        app.MapPost({|#2:"/apolices/arquivar"|}, () => { });
+        app.MapPost("/orders/create", () => { });
+    }
+}
+""";
+
+        await Verifier<Arch015ProhibitVerbsInHttpRoutesAnalyzer>.VerifyAnalyzerAsync(
+            [
+                ("/en/EnglishRoutes.cs", englishSource),
+                ("/pt/PortugueseRoutes.cs", portugueseSource),
+                ("MinimalApiStubs.cs", MinimalApiStubs),
+            ],
+            [
+                ("/en/.editorconfig", englishEditorConfig),
+                ("/pt/.editorconfig", portugueseEditorConfig),
+            ],
+            Expected(0, "create", "create", "en-US"),
+            Expected(1, "emitir", "emitir", "pt-BR"),
+            Expected(2, "arquivar", "arquivar", "pt-BR"));
+    }
+
+    [Fact]
     public async Task Falls_back_to_english_when_language_is_missing()
     {
         const string source = """

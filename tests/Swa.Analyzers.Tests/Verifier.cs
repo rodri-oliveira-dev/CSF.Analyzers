@@ -37,4 +37,28 @@ internal static class Verifier<TAnalyzer>
         test.ExpectedDiagnostics.AddRange(expected);
         return test.RunAsync();
     }
+
+    public static Task VerifyAnalyzerAsync(
+        IEnumerable<(string FileName, string Source)> sources,
+        IEnumerable<(string FileName, string Source)> analyzerConfigFiles,
+        params DiagnosticResult[] expected)
+    {
+        var test = new CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
+        {
+            ReferenceAssemblies = TargetReferenceAssemblies,
+        };
+
+        foreach (var source in sources)
+        {
+            test.TestState.Sources.Add((source.FileName, SourceText.From(source.Source, Encoding.UTF8)));
+        }
+
+        foreach (var analyzerConfigFile in analyzerConfigFiles)
+        {
+            test.TestState.AnalyzerConfigFiles.Add((analyzerConfigFile.FileName, SourceText.From(analyzerConfigFile.Source, Encoding.UTF8)));
+        }
+
+        test.ExpectedDiagnostics.AddRange(expected);
+        return test.RunAsync();
+    }
 }
