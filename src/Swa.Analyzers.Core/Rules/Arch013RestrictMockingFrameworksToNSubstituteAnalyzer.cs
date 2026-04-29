@@ -21,7 +21,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "To keep tests consistent and reduce maintenance cost, teams often standardize on a single mocking framework. This rule reports usages of known alternative mocking frameworks when the policy standard is NSubstitute.",
-        helpLinkUri: "docs/rules/ARCH013.md");
+        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH013.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

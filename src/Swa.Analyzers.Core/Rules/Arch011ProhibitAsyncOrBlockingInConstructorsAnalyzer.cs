@@ -20,7 +20,7 @@ public sealed class Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer : Diagn
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Constructors should not contain blocking calls (.Result, .Wait(), .GetAwaiter().GetResult()) or unawaited asynchronous operations. Use an async factory method instead.",
-        helpLinkUri: "docs/rules/ARCH011.md");
+        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH011.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

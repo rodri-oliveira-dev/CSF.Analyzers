@@ -20,7 +20,7 @@ public sealed class Arch012PreferDateTimeOffsetOverDateTimeAnalyzer : Diagnostic
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "DateTime does not carry time zone offset information, making it ambiguous whether the value is local, UTC, or unspecified. DateTimeOffset removes this ambiguity and is preferred for most business and persistence scenarios.",
-        helpLinkUri: "docs/rules/ARCH012.md");
+        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH012.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

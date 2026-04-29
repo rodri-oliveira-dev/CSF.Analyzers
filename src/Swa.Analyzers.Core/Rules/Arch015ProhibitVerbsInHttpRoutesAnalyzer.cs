@@ -27,7 +27,7 @@ public sealed class Arch015ProhibitVerbsInHttpRoutesAnalyzer : DiagnosticAnalyze
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "HTTP route paths should describe resources. This rule detects conservative command-like verbs in literal route segments for MVC/Web API attributes and Minimal APIs.",
-        helpLinkUri: "docs/rules/ARCH015.md");
+        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH015.md");
 
     private static readonly ImmutableHashSet<string> KnownMvcRouteAttributeTypeNames = ImmutableHashSet.Create(
         StringComparer.Ordinal,

@@ -20,7 +20,7 @@ public sealed class Arch009ProhibitSyncOverAsyncBlockingCallsAnalyzer : Diagnost
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Blocking on asynchronous operations using .Result, .Wait(), or .GetAwaiter().GetResult() risks deadlocks and degrades application scalability. Use 'await' instead.",
-        helpLinkUri: "docs/rules/ARCH009.md");
+        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH009.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

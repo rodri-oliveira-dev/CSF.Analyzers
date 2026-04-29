@@ -21,7 +21,7 @@ public sealed class Arch007DetectStringConcatenationInsideLoopsAnalyzer : Diagno
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "Repeated string concatenation inside loops can cause excessive allocations (often quadratic growth). Prefer StringBuilder or other buffering approaches when building strings iteratively.",
-        helpLinkUri: "docs/rules/ARCH007.md");
+        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH007.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

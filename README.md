@@ -8,7 +8,7 @@ Analyzers Roslyn reutilizaveis para .NET, focados em convencoes de arquitetura, 
 - `tests/Swa.Analyzers.Tests`: testes automatizados dos analyzers.
 - `src/Swa.Analyzers.SampleApp`: exemplos manuais validos e invalidos para cada regra.
 
-Cada regra tem documentacao propria em [docs/rules](docs/rules), tambem usada como *help link* dos diagnosticos.
+Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos publicados pelo pacote usam *help links* absolutos para estes arquivos no repositorio publico, facilitando o acesso quando o analyzer e distribuido via NuGet.
 
 ## Regras existentes
 

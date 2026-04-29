@@ -20,7 +20,7 @@ public sealed class Arch002AvoidTaskContinueWithAnalyzer : DiagnosticAnalyzer
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Task.ContinueWith makes async control flow harder to read and reason about. Prefer 'await' to keep code linear, preserve exception propagation through the returned Task, and improve long-term maintenance.",
-        helpLinkUri: "docs/rules/ARCH002.md");
+        helpLinkUri: "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/ARCH002.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
