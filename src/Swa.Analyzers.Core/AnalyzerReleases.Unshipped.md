@@ -24,3 +24,4 @@
 | ARCH020 | Security    | Warning  | Require explicit authorization decision on HTTP endpoints. |
 | ARCH021 | Performance | Warning  | Prefer AsNoTracking for read-only EF Core queries.       |
 | ARCH022 | Performance | Warning  | Avoid premature query materialization before filtering or projection. |
+| ARCH023 | Testability | Warning  | Prefer TimeProvider over direct system clock access.     |

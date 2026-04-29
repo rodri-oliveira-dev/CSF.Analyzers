@@ -24,4 +24,5 @@ internal static class RuleIdentifiers
     public const string RequireExplicitAuthorizationOnHttpEndpoints = "ARCH020";
     public const string PreferAsNoTrackingForReadOnlyQueries = "ARCH021";
     public const string AvoidPrematureQueryMaterialization = "ARCH022";
+    public const string PreferTimeProvider = "ARCH023";
 }

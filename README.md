@@ -36,6 +36,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH020 | Require explicit endpoint authorization          | Security    | Warning           | [ARCH020](docs/rules/ARCH020.md) |
 | ARCH021 | Prefer AsNoTracking for read-only EF queries    | Performance | Warning           | [ARCH021](docs/rules/ARCH021.md) |
 | ARCH022 | Avoid premature query materialization           | Performance | Warning           | [ARCH022](docs/rules/ARCH022.md) |
+| ARCH023 | Prefer TimeProvider for current time            | Testability | Warning           | [ARCH023](docs/rules/ARCH023.md) |
 
 ## Como configurar
 
@@ -66,6 +67,15 @@ Exemplo para `ARCH020`:
 dotnet_diagnostic.ARCH020.allowed_routes = ["/internal/status", "/diagnostics/*"]
 dotnet_diagnostic.ARCH020.allowed_methods = ["Ping"]
 dotnet_diagnostic.ARCH020.ignored_namespaces = ["Sample.PublicEndpoints"]
+```
+
+Exemplo para `ARCH023`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH023.allowed_namespaces = ["MyApp.Infrastructure.Time"]
+dotnet_diagnostic.ARCH023.allowed_types = ["MachineTimeSource"]
+dotnet_diagnostic.ARCH023.ignore_simple_logging = true
 ```
 
 ## Como validar
