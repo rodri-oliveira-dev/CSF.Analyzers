@@ -25,6 +25,7 @@ dotnet_diagnostic.ARCH027.severity = warning
 dotnet_diagnostic.ARCH028.severity = warning
 dotnet_diagnostic.ARCH029.severity = warning
 dotnet_diagnostic.ARCH030.severity = warning
+dotnet_diagnostic.ARCH031.severity = warning
 dotnet_diagnostic.ARCH015.route_language = pt-BR
 dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar"]
 dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Application"
@@ -130,3 +131,7 @@ dotnet_diagnostic.IDE0290.severity = none
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0052.severity = none
 dotnet_diagnostic.IDE0290.severity = none
+
+[Arch031/*.cs]
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.IDE0330.severity = none

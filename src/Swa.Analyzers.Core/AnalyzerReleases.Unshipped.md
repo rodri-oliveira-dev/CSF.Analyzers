@@ -32,3 +32,4 @@
 | ARCH028 | Design      | Warning  | Prohibit mutable properties in records.                  |
 | ARCH029 | Design      | Warning  | Prohibit public setters in domain entities.              |
 | ARCH030 | Maintainability | Info     | Detect duplicated PackageReference items across projects. |
+| ARCH031 | Performance | Warning  | Prefer System.Threading.Lock over object lock monitors.  |
