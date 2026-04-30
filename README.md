@@ -149,4 +149,7 @@ dotnet_diagnostic.ARCH032.compare_values = true
 - **Restore**: `dotnet restore ./Swa.Analyzers.slnx`
 - **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore`
 - **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1` (a orquestracao do VSTest na `.slnx` falha antes da descoberta quando o MSBuild usa multiplos nos)
+- **Release check**: `pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1` (consistencia entre regras ARCH, docs, testes, SampleApp, changelog e versao)
 - **Manual**: veja [src/Swa.Analyzers.SampleApp/README.md](src/Swa.Analyzers.SampleApp/README.md) (exemplos por regra e build com diagnosticos)
+
+Detalhes das validacoes de release estao em [docs/release.md](docs/release.md).
