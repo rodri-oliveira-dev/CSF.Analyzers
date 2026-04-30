@@ -31,3 +31,4 @@
 | ARCH027 | Architecture | Warning  | Prevent infrastructure dependencies in core layers.      |
 | ARCH028 | Design      | Warning  | Prohibit mutable properties in records.                  |
 | ARCH029 | Design      | Warning  | Prohibit public setters in domain entities.              |
+| ARCH030 | Maintainability | Info     | Detect duplicated PackageReference items across projects. |

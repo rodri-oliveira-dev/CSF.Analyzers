@@ -43,6 +43,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH027 | Prevent infrastructure dependencies in core layers | Architecture | Warning           | [ARCH027](docs/rules/ARCH027.md) |
 | ARCH028 | Prohibit mutable properties in records        | Design      | Warning           | [ARCH028](docs/rules/ARCH028.md) |
 | ARCH029 | Prohibit public setters in domain entities    | Design      | Warning           | [ARCH029](docs/rules/ARCH029.md) |
+| ARCH030 | Detect duplicated PackageReference across projects | Maintainability | Info              | [ARCH030](docs/rules/ARCH030.md) |
 
 ## Como configurar
 
@@ -115,6 +116,14 @@ Exemplo para `ARCH029`:
 dotnet_diagnostic.ARCH029.entity_namespaces = ["MyApp.Domain.Entities", "MyApp.Domain.Aggregates"]
 dotnet_diagnostic.ARCH029.entity_base_types = ["Entity", "AggregateRoot"]
 dotnet_diagnostic.ARCH029.allow_internal_setters = false
+```
+
+Exemplo para `ARCH030`:
+
+```ini
+[*.csproj]
+dotnet_diagnostic.ARCH030.allowed_packages = ["Microsoft.NET.Test.Sdk", "xunit", "coverlet.collector"]
+dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj", "*.Benchmarks.csproj"]
 ```
 
 ## Como validar

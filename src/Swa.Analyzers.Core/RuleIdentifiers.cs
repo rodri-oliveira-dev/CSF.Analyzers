@@ -31,4 +31,5 @@ internal static class RuleIdentifiers
     public const string PreventInfrastructureDependenciesInCoreLayers = "ARCH027";
     public const string ProhibitMutablePropertiesInRecords = "ARCH028";
     public const string ProhibitPublicSettersInDomainEntities = "ARCH029";
+    public const string AvoidDuplicatedPackageReferencesAcrossProjects = "ARCH030";
 }
