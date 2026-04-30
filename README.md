@@ -45,6 +45,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH029 | Prohibit public setters in domain entities    | Design      | Warning           | [ARCH029](docs/rules/ARCH029.md) |
 | ARCH030 | Detect duplicated PackageReference across projects | Maintainability | Info              | [ARCH030](docs/rules/ARCH030.md) |
 | ARCH031 | Prefer System.Threading.Lock over object locks | Performance | Warning           | [ARCH031](docs/rules/ARCH031.md) |
+| ARCH032 | Avoid duplicated MSBuild properties             | Maintainability | Info              | [ARCH032](docs/rules/ARCH032.md) |
 
 ## Como configurar
 
@@ -133,6 +134,14 @@ Exemplo para `ARCH031`:
 [*.cs]
 dotnet_diagnostic.ARCH031.minimum_target_framework = net9.0
 dotnet_diagnostic.ARCH031.report_local_variables = true
+```
+
+Exemplo para `ARCH032`:
+
+```ini
+[*.csproj]
+dotnet_diagnostic.ARCH032.ignored_properties = ["TargetFramework", "TargetFrameworks", "AssemblyName", "RootNamespace"]
+dotnet_diagnostic.ARCH032.compare_values = true
 ```
 
 ## Como validar
