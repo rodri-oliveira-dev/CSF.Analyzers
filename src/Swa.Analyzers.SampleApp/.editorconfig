@@ -18,6 +18,7 @@ dotnet_diagnostic.ARCH020.severity = warning
 dotnet_diagnostic.ARCH021.severity = warning
 dotnet_diagnostic.ARCH022.severity = warning
 dotnet_diagnostic.ARCH023.severity = warning
+dotnet_diagnostic.ARCH024.severity = warning
 dotnet_diagnostic.ARCH015.route_language = pt-BR
 dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar"]
 
@@ -96,4 +97,9 @@ dotnet_diagnostic.IDE0290.severity = none
 
 [Arch023/*.cs]
 dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.IDE0290.severity = none
+
+[Arch024/*.cs]
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA2254.severity = none
 dotnet_diagnostic.IDE0290.severity = none

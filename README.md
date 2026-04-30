@@ -37,6 +37,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH021 | Prefer AsNoTracking for read-only EF queries    | Performance | Warning           | [ARCH021](docs/rules/ARCH021.md) |
 | ARCH022 | Avoid premature query materialization           | Performance | Warning           | [ARCH022](docs/rules/ARCH022.md) |
 | ARCH023 | Prefer TimeProvider for current time            | Testability | Warning           | [ARCH023](docs/rules/ARCH023.md) |
+| ARCH024 | Avoid interpolated strings in ILogger calls     | Observability | Warning           | [ARCH024](docs/rules/ARCH024.md) |
 
 ## Como configurar
 
