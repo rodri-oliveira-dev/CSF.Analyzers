@@ -26,3 +26,4 @@
 | ARCH022 | Performance | Warning  | Avoid premature query materialization before filtering or projection. |
 | ARCH023 | Testability | Warning  | Prefer TimeProvider over direct system clock access.     |
 | ARCH024 | Observability | Warning  | Avoid interpolated strings or concatenation in ILogger calls. |
+| ARCH025 | Observability | Warning  | Enforce ILogger category matching the containing type.   |
