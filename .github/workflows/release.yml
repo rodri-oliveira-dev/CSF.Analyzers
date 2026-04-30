@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      version: ${{ steps.package_version.outputs.version }}
 
     steps:
       - name: Checkout
@@ -40,6 +42,25 @@ jobs:
       - name: Build
         run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
 
+      - name: Read package version
+        id: package_version
+        shell: bash
+        run: |
+          version="$(grep -oPm1 '(?<=<VersionPrefix>)[^<]+' src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj)"
+
+          if [ -z "$version" ]; then
+            echo "VersionPrefix nao encontrado em src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj"
+            exit 1
+          fi
+
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
+            echo "VersionPrefix invalido: $version"
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Package version: $version"
+
       # dotnet test against the .slnx currently fails before test discovery when
       # MSBuild runs with multiple nodes. Keep orchestration single-node while
       # preserving full solution test coverage.
@@ -47,7 +68,7 @@ jobs:
         run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
 
       - name: Pack analyzer
-        run: dotnet pack ./src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj --configuration Release --no-build --output ./artifacts/packages /p:Version=0.1.${{ github.run_number }}
+        run: dotnet pack ./src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.package_version.outputs.version }}
 
       - name: Upload NuGet packages
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -77,10 +98,9 @@ jobs:
         id: release_tag
         shell: bash
         run: |
-          timestamp="$(date -u +'%Y%m%d-%H%M')"
-          short_sha="${GITHUB_SHA::7}"
-          tag="release-${timestamp}-${short_sha}"
+          tag="v${{ needs.validate.outputs.version }}"
           echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
+          echo "Release tag: ${tag}"
 
       - name: Create GitHub release
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
@@ -157,7 +177,7 @@ jobs:
               owner,
               repo,
               tag_name: tag,
-              name: tag,
+              name: `Swa.Analyzers ${tag}`,
               body: notes.data.body,
               target_commitish: context.sha,
               draft: false,
@@ -181,3 +201,18 @@ jobs:
           fi
 
           gh release upload "${{ steps.release_tag.outputs.tag }}" "${files[@]}" --clobber
+
+      # Futuro: publicar no NuGet.org.
+      # Para habilitar:
+      # 1. Criar o secret NUGET_API_KEY no repositorio.
+      # 2. Descomentar este step.
+      #
+      # - name: Publish to NuGet
+      #   env:
+      #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      #   shell: bash
+      #   run: |
+      #     dotnet nuget push "artifacts/packages/*.nupkg" \
+      #       --api-key "$NUGET_API_KEY" \
+      #       --source https://api.nuget.org/v3/index.json \
+      #       --skip-duplicate

@@ -25,3 +25,9 @@ O hook `.githooks/pre-push` executa a mesma validacao antes do restore, build, t
 - Quando um novo `ARCH###` aparece em `RuleIdentifiers.cs`, `src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md` precisa conter esse ID.
 
 O workflow `.github/workflows/release-check.yml` executa essas validacoes em `pull_request`, em `push` para `main` e manualmente via `workflow_dispatch`.
+
+## Versao de release
+
+O workflow `.github/workflows/release.yml` usa o `VersionPrefix` de `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj` como versao oficial do pacote. Essa versao define o `PackageVersion` do `dotnet pack`, o nome dos pacotes `.nupkg` e `.snupkg`, a tag `v{VersionPrefix}` e o nome da GitHub Release `Swa.Analyzers v{VersionPrefix}`.
+
+A publicacao no NuGet.org permanece comentada no workflow ate que o secret `NUGET_API_KEY` seja configurado no repositorio.
