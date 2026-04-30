@@ -41,6 +41,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH025 | Enforce matching ILogger category              | Observability | Warning           | [ARCH025](docs/rules/ARCH025.md) |
 | ARCH026 | Avoid insecure CORS configuration              | Security    | Warning           | [ARCH026](docs/rules/ARCH026.md) |
 | ARCH027 | Prevent infrastructure dependencies in core layers | Architecture | Warning           | [ARCH027](docs/rules/ARCH027.md) |
+| ARCH028 | Prohibit mutable properties in records        | Design      | Warning           | [ARCH028](docs/rules/ARCH028.md) |
 
 ## Como configurar
 
@@ -97,6 +98,13 @@ dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Application"
 dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql"
 dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
 dotnet_diagnostic.ARCH027.ignore_tests = true
+```
+
+Exemplo para `ARCH028`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH028.allow_non_public_setters = true
 ```
 
 ## Como validar

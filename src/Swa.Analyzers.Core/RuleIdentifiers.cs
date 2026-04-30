@@ -29,4 +29,5 @@ internal static class RuleIdentifiers
     public const string EnforceLoggerCategoryMatchesContainingType = "ARCH025";
     public const string AvoidInsecureCorsConfiguration = "ARCH026";
     public const string PreventInfrastructureDependenciesInCoreLayers = "ARCH027";
+    public const string ProhibitMutablePropertiesInRecords = "ARCH028";
 }
