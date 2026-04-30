@@ -131,6 +131,22 @@ namespace Microsoft.AspNetCore.Routing
     }
 }
 
+namespace Microsoft.AspNetCore.Cors.Infrastructure
+{
+    public sealed class CorsPolicyBuilder
+    {
+        public CorsPolicyBuilder AllowAnyOrigin() => this;
+
+        public CorsPolicyBuilder AllowCredentials() => this;
+
+        public CorsPolicyBuilder AllowAnyHeader() => this;
+
+        public CorsPolicyBuilder AllowAnyMethod() => this;
+
+        public CorsPolicyBuilder WithOrigins(params string[] origins) => this;
+    }
+}
+
 namespace Microsoft.Extensions.Hosting
 {
     public interface IHostedService

@@ -27,3 +27,4 @@
 | ARCH023 | Testability | Warning  | Prefer TimeProvider over direct system clock access.     |
 | ARCH024 | Observability | Warning  | Avoid interpolated strings or concatenation in ILogger calls. |
 | ARCH025 | Observability | Warning  | Enforce ILogger category matching the containing type.   |
+| ARCH026 | Security    | Warning  | Avoid insecure ASP.NET Core CORS configuration.          |

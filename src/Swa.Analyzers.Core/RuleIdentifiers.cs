@@ -27,4 +27,5 @@ internal static class RuleIdentifiers
     public const string PreferTimeProvider = "ARCH023";
     public const string AvoidInterpolatedStringsInLogger = "ARCH024";
     public const string EnforceLoggerCategoryMatchesContainingType = "ARCH025";
+    public const string AvoidInsecureCorsConfiguration = "ARCH026";
 }
