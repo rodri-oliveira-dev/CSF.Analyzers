@@ -17,3 +17,12 @@
 | ARCH013 | TestQuality | Info     | Restrict mocking frameworks to NSubstitute.              |
 | ARCH014 | TestQuality | Info     | Prefer Is.Equivalent over NSubstitute Arg.Is.            |
 | ARCH015 | Design      | Warning  | Prohibit verbs in HTTP route segments.                   |
+| ARCH016 | Performance | Warning  | Avoid Task.Run in ASP.NET request flows.                 |
+| ARCH017 | Reliability | Warning  | Prohibit fire-and-forget in ASP.NET request flows.       |
+| ARCH018 | Reliability | Warning  | Avoid direct HttpClient instantiation.                   |
+| ARCH019 | Security    | Warning  | Avoid conflicting Authorize and AllowAnonymous metadata. |
+| ARCH020 | Security    | Warning  | Require explicit authorization decision on HTTP endpoints. |
+| ARCH021 | Performance | Warning  | Prefer AsNoTracking for read-only EF Core queries.       |
+| ARCH022 | Performance | Warning  | Avoid premature query materialization before filtering or projection. |
+| ARCH023 | Testability | Warning  | Prefer TimeProvider over direct system clock access.     |
+| ARCH024 | Observability | Warning  | Avoid interpolated strings or concatenation in ILogger calls. |

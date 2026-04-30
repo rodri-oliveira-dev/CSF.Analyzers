@@ -29,6 +29,15 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH013 | Restrict mocking frameworks to NSubstitute       | TestQuality | Info              | [ARCH013](docs/rules/ARCH013.md) |
 | ARCH014 | Prefer Is.Equivalent over NSubstitute Arg.Is     | TestQuality | Info              | [ARCH014](docs/rules/ARCH014.md) |
 | ARCH015 | Prohibit verbs in HTTP routes                    | Design      | Warning           | [ARCH015](docs/rules/ARCH015.md) |
+| ARCH016 | Avoid Task.Run in ASP.NET request flow           | Performance | Warning           | [ARCH016](docs/rules/ARCH016.md) |
+| ARCH017 | Prohibit fire-and-forget in request flow         | Reliability | Warning           | [ARCH017](docs/rules/ARCH017.md) |
+| ARCH018 | Avoid direct HttpClient instantiation            | Reliability | Warning           | [ARCH018](docs/rules/ARCH018.md) |
+| ARCH019 | Avoid Authorize with AllowAnonymous              | Security    | Warning           | [ARCH019](docs/rules/ARCH019.md) |
+| ARCH020 | Require explicit endpoint authorization          | Security    | Warning           | [ARCH020](docs/rules/ARCH020.md) |
+| ARCH021 | Prefer AsNoTracking for read-only EF queries    | Performance | Warning           | [ARCH021](docs/rules/ARCH021.md) |
+| ARCH022 | Avoid premature query materialization           | Performance | Warning           | [ARCH022](docs/rules/ARCH022.md) |
+| ARCH023 | Prefer TimeProvider for current time            | Testability | Warning           | [ARCH023](docs/rules/ARCH023.md) |
+| ARCH024 | Avoid interpolated strings in ILogger calls     | Observability | Warning           | [ARCH024](docs/rules/ARCH024.md) |
 
 ## Como configurar
 
@@ -50,6 +59,24 @@ Algumas regras aceitam opcoes proprias via `.editorconfig`. Exemplo para `ARCH01
 [*.cs]
 dotnet_diagnostic.ARCH015.route_language = pt-BR
 dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar", "recalcular"]
+```
+
+Exemplo para `ARCH020`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH020.allowed_routes = ["/internal/status", "/diagnostics/*"]
+dotnet_diagnostic.ARCH020.allowed_methods = ["Ping"]
+dotnet_diagnostic.ARCH020.ignored_namespaces = ["Sample.PublicEndpoints"]
+```
+
+Exemplo para `ARCH023`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH023.allowed_namespaces = ["MyApp.Infrastructure.Time"]
+dotnet_diagnostic.ARCH023.allowed_types = ["MachineTimeSource"]
+dotnet_diagnostic.ARCH023.ignore_simple_logging = true
 ```
 
 ## Como validar

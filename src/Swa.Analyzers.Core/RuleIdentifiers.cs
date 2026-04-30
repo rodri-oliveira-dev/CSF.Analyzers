@@ -17,4 +17,13 @@ internal static class RuleIdentifiers
     public const string RestrictMockingFrameworksToNSubstitute = "ARCH013";
     public const string PreferIsEquivalentOverArgIs = "ARCH014";
     public const string ProhibitVerbsInHttpRoutes = "ARCH015";
+    public const string AvoidTaskRunInAspNetRequestFlow = "ARCH016";
+    public const string ProhibitFireAndForgetInRequestFlow = "ARCH017";
+    public const string AvoidDirectHttpClientInstantiation = "ARCH018";
+    public const string AvoidAuthorizeWithAllowAnonymous = "ARCH019";
+    public const string RequireExplicitAuthorizationOnHttpEndpoints = "ARCH020";
+    public const string PreferAsNoTrackingForReadOnlyQueries = "ARCH021";
+    public const string AvoidPrematureQueryMaterialization = "ARCH022";
+    public const string PreferTimeProvider = "ARCH023";
+    public const string AvoidInterpolatedStringsInLogger = "ARCH024";
 }

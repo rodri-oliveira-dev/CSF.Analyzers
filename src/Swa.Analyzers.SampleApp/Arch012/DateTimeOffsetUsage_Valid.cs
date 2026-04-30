@@ -4,9 +4,9 @@ internal static class DateTimeOffsetUsage_Valid
 {
     // Exemplos que NÃO devem gerar diagnóstico ARCH012.
 
-    public static DateTimeOffset GetTimestamp()
+    public static DateTimeOffset GetTimestamp(TimeProvider timeProvider)
     {
-        return DateTimeOffset.UtcNow;
+        return timeProvider.GetUtcNow();
     }
 
     public static void Process(DateTimeOffset timestamp)
