@@ -38,6 +38,14 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH022 | Avoid premature query materialization           | Performance | Warning           | [ARCH022](docs/rules/ARCH022.md) |
 | ARCH023 | Prefer TimeProvider for current time            | Testability | Warning           | [ARCH023](docs/rules/ARCH023.md) |
 | ARCH024 | Avoid interpolated strings in ILogger calls     | Observability | Warning           | [ARCH024](docs/rules/ARCH024.md) |
+| ARCH025 | Enforce matching ILogger category              | Observability | Warning           | [ARCH025](docs/rules/ARCH025.md) |
+| ARCH026 | Avoid insecure CORS configuration              | Security    | Warning           | [ARCH026](docs/rules/ARCH026.md) |
+| ARCH027 | Prevent infrastructure dependencies in core layers | Architecture | Warning           | [ARCH027](docs/rules/ARCH027.md) |
+| ARCH028 | Prohibit mutable properties in records        | Design      | Warning           | [ARCH028](docs/rules/ARCH028.md) |
+| ARCH029 | Prohibit public setters in domain entities    | Design      | Warning           | [ARCH029](docs/rules/ARCH029.md) |
+| ARCH030 | Detect duplicated PackageReference across projects | Maintainability | Info              | [ARCH030](docs/rules/ARCH030.md) |
+| ARCH031 | Prefer System.Threading.Lock over object locks | Performance | Warning           | [ARCH031](docs/rules/ARCH031.md) |
+| ARCH032 | Avoid duplicated MSBuild properties             | Maintainability | Info              | [ARCH032](docs/rules/ARCH032.md) |
 
 ## Como configurar
 
@@ -79,9 +87,69 @@ dotnet_diagnostic.ARCH023.allowed_types = ["MachineTimeSource"]
 dotnet_diagnostic.ARCH023.ignore_simple_logging = true
 ```
 
+Exemplo para `ARCH026`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH026.disallow_any_origin = true
+```
+
+Exemplo para `ARCH027`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Application"
+dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql"
+dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
+dotnet_diagnostic.ARCH027.ignore_tests = true
+```
+
+Exemplo para `ARCH028`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH028.allow_non_public_setters = true
+```
+
+Exemplo para `ARCH029`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH029.entity_namespaces = ["MyApp.Domain.Entities", "MyApp.Domain.Aggregates"]
+dotnet_diagnostic.ARCH029.entity_base_types = ["Entity", "AggregateRoot"]
+dotnet_diagnostic.ARCH029.allow_internal_setters = false
+```
+
+Exemplo para `ARCH030`:
+
+```ini
+[*.csproj]
+dotnet_diagnostic.ARCH030.allowed_packages = ["Microsoft.NET.Test.Sdk", "xunit", "coverlet.collector"]
+dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj", "*.Benchmarks.csproj"]
+```
+
+Exemplo para `ARCH031`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH031.minimum_target_framework = net9.0
+dotnet_diagnostic.ARCH031.report_local_variables = true
+```
+
+Exemplo para `ARCH032`:
+
+```ini
+[*.csproj]
+dotnet_diagnostic.ARCH032.ignored_properties = ["TargetFramework", "TargetFrameworks", "AssemblyName", "RootNamespace"]
+dotnet_diagnostic.ARCH032.compare_values = true
+```
+
 ## Como validar
 
 - **Restore**: `dotnet restore ./Swa.Analyzers.slnx`
 - **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore`
 - **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1` (a orquestracao do VSTest na `.slnx` falha antes da descoberta quando o MSBuild usa multiplos nos)
+- **Release check**: `pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1` (consistencia entre regras ARCH, docs, testes, SampleApp, changelog e versao)
 - **Manual**: veja [src/Swa.Analyzers.SampleApp/README.md](src/Swa.Analyzers.SampleApp/README.md) (exemplos por regra e build com diagnosticos)
+
+Detalhes das validacoes de release estao em [docs/release.md](docs/release.md).

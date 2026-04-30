@@ -4,6 +4,10 @@ public interface ILogger
 {
 }
 
+public interface ILogger<TCategoryName> : ILogger
+{
+}
+
 public readonly struct EventId
 {
 }

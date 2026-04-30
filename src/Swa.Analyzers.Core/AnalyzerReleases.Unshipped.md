@@ -26,3 +26,11 @@
 | ARCH022 | Performance | Warning  | Avoid premature query materialization before filtering or projection. |
 | ARCH023 | Testability | Warning  | Prefer TimeProvider over direct system clock access.     |
 | ARCH024 | Observability | Warning  | Avoid interpolated strings or concatenation in ILogger calls. |
+| ARCH025 | Observability | Warning  | Enforce ILogger category matching the containing type.   |
+| ARCH026 | Security    | Warning  | Avoid insecure ASP.NET Core CORS configuration.          |
+| ARCH027 | Architecture | Warning  | Prevent infrastructure dependencies in core layers.      |
+| ARCH028 | Design      | Warning  | Prohibit mutable properties in records.                  |
+| ARCH029 | Design      | Warning  | Prohibit public setters in domain entities.              |
+| ARCH030 | Maintainability | Info     | Detect duplicated PackageReference items across projects. |
+| ARCH031 | Performance | Warning  | Prefer System.Threading.Lock over object lock monitors.  |
+| ARCH032 | Maintainability | Info     | Avoid duplicated MSBuild properties between project files and Directory.Build.props. |

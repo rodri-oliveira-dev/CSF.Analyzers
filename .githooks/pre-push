@@ -26,6 +26,23 @@ clean_pre_push_results() {
   mkdir -p "$results_dir"
 }
 
+run_release_check() {
+  echo "==> pre-push: validando consistencia de release"
+
+  if command -v pwsh >/dev/null 2>&1; then
+    pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1
+    return
+  fi
+
+  if command -v powershell.exe >/dev/null 2>&1; then
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1
+    return
+  fi
+
+  echo "pre-push: PowerShell nao encontrado; instale pwsh ou powershell.exe para executar scripts/Validate-Release.ps1." >&2
+  exit 1
+}
+
 if command -v mktemp >/dev/null 2>&1; then
   changed_files="$(mktemp "${TMPDIR:-/tmp}/pre-push-changed.XXXXXX")"
 else
@@ -123,6 +140,8 @@ else
 
   echo "==> pre-push: alteracao impactante detectada em $impacting_file"
 fi
+
+run_release_check
 
 echo "==> pre-push: restaurando dependencias"
 dotnet restore ./Swa.Analyzers.slnx

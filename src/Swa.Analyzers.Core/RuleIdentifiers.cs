@@ -26,4 +26,12 @@ internal static class RuleIdentifiers
     public const string AvoidPrematureQueryMaterialization = "ARCH022";
     public const string PreferTimeProvider = "ARCH023";
     public const string AvoidInterpolatedStringsInLogger = "ARCH024";
+    public const string EnforceLoggerCategoryMatchesContainingType = "ARCH025";
+    public const string AvoidInsecureCorsConfiguration = "ARCH026";
+    public const string PreventInfrastructureDependenciesInCoreLayers = "ARCH027";
+    public const string ProhibitMutablePropertiesInRecords = "ARCH028";
+    public const string ProhibitPublicSettersInDomainEntities = "ARCH029";
+    public const string AvoidDuplicatedPackageReferencesAcrossProjects = "ARCH030";
+    public const string PreferSystemThreadingLock = "ARCH031";
+    public const string AvoidDuplicatedMsBuildProperties = "ARCH032";
 }
