@@ -99,8 +99,33 @@ jobs:
               }
             }
 
+            const releases = await github.rest.repos.listReleases({
+              owner,
+              repo,
+              per_page: 10,
+            });
+
+            const previousRelease = releases.data.find(release =>
+              !release.draft &&
+              !release.prerelease &&
+              release.tag_name !== tag
+            );
+
+            const previousTag = previousRelease?.tag_name;
+
+            if (previousTag) {
+              core.notice(`Generating release notes from previous tag: ${previousTag}`);
+            } else {
+              core.notice('No previous release tag found. Generating notes without previous_tag_name.');
+            }
+
             try {
-              await github.rest.git.getRef({ owner, repo, ref: `tags/${tag}` });
+              await github.rest.git.getRef({
+                owner,
+                repo,
+                ref: `tags/${tag}`,
+              });
+
               core.notice(`Tag ${tag} already exists. Creating release from existing tag.`);
             } catch (error) {
               if (error.status !== 404) {
@@ -115,16 +140,44 @@ jobs:
               });
             }
 
+            const releaseNotesRequest = {
+              owner,
+              repo,
+              tag_name: tag,
+              target_commitish: context.sha,
+            };
+
+            if (previousTag) {
+              releaseNotesRequest.previous_tag_name = previousTag;
+            }
+
+            const notes = await github.rest.repos.generateReleaseNotes(releaseNotesRequest);
+
             await github.rest.repos.createRelease({
               owner,
               repo,
               tag_name: tag,
               name: tag,
+              body: notes.data.body,
               target_commitish: context.sha,
-              generate_release_notes: true,
+              draft: false,
+              prerelease: false,
+              generate_release_notes: false,
             });
 
       - name: Attach NuGet packages to release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ steps.release_tag.outputs.tag }}" artifacts/packages/*.nupkg artifacts/packages/*.snupkg --clobber
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+
+          files=(artifacts/packages/*.nupkg artifacts/packages/*.snupkg)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "Nenhum pacote .nupkg ou .snupkg encontrado em artifacts/packages"
+            exit 1
+          fi
+
+          gh release upload "${{ steps.release_tag.outputs.tag }}" "${files[@]}" --clobber
