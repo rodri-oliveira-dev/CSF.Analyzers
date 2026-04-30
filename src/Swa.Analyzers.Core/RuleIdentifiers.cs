@@ -30,4 +30,5 @@ internal static class RuleIdentifiers
     public const string AvoidInsecureCorsConfiguration = "ARCH026";
     public const string PreventInfrastructureDependenciesInCoreLayers = "ARCH027";
     public const string ProhibitMutablePropertiesInRecords = "ARCH028";
+    public const string ProhibitPublicSettersInDomainEntities = "ARCH029";
 }

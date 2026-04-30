@@ -30,3 +30,4 @@
 | ARCH026 | Security    | Warning  | Avoid insecure ASP.NET Core CORS configuration.          |
 | ARCH027 | Architecture | Warning  | Prevent infrastructure dependencies in core layers.      |
 | ARCH028 | Design      | Warning  | Prohibit mutable properties in records.                  |
+| ARCH029 | Design      | Warning  | Prohibit public setters in domain entities.              |
