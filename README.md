@@ -40,6 +40,7 @@ Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos
 | ARCH024 | Avoid interpolated strings in ILogger calls     | Observability | Warning           | [ARCH024](docs/rules/ARCH024.md) |
 | ARCH025 | Enforce matching ILogger category              | Observability | Warning           | [ARCH025](docs/rules/ARCH025.md) |
 | ARCH026 | Avoid insecure CORS configuration              | Security    | Warning           | [ARCH026](docs/rules/ARCH026.md) |
+| ARCH027 | Prevent infrastructure dependencies in core layers | Architecture | Warning           | [ARCH027](docs/rules/ARCH027.md) |
 
 ## Como configurar
 
@@ -86,6 +87,16 @@ Exemplo para `ARCH026`:
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH026.disallow_any_origin = true
+```
+
+Exemplo para `ARCH027`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Application"
+dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql"
+dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
+dotnet_diagnostic.ARCH027.ignore_tests = true
 ```
 
 ## Como validar
