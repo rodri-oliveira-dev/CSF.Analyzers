@@ -5,3 +5,10 @@ O workflow `.github/workflows/release.yml` valida, empacota e cria a GitHub Rele
 A release deve ser imutavel: a mesma versao nao deve recriar release nem sobrescrever assets existentes. O upload dos pacotes deve falhar se um asset com o mesmo nome ja existir.
 
 Mantenha `permissions: {}` no topo do workflow. Permissoes elevadas devem ser declaradas apenas por job, e `contents: write` deve permanecer somente no job de release.
+
+## Pacotes e provenance
+
+- O workflow gera `.nupkg` e `.snupkg`.
+- Os artifacts intermediarios possuem retencao curta.
+- Os pacotes devem ter artifact attestation.
+- A publicacao NuGet permanece desativada ate existir environment protegido e secret apropriado.

@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      attestations: write
+      id-token: write
     outputs:
       version: ${{ steps.package_version.outputs.version }}
 
@@ -72,6 +74,13 @@ jobs:
       - name: Pack analyzer
         run: dotnet pack ./src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.package_version.outputs.version }}
 
+      - name: Attest NuGet packages
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26
+        with:
+          subject-path: |
+            artifacts/packages/*.nupkg
+            artifacts/packages/*.snupkg
+
       - name: Upload NuGet packages
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -80,6 +89,7 @@ jobs:
             artifacts/packages/*.nupkg
             artifacts/packages/*.snupkg
           if-no-files-found: error
+          retention-days: 7
 
   release:
     name: Release
@@ -205,10 +215,12 @@ jobs:
 
           gh release upload "${{ steps.release_tag.outputs.tag }}" "${files[@]}"
 
-      # Futuro: publicar no NuGet.org.
+      # Futuro: publicar no NuGet.org somente apos revisao de governanca.
       # Para habilitar:
-      # 1. Criar o secret NUGET_API_KEY no repositorio.
-      # 2. Descomentar este step.
+      # 1. Criar o secret NUGET_API_KEY com escopo minimo no repositorio.
+      # 2. Usar environment protegido com revisores para publicacao.
+      # 3. Manter --skip-duplicate.
+      # 4. Descomentar este step apenas apos aprovacao do fluxo.
       #
       # - name: Publish to NuGet
       #   env:
