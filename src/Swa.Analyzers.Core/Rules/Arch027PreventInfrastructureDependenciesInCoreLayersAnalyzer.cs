@@ -6,6 +6,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using Swa.Analyzers.Core.Common;
+
 namespace Swa.Analyzers.Core.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -288,7 +290,7 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
                 coreNamespacePatterns,
                 forbiddenNamespacePatterns,
                 allowedNamespacePatterns,
-                ReadBoolean(options, IgnoreTestsOption, defaultValue: true));
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, IgnoreTestsOption, defaultValue: true));
         }
 
         private static ImmutableArray<string> ReadPatternList(
@@ -326,18 +328,6 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
             return builder.ToImmutable();
         }
 
-        private static bool ReadBoolean(AnalyzerConfigOptions options, string optionName, bool defaultValue)
-        {
-            if (!options.TryGetValue(optionName, out var configuredValue))
-            {
-                return defaultValue;
-            }
-
-            return bool.TryParse(configuredValue.Trim(), out var value)
-                ? value
-                : defaultValue;
-        }
-
         private static bool MatchesAnyPattern(string namespaceName, ImmutableArray<string> patterns)
         {
             foreach (var pattern in patterns)
@@ -369,44 +359,7 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
 
         private static bool MatchesWildcard(string value, string pattern)
         {
-            var valueIndex = 0;
-            var patternIndex = 0;
-            var starIndex = -1;
-            var matchIndex = 0;
-
-            while (valueIndex < value.Length)
-            {
-                if (patternIndex < pattern.Length
-                    && (pattern[patternIndex] == value[valueIndex]))
-                {
-                    valueIndex++;
-                    patternIndex++;
-                    continue;
-                }
-
-                if (patternIndex < pattern.Length && pattern[patternIndex] == '*')
-                {
-                    starIndex = patternIndex++;
-                    matchIndex = valueIndex;
-                    continue;
-                }
-
-                if (starIndex != -1)
-                {
-                    patternIndex = starIndex + 1;
-                    valueIndex = ++matchIndex;
-                    continue;
-                }
-
-                return false;
-            }
-
-            while (patternIndex < pattern.Length && pattern[patternIndex] == '*')
-            {
-                patternIndex++;
-            }
-
-            return patternIndex == pattern.Length;
+            return WildcardPatternMatcher.Matches(value, pattern, StringComparison.Ordinal);
         }
     }
 }

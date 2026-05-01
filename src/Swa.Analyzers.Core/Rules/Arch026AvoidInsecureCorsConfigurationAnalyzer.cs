@@ -6,6 +6,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using Swa.Analyzers.Core.Common;
+
 namespace Swa.Analyzers.Core.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -276,10 +278,8 @@ public sealed class Arch026AvoidInsecureCorsConfigurationAnalyzer : DiagnosticAn
         public static CorsRuleOptions Create(AnalyzerConfigOptionsProvider provider, SyntaxTree syntaxTree)
         {
             var options = provider.GetOptions(syntaxTree);
-            var disallowAnyOrigin = options.TryGetValue(DisallowAnyOriginOption, out var configuredValue)
-                && string.Equals(configuredValue.Trim(), "true", StringComparison.OrdinalIgnoreCase);
-
-            return new CorsRuleOptions(disallowAnyOrigin);
+            return new CorsRuleOptions(
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, DisallowAnyOriginOption, defaultValue: false));
         }
     }
 }

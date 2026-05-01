@@ -286,34 +286,16 @@ public sealed class Arch029ProhibitPublicSettersInDomainEntitiesAnalyzer : Diagn
             return new DomainEntityOptions(
                 ReadStringArray(options, EntityNamespacesOption).ToImmutableArray(),
                 ReadStringArray(options, EntityBaseTypesOption).ToImmutableHashSet(StringComparer.Ordinal),
-                ReadBoolean(options, AllowInternalSettersOption, defaultValue: false));
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, AllowInternalSettersOption, defaultValue: false));
         }
 
         private static IEnumerable<string> ReadStringArray(AnalyzerConfigOptions options, string optionName)
         {
-            if (!options.TryGetValue(optionName, out var configuredValue)
-                || !JsonStringArrayOptionParser.TryParse(configuredValue, out var parsedValues))
-            {
-                yield break;
-            }
-
-            foreach (var parsedValue in parsedValues)
-            {
-                var normalized = parsedValue.Trim();
-
-                if (normalized.Length > 0)
-                {
-                    yield return normalized;
-                }
-            }
-        }
-
-        private static bool ReadBoolean(AnalyzerConfigOptions options, string optionName, bool defaultValue)
-        {
-            return options.TryGetValue(optionName, out var configuredValue)
-                && bool.TryParse(configuredValue.Trim(), out var parsedValue)
-                    ? parsedValue
-                    : defaultValue;
+            return AnalyzerConfigOptionReader.ReadStringArrayOption(
+                options,
+                optionName,
+                ImmutableArray<string>.Empty,
+                static value => value.Trim());
         }
 
     }

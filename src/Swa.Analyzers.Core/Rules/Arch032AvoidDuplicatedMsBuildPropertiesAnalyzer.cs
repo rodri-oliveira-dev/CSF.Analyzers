@@ -329,7 +329,7 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
 
             return new DuplicatedMsBuildPropertyOptions(
                 ReadStringArray(options, IgnoredPropertiesOption, DefaultIgnoredProperties).ToImmutableHashSet(StringComparer.OrdinalIgnoreCase),
-                ReadBoolean(options, CompareValuesOption, defaultValue: true));
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, CompareValuesOption, defaultValue: true));
         }
 
         private static IEnumerable<string> ReadStringArray(
@@ -337,22 +337,11 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
             string optionName,
             ImmutableArray<string> defaultValue)
         {
-            if (!options.TryGetValue(optionName, out var configuredValue))
-            {
-                return defaultValue;
-            }
-
-            return JsonStringArrayOptionParser.TryParse(configuredValue, out var parsedValues)
-                ? parsedValues.Select(static value => value.Trim()).Where(static value => value.Length > 0)
-                : defaultValue;
-        }
-
-        private static bool ReadBoolean(AnalyzerConfigOptions options, string optionName, bool defaultValue)
-        {
-            return options.TryGetValue(optionName, out var configuredValue)
-                && bool.TryParse(configuredValue, out var parsedValue)
-                    ? parsedValue
-                    : defaultValue;
+            return AnalyzerConfigOptionReader.ReadStringArrayOption(
+                options,
+                optionName,
+                defaultValue,
+                static value => value.Trim());
         }
 
     }

@@ -273,57 +273,16 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
             string optionName,
             ImmutableArray<string> defaultValue)
         {
-            if (!options.TryGetValue(optionName, out var configuredValue))
-            {
-                return defaultValue;
-            }
-
-            return JsonStringArrayOptionParser.TryParse(configuredValue, out var parsedValues)
-                ? parsedValues.Select(static value => value.Trim()).Where(static value => value.Length > 0)
-                : defaultValue;
+            return AnalyzerConfigOptionReader.ReadStringArrayOption(
+                options,
+                optionName,
+                defaultValue,
+                static value => value.Trim());
         }
 
         private static bool MatchesWildcard(string value, string pattern)
         {
-            var valueIndex = 0;
-            var patternIndex = 0;
-            var starIndex = -1;
-            var matchIndex = 0;
-
-            while (valueIndex < value.Length)
-            {
-                if (patternIndex < pattern.Length
-                    && (pattern[patternIndex] == value[valueIndex]
-                        || char.ToUpperInvariant(pattern[patternIndex]) == char.ToUpperInvariant(value[valueIndex])))
-                {
-                    valueIndex++;
-                    patternIndex++;
-                    continue;
-                }
-
-                if (patternIndex < pattern.Length && pattern[patternIndex] == '*')
-                {
-                    starIndex = patternIndex++;
-                    matchIndex = valueIndex;
-                    continue;
-                }
-
-                if (starIndex != -1)
-                {
-                    patternIndex = starIndex + 1;
-                    valueIndex = ++matchIndex;
-                    continue;
-                }
-
-                return false;
-            }
-
-            while (patternIndex < pattern.Length && pattern[patternIndex] == '*')
-            {
-                patternIndex++;
-            }
-
-            return patternIndex == pattern.Length;
+            return WildcardPatternMatcher.Matches(value, pattern, StringComparison.OrdinalIgnoreCase);
         }
     }
 

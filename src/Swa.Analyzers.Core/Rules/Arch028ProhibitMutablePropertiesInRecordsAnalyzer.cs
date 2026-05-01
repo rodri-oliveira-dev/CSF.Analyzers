@@ -6,6 +6,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using Swa.Analyzers.Core.Common;
+
 namespace Swa.Analyzers.Core.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -123,15 +125,8 @@ public sealed class Arch028ProhibitMutablePropertiesInRecordsAnalyzer : Diagnost
         public static RecordMutabilityOptions Create(AnalyzerConfigOptionsProvider provider, SyntaxTree syntaxTree)
         {
             var options = provider.GetOptions(syntaxTree);
-            var allowNonPublicSetters = true;
-
-            if (options.TryGetValue(AllowNonPublicSettersOption, out var configuredValue)
-                && bool.TryParse(configuredValue.Trim(), out var parsedValue))
-            {
-                allowNonPublicSetters = parsedValue;
-            }
-
-            return new RecordMutabilityOptions(allowNonPublicSetters);
+            return new RecordMutabilityOptions(
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, AllowNonPublicSettersOption, defaultValue: true));
         }
     }
 }

@@ -306,17 +306,7 @@ public sealed class Arch023PreferTimeProviderAnalyzer : DiagnosticAnalyzer
             return new TimeProviderRuleOptions(
                 ReadStringArray(options, AllowedNamespacesOption, static value => value.Trim()).ToImmutableArray(),
                 ReadStringArray(options, AllowedTypesOption, static value => value.Trim()).ToImmutableHashSet(StringComparer.Ordinal),
-                ReadBoolean(options, IgnoreSimpleLoggingOption));
-        }
-
-        private static bool ReadBoolean(AnalyzerConfigOptions options, string optionName)
-        {
-            if (!options.TryGetValue(optionName, out var configuredValue))
-            {
-                return false;
-            }
-
-            return bool.TryParse(configuredValue, out var value) && value;
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, IgnoreSimpleLoggingOption, defaultValue: false));
         }
 
         private static IEnumerable<string> ReadStringArray(
@@ -324,21 +314,11 @@ public sealed class Arch023PreferTimeProviderAnalyzer : DiagnosticAnalyzer
             string optionName,
             Func<string, string> normalize)
         {
-            if (!options.TryGetValue(optionName, out var configuredValue)
-                || !JsonStringArrayOptionParser.TryParse(configuredValue, out var parsedValues))
-            {
-                yield break;
-            }
-
-            foreach (var parsedValue in parsedValues)
-            {
-                var normalized = normalize(parsedValue);
-
-                if (normalized.Length > 0)
-                {
-                    yield return normalized;
-                }
-            }
+            return AnalyzerConfigOptionReader.ReadStringArrayOption(
+                options,
+                optionName,
+                ImmutableArray<string>.Empty,
+                normalize);
         }
 
     }

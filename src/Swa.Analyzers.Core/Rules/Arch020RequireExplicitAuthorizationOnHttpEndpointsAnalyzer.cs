@@ -692,21 +692,11 @@ public sealed class Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer :
             string optionName,
             Func<string, string> normalize)
         {
-            if (!options.TryGetValue(optionName, out var configuredValue)
-                || !JsonStringArrayOptionParser.TryParse(configuredValue, out var parsedValues))
-            {
-                yield break;
-            }
-
-            foreach (var parsedValue in parsedValues)
-            {
-                var normalized = normalize(parsedValue);
-
-                if (normalized.Length > 0)
-                {
-                    yield return normalized;
-                }
-            }
+            return AnalyzerConfigOptionReader.ReadStringArrayOption(
+                options,
+                optionName,
+                ImmutableArray<string>.Empty,
+                normalize);
         }
 
     }
