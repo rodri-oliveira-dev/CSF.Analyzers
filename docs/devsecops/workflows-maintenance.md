@@ -12,3 +12,7 @@ Mantenha `permissions: {}` no topo do workflow. Permissoes elevadas devem ser de
 - Os artifacts intermediarios possuem retencao curta.
 - Os pacotes devem ter artifact attestation.
 - A publicacao NuGet permanece desativada ate existir environment protegido e secret apropriado.
+
+## Pinning de actions
+
+As actions devem permanecer pinadas por SHA completo. Ao atualizar uma action, revisar release notes e substituir o SHA pelo commit correspondente.
