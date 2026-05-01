@@ -6,6 +6,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using Swa.Analyzers.Core.Common;
+
 namespace Swa.Analyzers.Core.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -154,7 +156,7 @@ public sealed class Arch031PreferSystemThreadingLockAnalyzer : DiagnosticAnalyze
 
             return new LockRuleOptions(
                 IsTargetFrameworkSupported(targetFramework, minimumTargetFramework),
-                ReadBoolean(treeOptions, ReportLocalVariablesOption, defaultValue: true));
+                AnalyzerConfigOptionReader.ReadBooleanOption(treeOptions, ReportLocalVariablesOption, defaultValue: true));
         }
 
         private static TargetFrameworkVersion ReadMinimumTargetFramework(
@@ -200,16 +202,6 @@ public sealed class Arch031PreferSystemThreadingLockAnalyzer : DiagnosticAnalyze
             return parsedTargetFramework.CompareTo(minimumTargetFramework) >= 0;
         }
 
-        private static bool ReadBoolean(AnalyzerConfigOptions options, string optionName, bool defaultValue)
-        {
-            if (options.TryGetValue(optionName, out var configuredValue)
-                && bool.TryParse(configuredValue.Trim(), out var parsedValue))
-            {
-                return parsedValue;
-            }
-
-            return defaultValue;
-        }
     }
 
     private readonly struct TargetFrameworkVersion : IComparable<TargetFrameworkVersion>

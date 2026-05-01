@@ -66,7 +66,7 @@ Centralize a dependencia no projeto que realmente a utiliza ou exponha a funcion
 
 ## Configuracao
 
-A regra aceita arrays JSON em `.editorconfig`:
+A regra aceita arrays JSON em `.editorconfig`. As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado:
 
 ```ini
 [*.csproj]
@@ -77,6 +77,15 @@ dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj", "*.Bench
 `allowed_packages` define a lista de pacotes que podem aparecer em varios projetos. Quando a opcao e omitida ou contem JSON invalido, a regra usa a allowlist padrao.
 
 `allowed_project_patterns` remove projetos inteiros da analise. Os padroes aceitam `*` e sao comparados com o nome do arquivo e com o caminho normalizado. O padrao e vazio.
+
+Listas configuraveis sao normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite sao ignoradas.
+
+### Fallback das opcoes
+
+- `allowed_packages`: array JSON de strings; default e a allowlist padrao quando ausente ou malformado. Pacotes sao aparados e comparados sem diferenciar maiusculas de minusculas. Entradas vazias sao ignoradas. Um array JSON vazio substitui a allowlist por vazio.
+- `allowed_project_patterns`: array JSON de strings; default vazio. Padroes sao aparados, aceitam `*` e sao comparados sem diferenciar maiusculas de minusculas. Entradas vazias, duplicadas ou acima do limite sao ignoradas. JSON vazio, invalido ou malformado e ignorado.
+
+O fallback de `allowed_packages` preserva a allowlist padrao; o de `allowed_project_patterns` e restritivo, pois nao ignora projetos quando a configuracao e invalida.
 
 A severidade pode ser configurada normalmente:
 
@@ -99,12 +108,16 @@ Em consumidores que usam o analyzer via MSBuild, inclua os projetos como arquivo
 
 Se nenhum `.csproj` for recebido como `AdditionalFiles`, a regra nao reporta diagnosticos.
 
+## Segurança e limites
+
+Arquivos MSBuild informados como `AdditionalFiles` sao processados com limites defensivos. Arquivos vazios, invalidos ou acima do limite configurado sao ignorados para evitar degradacao de build/IDE.
+
 ## Heuristica
 
 A regra:
 
 - filtra `AdditionalFiles` com caminho terminado em `.csproj`;
-- le XML com `System.Xml.Linq`;
+- le XML com parser endurecido e limite de tamanho;
 - localiza elementos `PackageReference`;
 - usa `Include` ou `Update` como nome do pacote;
 - compara nomes com `StringComparer.OrdinalIgnoreCase`;

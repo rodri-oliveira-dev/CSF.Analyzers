@@ -244,6 +244,110 @@ public sealed class ApplicationService
             Expected(1, "StackExchange.Redis", "Billing.Application"));
     }
 
+    [Fact]
+    public async Task Normalizes_empty_pattern_entries()
+    {
+        const string editorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;;*.Application"
+dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;;Npgsql"
+dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
+dotnet_diagnostic.ARCH027.ignore_tests = true
+""";
+
+        const string source = """
+using {|#0:Microsoft.EntityFrameworkCore|};
+
+namespace Billing.Domain;
+
+public sealed class Invoice
+{
+}
+""";
+
+        await VerifyAsync(source, editorConfig, Expected(0, "Microsoft.EntityFrameworkCore", "Billing.Domain"));
+    }
+
+    [Fact]
+    public async Task Normalizes_duplicate_pattern_entries()
+    {
+        const string editorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Domain"
+dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.EntityFrameworkCore"
+dotnet_diagnostic.ARCH027.allowed_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.EntityFrameworkCore"
+dotnet_diagnostic.ARCH027.ignore_tests = true
+""";
+
+        const string source = """
+using Microsoft.EntityFrameworkCore;
+
+namespace Billing.Domain;
+
+public sealed class Invoice
+{
+}
+""";
+
+        await VerifyAsync(source, editorConfig);
+    }
+
+    [Fact]
+    public async Task Limits_configured_pattern_count()
+    {
+        var editorConfig = $$"""
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH027.core_namespace_patterns = "{{CreatePatternList("Billing.Layer", 300)}}"
+dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = Microsoft.EntityFrameworkCore
+dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
+dotnet_diagnostic.ARCH027.ignore_tests = true
+""";
+
+        const string source = """
+using Microsoft.EntityFrameworkCore;
+
+namespace Billing.Layer299;
+
+public sealed class Invoice
+{
+}
+""";
+
+        await VerifyAsync(source, editorConfig);
+    }
+
+    [Fact]
+    public async Task Ignores_pattern_above_length_limit()
+    {
+        var editorConfig = $$"""
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH027.core_namespace_patterns = *.Domain
+dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = {{new string('A', 257)}}
+dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
+dotnet_diagnostic.ARCH027.ignore_tests = true
+""";
+
+        const string source = """
+using Microsoft.EntityFrameworkCore;
+
+namespace Billing.Domain;
+
+public sealed class Invoice
+{
+}
+""";
+
+        await VerifyAsync(source, editorConfig);
+    }
+
     private static Task VerifyAsync(string source, params DiagnosticResult[] expected)
     {
         return VerifyAsync(source, DefaultEditorConfig, expected);
@@ -265,6 +369,11 @@ public sealed class ApplicationService
         return Verifier<Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer>.Diagnostic("ARCH027")
             .WithLocation(location)
             .WithArguments(dependencyNamespace, coreNamespace);
+    }
+
+    private static string CreatePatternList(string prefix, int count)
+    {
+        return string.Join(";", Enumerable.Range(0, count).Select(index => prefix + index));
     }
 
     private const string InfrastructureStubs = """

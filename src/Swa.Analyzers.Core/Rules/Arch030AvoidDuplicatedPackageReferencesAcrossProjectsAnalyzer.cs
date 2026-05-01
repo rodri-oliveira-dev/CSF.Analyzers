@@ -1,11 +1,11 @@
 using System.Collections.Immutable;
-using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+
+using Swa.Analyzers.Core.Common;
 
 namespace Swa.Analyzers.Core.Rules;
 
@@ -15,6 +15,8 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
     private const string Category = "Maintainability";
     private const string AllowedPackagesOption = "dotnet_diagnostic.ARCH030.allowed_packages";
     private const string AllowedProjectPatternsOption = "dotnet_diagnostic.ARCH030.allowed_project_patterns";
+    private const int MaxConfiguredPatterns = 256;
+    private const int MaxConfiguredPatternLength = 256;
 
     private static readonly DiagnosticDescriptor Rule = new(
         id: RuleIdentifiers.AvoidDuplicatedPackageReferencesAcrossProjects,
@@ -77,7 +79,8 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
             }
 
             var sourceText = additionalFile.GetText(context.CancellationToken);
-            if (sourceText is null || !TryParseProjectFile(sourceText, out var document))
+            if (sourceText is null
+                || !MsBuildXmlDocumentReader.TryRead(sourceText, LoadOptions.PreserveWhitespace, context.CancellationToken, out var document))
             {
                 continue;
             }
@@ -129,20 +132,6 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
                 CreateStartLocation(firstReference.ProjectPath, firstReference.SourceText),
                 packageName,
                 projectNames));
-        }
-    }
-
-    private static bool TryParseProjectFile(SourceText sourceText, out XDocument document)
-    {
-        try
-        {
-            document = XDocument.Parse(sourceText.ToString(), LoadOptions.PreserveWhitespace);
-            return true;
-        }
-        catch (XmlException)
-        {
-            document = null!;
-            return false;
         }
     }
 
@@ -244,7 +233,39 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
 
             return new DuplicatedPackageReferenceOptions(
                 ReadStringArray(options, AllowedPackagesOption, DefaultAllowedPackages).ToImmutableHashSet(StringComparer.OrdinalIgnoreCase),
-                ReadStringArray(options, AllowedProjectPatternsOption, ImmutableArray<string>.Empty).ToImmutableArray());
+                ReadAllowedProjectPatterns(options).ToImmutableArray());
+        }
+
+        private static IEnumerable<string> ReadAllowedProjectPatterns(AnalyzerConfigOptions options)
+        {
+            if (!options.TryGetValue(AllowedProjectPatternsOption, out var configuredValue)
+                || !JsonStringArrayOptionParser.TryParse(configuredValue, out var parsedValues))
+            {
+                yield break;
+            }
+
+            var seenPatterns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var count = 0;
+
+            foreach (var parsedValue in parsedValues)
+            {
+                var pattern = parsedValue.Trim();
+
+                if (pattern.Length == 0
+                    || pattern.Length > MaxConfiguredPatternLength
+                    || !seenPatterns.Add(pattern))
+                {
+                    continue;
+                }
+
+                yield return pattern;
+                count++;
+
+                if (count == MaxConfiguredPatterns)
+                {
+                    yield break;
+                }
+            }
         }
 
         private static IEnumerable<string> ReadStringArray(
@@ -252,222 +273,17 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
             string optionName,
             ImmutableArray<string> defaultValue)
         {
-            if (!options.TryGetValue(optionName, out var configuredValue))
-            {
-                return defaultValue;
-            }
-
-            return TryParseJsonStringArray(configuredValue, out var parsedValues)
-                ? parsedValues.Select(static value => value.Trim()).Where(static value => value.Length > 0)
-                : defaultValue;
-        }
-
-        private static bool TryParseJsonStringArray(string value, out ImmutableArray<string> items)
-        {
-            var parser = new JsonStringArrayParser(value);
-            return parser.TryParse(out items);
+            return AnalyzerConfigOptionReader.ReadStringArrayOption(
+                options,
+                optionName,
+                defaultValue,
+                static value => value.Trim());
         }
 
         private static bool MatchesWildcard(string value, string pattern)
         {
-            var valueIndex = 0;
-            var patternIndex = 0;
-            var starIndex = -1;
-            var matchIndex = 0;
-
-            while (valueIndex < value.Length)
-            {
-                if (patternIndex < pattern.Length
-                    && (pattern[patternIndex] == value[valueIndex]
-                        || char.ToUpperInvariant(pattern[patternIndex]) == char.ToUpperInvariant(value[valueIndex])))
-                {
-                    valueIndex++;
-                    patternIndex++;
-                    continue;
-                }
-
-                if (patternIndex < pattern.Length && pattern[patternIndex] == '*')
-                {
-                    starIndex = patternIndex++;
-                    matchIndex = valueIndex;
-                    continue;
-                }
-
-                if (starIndex != -1)
-                {
-                    patternIndex = starIndex + 1;
-                    valueIndex = ++matchIndex;
-                    continue;
-                }
-
-                return false;
-            }
-
-            while (patternIndex < pattern.Length && pattern[patternIndex] == '*')
-            {
-                patternIndex++;
-            }
-
-            return patternIndex == pattern.Length;
+            return WildcardPatternMatcher.Matches(value, pattern, StringComparison.OrdinalIgnoreCase);
         }
     }
 
-    private struct JsonStringArrayParser
-    {
-        private readonly string _value;
-        private int _position;
-
-        public JsonStringArrayParser(string value)
-        {
-            _value = value;
-            _position = 0;
-        }
-
-        public bool TryParse(out ImmutableArray<string> items)
-        {
-            var builder = ImmutableArray.CreateBuilder<string>();
-
-            SkipWhitespace();
-
-            if (!TryRead('['))
-            {
-                items = ImmutableArray<string>.Empty;
-                return false;
-            }
-
-            SkipWhitespace();
-
-            if (TryRead(']'))
-            {
-                SkipWhitespace();
-                if (_position != _value.Length)
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-
-                items = builder.ToImmutable();
-                return true;
-            }
-
-            while (true)
-            {
-                SkipWhitespace();
-
-                if (!TryReadString(out var item))
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-
-                builder.Add(item);
-                SkipWhitespace();
-
-                if (TryRead(']'))
-                {
-                    SkipWhitespace();
-                    if (_position != _value.Length)
-                    {
-                        items = ImmutableArray<string>.Empty;
-                        return false;
-                    }
-
-                    items = builder.ToImmutable();
-                    return true;
-                }
-
-                if (!TryRead(','))
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-            }
-        }
-
-        private bool TryReadString(out string value)
-        {
-            var builder = new StringBuilder();
-
-            if (!TryRead('"'))
-            {
-                value = string.Empty;
-                return false;
-            }
-
-            while (_position < _value.Length)
-            {
-                var current = _value[_position++];
-
-                if (current == '"')
-                {
-                    value = builder.ToString();
-                    return true;
-                }
-
-                if (current == '\\')
-                {
-                    if (_position >= _value.Length)
-                    {
-                        value = string.Empty;
-                        return false;
-                    }
-
-                    var escaped = _value[_position++];
-
-                    switch (escaped)
-                    {
-                        case '"':
-                        case '\\':
-                        case '/':
-                            builder.Append(escaped);
-                            break;
-                        case 'b':
-                            builder.Append('\b');
-                            break;
-                        case 'f':
-                            builder.Append('\f');
-                            break;
-                        case 'n':
-                            builder.Append('\n');
-                            break;
-                        case 'r':
-                            builder.Append('\r');
-                            break;
-                        case 't':
-                            builder.Append('\t');
-                            break;
-                        default:
-                            value = string.Empty;
-                            return false;
-                    }
-
-                    continue;
-                }
-
-                builder.Append(current);
-            }
-
-            value = string.Empty;
-            return false;
-        }
-
-        private bool TryRead(char expected)
-        {
-            if (_position >= _value.Length || _value[_position] != expected)
-            {
-                return false;
-            }
-
-            _position++;
-            return true;
-        }
-
-        private void SkipWhitespace()
-        {
-            while (_position < _value.Length && char.IsWhiteSpace(_value[_position]))
-            {
-                _position++;
-            }
-        }
-    }
 }

@@ -89,7 +89,15 @@ dotnet_diagnostic.ARCH029.allow_internal_setters = false
 
 `allow_internal_setters` controla `internal set` e `protected internal set`. O valor padrao e `false`, portanto esses setters reportam diagnostico. Quando configurado como `true`, eles sao aceitos.
 
-Arrays JSON invalidos sao ignorados e os padroes continuam em uso. Valores booleanos invalidos usam o padrao `false`.
+As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Arrays JSON invalidos sao ignorados e os padroes continuam em uso. Valores booleanos invalidos usam o padrao `false`.
+
+### Fallback das opcoes
+
+- `entity_namespaces`: array JSON de strings; default vazio, somado aos marcadores nativos de dominio. Namespaces sao aparados e comparados com casing exato, incluindo namespaces filhos. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado.
+- `entity_base_types`: array JSON de strings; default vazio, somado aos tipos nativos de entidade. Nomes sao aparados e comparados com casing exato. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado.
+- `allow_internal_setters`: booleano; default `false`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `false`.
+
+O fallback e restritivo: configuracao invalida nao amplia a heuristica de entidade nem permite setters internos.
 
 A severidade pode ser configurada normalmente:
 

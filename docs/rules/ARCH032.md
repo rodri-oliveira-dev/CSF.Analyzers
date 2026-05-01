@@ -54,7 +54,7 @@ O projeto mantem apenas propriedades especificas dele. As propriedades compartil
 
 ## Configuracao
 
-A regra aceita opcoes em `.editorconfig`:
+A regra aceita opcoes em `.editorconfig`. As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado:
 
 ```ini
 [*.csproj]
@@ -78,6 +78,13 @@ dotnet_diagnostic.ARCH032.compare_values = true
 - `true` (padrao): reporta apenas quando nome e valor sao iguais.
 - `false`: reporta quando o nome existe nos dois arquivos, mesmo com valores diferentes.
 
+### Fallback das opcoes
+
+- `ignored_properties`: array JSON de strings; default e a lista padrao quando ausente ou malformado. Propriedades sao aparadas e comparadas sem diferenciar maiusculas de minusculas. Entradas vazias sao ignoradas. Um array JSON vazio substitui a lista por vazio.
+- `compare_values`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `true`.
+
+O fallback preserva o comportamento padrao: propriedades comuns continuam ignoradas e a comparacao de valores permanece habilitada.
+
 A severidade pode ser configurada normalmente:
 
 ```ini
@@ -100,13 +107,17 @@ Em consumidores que usam o analyzer via MSBuild, inclua os arquivos quando neces
 
 Se nenhum `.csproj` ou nenhum `Directory.Build.props` for recebido como `AdditionalFiles`, a regra nao reporta diagnosticos.
 
+## Segurança e limites
+
+Arquivos MSBuild informados como `AdditionalFiles` sao processados com limites defensivos. Arquivos vazios, invalidos ou acima do limite configurado sao ignorados para evitar degradacao de build/IDE.
+
 ## Heuristica
 
 A regra:
 
 - filtra `AdditionalFiles` chamados `Directory.Build.props`;
 - filtra `AdditionalFiles` terminados em `.csproj`;
-- le XML com `System.Xml.Linq`;
+- le XML com parser endurecido e limite de tamanho;
 - extrai propriedades diretas de `PropertyGroup`;
 - ignora `PropertyGroup` com `Condition`;
 - ignora propriedades com `Condition`;

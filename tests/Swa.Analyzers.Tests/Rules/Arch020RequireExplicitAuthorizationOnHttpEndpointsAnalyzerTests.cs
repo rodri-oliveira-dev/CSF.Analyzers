@@ -266,6 +266,106 @@ namespace Sample.Public
     }
 
     [Fact]
+    public async Task Malformed_allowed_routes_configuration_is_ignored()
+    {
+        const string editorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH020.allowed_routes = ["/internal/status",
+""";
+
+        const string source = """
+using Microsoft.AspNetCore.Mvc;
+
+public sealed class StatusController : ControllerBase
+{
+    [{|#0:HttpGet|}("/internal/status")]
+    public void Get() { }
+}
+""";
+
+        await VerifyMvcAsync(source, editorConfig, Expected(0, "StatusController.Get"));
+    }
+
+    [Fact]
+    public async Task Malformed_allowed_methods_configuration_is_ignored()
+    {
+        const string editorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH020.allowed_methods = Ping
+""";
+
+        const string source = """
+using Microsoft.AspNetCore.Mvc;
+
+public sealed class DiagnosticsController : ControllerBase
+{
+    [{|#0:HttpGet|}("diagnostics/ping")]
+    public void Ping() { }
+}
+""";
+
+        await VerifyMvcAsync(source, editorConfig, Expected(0, "DiagnosticsController.Ping"));
+    }
+
+    [Fact]
+    public async Task Malformed_ignored_namespaces_configuration_is_ignored()
+    {
+        const string editorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH020.ignored_namespaces = [123]
+""";
+
+        const string source = """
+using Microsoft.AspNetCore.Mvc;
+
+namespace Sample.Public
+{
+    public sealed class StatusController : ControllerBase
+    {
+        [{|#0:HttpGet|}("status")]
+        public void Get() { }
+    }
+}
+""";
+
+        await VerifyMvcAsync(source, editorConfig, Expected(0, "StatusController.Get"));
+    }
+
+    [Fact]
+    public async Task Empty_or_whitespace_entries_do_not_allow_routes_methods_or_namespaces()
+    {
+        const string editorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH020.allowed_routes = ["", "   "]
+dotnet_diagnostic.ARCH020.allowed_methods = ["", "   "]
+dotnet_diagnostic.ARCH020.ignored_namespaces = ["", "   "]
+""";
+
+        const string source = """
+using Microsoft.AspNetCore.Mvc;
+
+namespace Sample.Public
+{
+    public sealed class DiagnosticsController : ControllerBase
+    {
+        [{|#0:HttpGet|}("/internal/status")]
+        public void Ping() { }
+    }
+}
+""";
+
+        await VerifyMvcAsync(source, editorConfig, Expected(0, "DiagnosticsController.Ping"));
+    }
+
+    [Fact]
     public async Task Ignores_custom_symbols_named_like_asp_net_core()
     {
         const string source = """

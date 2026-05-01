@@ -1,11 +1,12 @@
 using System.Collections.Immutable;
-using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+
+using Swa.Analyzers.Core.Common;
 
 namespace Swa.Analyzers.Core.Rules;
 
@@ -73,7 +74,8 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
             }
 
             var sourceText = additionalFile.GetText(context.CancellationToken);
-            if (sourceText is null || !TryParseMsBuildFile(sourceText, out var document))
+            if (sourceText is null
+                || !MsBuildXmlDocumentReader.TryRead(sourceText, LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo, context.CancellationToken, out var document))
             {
                 continue;
             }
@@ -136,20 +138,6 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
                     projectProperty.Location,
                     projectProperty.Name));
             }
-        }
-    }
-
-    private static bool TryParseMsBuildFile(SourceText sourceText, out XDocument document)
-    {
-        try
-        {
-            document = XDocument.Parse(sourceText.ToString(), LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo);
-            return true;
-        }
-        catch (XmlException)
-        {
-            document = null!;
-            return false;
         }
     }
 
@@ -341,7 +329,7 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
 
             return new DuplicatedMsBuildPropertyOptions(
                 ReadStringArray(options, IgnoredPropertiesOption, DefaultIgnoredProperties).ToImmutableHashSet(StringComparer.OrdinalIgnoreCase),
-                ReadBoolean(options, CompareValuesOption, defaultValue: true));
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, CompareValuesOption, defaultValue: true));
         }
 
         private static IEnumerable<string> ReadStringArray(
@@ -349,187 +337,12 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
             string optionName,
             ImmutableArray<string> defaultValue)
         {
-            if (!options.TryGetValue(optionName, out var configuredValue))
-            {
-                return defaultValue;
-            }
-
-            return TryParseJsonStringArray(configuredValue, out var parsedValues)
-                ? parsedValues.Select(static value => value.Trim()).Where(static value => value.Length > 0)
-                : defaultValue;
+            return AnalyzerConfigOptionReader.ReadStringArrayOption(
+                options,
+                optionName,
+                defaultValue,
+                static value => value.Trim());
         }
 
-        private static bool ReadBoolean(AnalyzerConfigOptions options, string optionName, bool defaultValue)
-        {
-            return options.TryGetValue(optionName, out var configuredValue)
-                && bool.TryParse(configuredValue, out var parsedValue)
-                    ? parsedValue
-                    : defaultValue;
-        }
-
-        private static bool TryParseJsonStringArray(string value, out ImmutableArray<string> items)
-        {
-            var parser = new JsonStringArrayParser(value);
-            return parser.TryParse(out items);
-        }
-    }
-
-    private struct JsonStringArrayParser
-    {
-        private readonly string _value;
-        private int _position;
-
-        public JsonStringArrayParser(string value)
-        {
-            _value = value;
-            _position = 0;
-        }
-
-        public bool TryParse(out ImmutableArray<string> items)
-        {
-            var builder = ImmutableArray.CreateBuilder<string>();
-
-            SkipWhitespace();
-
-            if (!TryRead('['))
-            {
-                items = ImmutableArray<string>.Empty;
-                return false;
-            }
-
-            SkipWhitespace();
-
-            if (TryRead(']'))
-            {
-                SkipWhitespace();
-                if (_position != _value.Length)
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-
-                items = builder.ToImmutable();
-                return true;
-            }
-
-            while (true)
-            {
-                SkipWhitespace();
-
-                if (!TryReadString(out var item))
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-
-                builder.Add(item);
-                SkipWhitespace();
-
-                if (TryRead(']'))
-                {
-                    SkipWhitespace();
-                    if (_position != _value.Length)
-                    {
-                        items = ImmutableArray<string>.Empty;
-                        return false;
-                    }
-
-                    items = builder.ToImmutable();
-                    return true;
-                }
-
-                if (!TryRead(','))
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-            }
-        }
-
-        private bool TryReadString(out string value)
-        {
-            var builder = new StringBuilder();
-
-            if (!TryRead('"'))
-            {
-                value = string.Empty;
-                return false;
-            }
-
-            while (_position < _value.Length)
-            {
-                var current = _value[_position++];
-
-                if (current == '"')
-                {
-                    value = builder.ToString();
-                    return true;
-                }
-
-                if (current == '\\')
-                {
-                    if (_position >= _value.Length)
-                    {
-                        value = string.Empty;
-                        return false;
-                    }
-
-                    var escaped = _value[_position++];
-
-                    switch (escaped)
-                    {
-                        case '"':
-                        case '\\':
-                        case '/':
-                            builder.Append(escaped);
-                            break;
-                        case 'b':
-                            builder.Append('\b');
-                            break;
-                        case 'f':
-                            builder.Append('\f');
-                            break;
-                        case 'n':
-                            builder.Append('\n');
-                            break;
-                        case 'r':
-                            builder.Append('\r');
-                            break;
-                        case 't':
-                            builder.Append('\t');
-                            break;
-                        default:
-                            value = string.Empty;
-                            return false;
-                    }
-
-                    continue;
-                }
-
-                builder.Append(current);
-            }
-
-            value = string.Empty;
-            return false;
-        }
-
-        private bool TryRead(char expected)
-        {
-            if (_position >= _value.Length || _value[_position] != expected)
-            {
-                return false;
-            }
-
-            _position++;
-            return true;
-        }
-
-        private void SkipWhitespace()
-        {
-            while (_position < _value.Length && char.IsWhiteSpace(_value[_position]))
-            {
-                _position++;
-            }
-        }
     }
 }

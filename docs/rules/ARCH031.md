@@ -87,6 +87,13 @@ dotnet_diagnostic.ARCH031.report_local_variables = false
 
 Valores invalidos de `report_local_variables` usam o padrao `true`.
 
+### Fallback das opcoes
+
+- `minimum_target_framework`: texto no formato `netX.Y`; default `net9.0`. Valor ausente, vazio ou invalido usa `net9.0`. JSON nao se aplica. Quando `build_property.TargetFramework` esta ausente ou invalido, a regra executa normalmente.
+- `report_local_variables`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `true`.
+
+O fallback mantem a regra visivel: configuracao invalida nao desabilita diagnosticos.
+
 ## Heuristica
 
 O analyzer registra `lock` statements e usa analise semantica para obter o tipo da expressao bloqueada.

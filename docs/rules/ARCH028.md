@@ -79,6 +79,12 @@ dotnet_diagnostic.ARCH028.allow_non_public_setters = false
 
 Valores invalidos usam o padrao `true`.
 
+### Fallback das opcoes
+
+- `allow_non_public_setters`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `true`.
+
+O fallback e permissivo para setters nao publicos, preservando o comportamento padrao; setters publicos continuam sendo reportados.
+
 A severidade pode ser configurada normalmente:
 
 ```ini

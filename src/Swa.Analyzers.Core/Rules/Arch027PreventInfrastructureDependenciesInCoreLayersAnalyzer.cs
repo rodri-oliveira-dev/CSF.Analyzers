@@ -6,6 +6,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using Swa.Analyzers.Core.Common;
+
 namespace Swa.Analyzers.Core.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -16,6 +18,8 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
     private const string ForbiddenNamespacePatternsOption = "dotnet_diagnostic.ARCH027.forbidden_namespace_patterns";
     private const string AllowedNamespacePatternsOption = "dotnet_diagnostic.ARCH027.allowed_namespace_patterns";
     private const string IgnoreTestsOption = "dotnet_diagnostic.ARCH027.ignore_tests";
+    private const int MaxConfiguredPatterns = 256;
+    private const int MaxConfiguredPatternLength = 256;
 
     private static readonly DiagnosticDescriptor Rule = new(
         id: RuleIdentifiers.PreventInfrastructureDependenciesInCoreLayers,
@@ -286,7 +290,7 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
                 coreNamespacePatterns,
                 forbiddenNamespacePatterns,
                 allowedNamespacePatterns,
-                ReadBoolean(options, IgnoreTestsOption, defaultValue: true));
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, IgnoreTestsOption, defaultValue: true));
         }
 
         private static ImmutableArray<string> ReadPatternList(
@@ -300,6 +304,7 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
             }
 
             var builder = ImmutableArray.CreateBuilder<string>();
+            var seenPatterns = new HashSet<string>(StringComparer.Ordinal);
 
             configuredValue = configuredValue.Trim().Trim('"');
 
@@ -307,25 +312,20 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
             {
                 var pattern = rawPattern.Trim();
 
-                if (pattern.Length > 0)
+                if (pattern.Length > 0
+                    && pattern.Length <= MaxConfiguredPatternLength
+                    && seenPatterns.Add(pattern))
                 {
                     builder.Add(pattern);
+
+                    if (builder.Count == MaxConfiguredPatterns)
+                    {
+                        break;
+                    }
                 }
             }
 
             return builder.ToImmutable();
-        }
-
-        private static bool ReadBoolean(AnalyzerConfigOptions options, string optionName, bool defaultValue)
-        {
-            if (!options.TryGetValue(optionName, out var configuredValue))
-            {
-                return defaultValue;
-            }
-
-            return bool.TryParse(configuredValue.Trim(), out var value)
-                ? value
-                : defaultValue;
         }
 
         private static bool MatchesAnyPattern(string namespaceName, ImmutableArray<string> patterns)
@@ -359,44 +359,7 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
 
         private static bool MatchesWildcard(string value, string pattern)
         {
-            var valueIndex = 0;
-            var patternIndex = 0;
-            var starIndex = -1;
-            var matchIndex = 0;
-
-            while (valueIndex < value.Length)
-            {
-                if (patternIndex < pattern.Length
-                    && (pattern[patternIndex] == value[valueIndex]))
-                {
-                    valueIndex++;
-                    patternIndex++;
-                    continue;
-                }
-
-                if (patternIndex < pattern.Length && pattern[patternIndex] == '*')
-                {
-                    starIndex = patternIndex++;
-                    matchIndex = valueIndex;
-                    continue;
-                }
-
-                if (starIndex != -1)
-                {
-                    patternIndex = starIndex + 1;
-                    valueIndex = ++matchIndex;
-                    continue;
-                }
-
-                return false;
-            }
-
-            while (patternIndex < pattern.Length && pattern[patternIndex] == '*')
-            {
-                patternIndex++;
-            }
-
-            return patternIndex == pattern.Length;
+            return WildcardPatternMatcher.Matches(value, pattern, StringComparison.Ordinal);
         }
     }
 }

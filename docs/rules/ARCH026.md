@@ -56,6 +56,12 @@ dotnet_diagnostic.ARCH026.disallow_any_origin = true
 
 Valores ausentes, `false` ou invalidos mantem o comportamento padrao.
 
+### Fallback das opcoes
+
+- `disallow_any_origin`: booleano; default `false`. Somente `true` habilita a politica mais rigida. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `false`.
+
+O fallback e permissivo apenas para o bloqueio opcional de `AllowAnyOrigin()` isolado; a combinacao `AllowAnyOrigin()` com `AllowCredentials()` continua sendo reportada.
+
 A severidade pode ser configurada normalmente:
 
 ```ini

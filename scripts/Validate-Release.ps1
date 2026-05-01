@@ -23,12 +23,26 @@ function Add-Failure {
 function Invoke-Git {
     param([string[]]$Arguments)
 
-    $output = & git @Arguments 2>$null
-    if ($LASTEXITCODE -ne 0) {
+    $previousErrorActionPreference = $ErrorActionPreference
+
+    try {
+        $ErrorActionPreference = "Continue"
+
+        $output = & git @Arguments 2>$null
+        $exitCode = $LASTEXITCODE
+
+        if ($exitCode -ne 0) {
+            return $null
+        }
+
+        return $output
+    }
+    catch {
         return $null
     }
-
-    return $output
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
 }
 
 function Test-GitCommit {
@@ -56,7 +70,7 @@ function Resolve-BaseRef {
     }
 
     $upstream = Invoke-Git @("rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
-    if ($upstream) {
+    if (-not [string]::IsNullOrWhiteSpace($upstream)) {
         return ($upstream | Select-Object -First 1)
     }
 

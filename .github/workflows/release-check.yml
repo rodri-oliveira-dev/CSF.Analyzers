@@ -1,4 +1,4 @@
-name: Release Check
+name: Release - Consistency Check
 
 on:
   pull_request:

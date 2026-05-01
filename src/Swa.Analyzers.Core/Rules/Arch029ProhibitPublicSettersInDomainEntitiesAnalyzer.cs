@@ -1,11 +1,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using System.Text;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+
+using Swa.Analyzers.Core.Common;
 
 namespace Swa.Analyzers.Core.Rules;
 
@@ -285,199 +286,17 @@ public sealed class Arch029ProhibitPublicSettersInDomainEntitiesAnalyzer : Diagn
             return new DomainEntityOptions(
                 ReadStringArray(options, EntityNamespacesOption).ToImmutableArray(),
                 ReadStringArray(options, EntityBaseTypesOption).ToImmutableHashSet(StringComparer.Ordinal),
-                ReadBoolean(options, AllowInternalSettersOption, defaultValue: false));
+                AnalyzerConfigOptionReader.ReadBooleanOption(options, AllowInternalSettersOption, defaultValue: false));
         }
 
         private static IEnumerable<string> ReadStringArray(AnalyzerConfigOptions options, string optionName)
         {
-            if (!options.TryGetValue(optionName, out var configuredValue)
-                || !TryParseJsonStringArray(configuredValue, out var parsedValues))
-            {
-                yield break;
-            }
-
-            foreach (var parsedValue in parsedValues)
-            {
-                var normalized = parsedValue.Trim();
-
-                if (normalized.Length > 0)
-                {
-                    yield return normalized;
-                }
-            }
+            return AnalyzerConfigOptionReader.ReadStringArrayOption(
+                options,
+                optionName,
+                ImmutableArray<string>.Empty,
+                static value => value.Trim());
         }
 
-        private static bool ReadBoolean(AnalyzerConfigOptions options, string optionName, bool defaultValue)
-        {
-            return options.TryGetValue(optionName, out var configuredValue)
-                && bool.TryParse(configuredValue.Trim(), out var parsedValue)
-                    ? parsedValue
-                    : defaultValue;
-        }
-
-        private static bool TryParseJsonStringArray(string value, out ImmutableArray<string> items)
-        {
-            var parser = new JsonStringArrayParser(value);
-            return parser.TryParse(out items);
-        }
-    }
-
-    private struct JsonStringArrayParser
-    {
-        private readonly string _value;
-        private int _position;
-
-        public JsonStringArrayParser(string value)
-        {
-            _value = value;
-            _position = 0;
-        }
-
-        public bool TryParse(out ImmutableArray<string> items)
-        {
-            var builder = ImmutableArray.CreateBuilder<string>();
-
-            SkipWhitespace();
-
-            if (!TryRead('['))
-            {
-                items = ImmutableArray<string>.Empty;
-                return false;
-            }
-
-            SkipWhitespace();
-
-            if (TryRead(']'))
-            {
-                SkipWhitespace();
-                if (_position != _value.Length)
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-
-                items = builder.ToImmutable();
-                return true;
-            }
-
-            while (true)
-            {
-                SkipWhitespace();
-
-                if (!TryReadString(out var item))
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-
-                builder.Add(item);
-                SkipWhitespace();
-
-                if (TryRead(']'))
-                {
-                    SkipWhitespace();
-                    if (_position != _value.Length)
-                    {
-                        items = ImmutableArray<string>.Empty;
-                        return false;
-                    }
-
-                    items = builder.ToImmutable();
-                    return true;
-                }
-
-                if (!TryRead(','))
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-            }
-        }
-
-        private bool TryReadString(out string value)
-        {
-            var builder = new StringBuilder();
-
-            if (!TryRead('"'))
-            {
-                value = string.Empty;
-                return false;
-            }
-
-            while (_position < _value.Length)
-            {
-                var current = _value[_position++];
-
-                if (current == '"')
-                {
-                    value = builder.ToString();
-                    return true;
-                }
-
-                if (current == '\\')
-                {
-                    if (_position >= _value.Length)
-                    {
-                        value = string.Empty;
-                        return false;
-                    }
-
-                    var escaped = _value[_position++];
-
-                    switch (escaped)
-                    {
-                        case '"':
-                        case '\\':
-                        case '/':
-                            builder.Append(escaped);
-                            break;
-                        case 'b':
-                            builder.Append('\b');
-                            break;
-                        case 'f':
-                            builder.Append('\f');
-                            break;
-                        case 'n':
-                            builder.Append('\n');
-                            break;
-                        case 'r':
-                            builder.Append('\r');
-                            break;
-                        case 't':
-                            builder.Append('\t');
-                            break;
-                        default:
-                            value = string.Empty;
-                            return false;
-                    }
-
-                    continue;
-                }
-
-                builder.Append(current);
-            }
-
-            value = string.Empty;
-            return false;
-        }
-
-        private bool TryRead(char expected)
-        {
-            if (_position >= _value.Length || _value[_position] != expected)
-            {
-                return false;
-            }
-
-            _position++;
-            return true;
-        }
-
-        private void SkipWhitespace()
-        {
-            while (_position < _value.Length && char.IsWhiteSpace(_value[_position]))
-            {
-                _position++;
-            }
-        }
     }
 }

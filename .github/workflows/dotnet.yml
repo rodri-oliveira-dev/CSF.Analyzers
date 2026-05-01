@@ -1,4 +1,4 @@
-name: PR Validation
+name: CI - Build and Test
 
 on:
   pull_request:
