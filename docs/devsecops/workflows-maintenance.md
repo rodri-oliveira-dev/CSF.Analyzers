@@ -16,3 +16,7 @@ Mantenha `permissions: {}` no topo do workflow. Permissoes elevadas devem ser de
 ## Pinning de actions
 
 As actions devem permanecer pinadas por SHA completo. Ao atualizar uma action, revisar release notes e substituir o SHA pelo commit correspondente.
+
+## Nomes dos workflows
+
+Use nomes no formato `Dominio - Objetivo`, por exemplo `CI - Build and Test` ou `Security - CodeQL`, para facilitar leitura dos checks no PR.
