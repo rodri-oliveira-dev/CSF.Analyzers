@@ -20,3 +20,7 @@ As actions devem permanecer pinadas por SHA completo. Ao atualizar uma action, r
 ## Nomes dos workflows
 
 Use nomes no formato `Dominio - Objetivo`, por exemplo `CI - Build and Test` ou `Security - CodeQL`, para facilitar leitura dos checks no PR.
+
+## Cache e validacao .NET
+
+O cache NuGet deve continuar baseado nos lock files. Evite chaves amplas que ignorem `packages.lock.json`. A criacao de reusable workflow deve ser considerada apenas quando houver drift real entre CI e release.
