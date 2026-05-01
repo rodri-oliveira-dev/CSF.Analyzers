@@ -1,26 +1,73 @@
 version: 2
-updates:
-  - package-ecosystem: "nuget"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-    groups:
-      roslyn-and-test-packages:
-        patterns:
-          - "Microsoft.CodeAnalysis*"
-          - "Microsoft.CodeAnalysis.Testing*"
-          - "xunit*"
-          - "coverlet*"
-      other-nuget:
-        patterns:
-          - "*"
 
+updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    cooldown:
+      default-days: 3
     groups:
       github-actions:
         patterns:
           - "*"
+
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:30"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "nuget"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    cooldown:
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      test-packages:
+        patterns:
+          - "Microsoft.CodeAnalysis.*.Testing"
+          - "Microsoft.NET.Test.Sdk"
+          - "xunit*"
+      roslyn-and-analyzer-packages:
+        patterns:
+          - "Microsoft.CodeAnalysis*"
+        exclude-patterns:
+          - "Microsoft.CodeAnalysis.*.Testing"
+      coverage-and-tools:
+        patterns:
+          - "coverlet*"
+          - "ReportGenerator"
+
+  - package-ecosystem: "dotnet-sdk"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      time: "10:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "dotnet-sdk"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    cooldown:
+      default-days: 7
