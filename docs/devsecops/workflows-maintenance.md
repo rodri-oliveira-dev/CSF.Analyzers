@@ -1,0 +1,7 @@
+# Manutencao dos workflows
+
+O workflow `.github/workflows/release.yml` valida, empacota e cria a GitHub Release do pacote `Swa.Analyzers` a partir do `VersionPrefix`, usando a tag `v{VersionPrefix}`.
+
+A release deve ser imutavel: a mesma versao nao deve recriar release nem sobrescrever assets existentes. O upload dos pacotes deve falhar se um asset com o mesmo nome ja existir.
+
+Mantenha `permissions: {}` no topo do workflow. Permissoes elevadas devem ser declaradas apenas por job, e `contents: write` deve permanecer somente no job de release.

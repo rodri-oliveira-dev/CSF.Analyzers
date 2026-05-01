@@ -9,6 +9,8 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+permissions: {}
+
 jobs:
   validate:
     name: Validate
@@ -111,7 +113,7 @@ jobs:
 
             try {
               await github.rest.repos.getReleaseByTag({ owner, repo, tag });
-              core.notice(`Release ${tag} already exists. Skipping creation.`);
+              core.setFailed(`Release ${tag} already exists. Refusing to overwrite release assets.`);
               return;
             } catch (error) {
               if (error.status !== 404) {
@@ -146,7 +148,8 @@ jobs:
                 ref: `tags/${tag}`,
               });
 
-              core.notice(`Tag ${tag} already exists. Creating release from existing tag.`);
+              core.setFailed(`Tag ${tag} already exists. Refusing to create release for an existing version.`);
+              return;
             } catch (error) {
               if (error.status !== 404) {
                 throw error;
@@ -200,7 +203,7 @@ jobs:
             exit 1
           fi
 
-          gh release upload "${{ steps.release_tag.outputs.tag }}" "${files[@]}" --clobber
+          gh release upload "${{ steps.release_tag.outputs.tag }}" "${files[@]}"
 
       # Futuro: publicar no NuGet.org.
       # Para habilitar:
