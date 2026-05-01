@@ -16,6 +16,8 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
     private const string ForbiddenNamespacePatternsOption = "dotnet_diagnostic.ARCH027.forbidden_namespace_patterns";
     private const string AllowedNamespacePatternsOption = "dotnet_diagnostic.ARCH027.allowed_namespace_patterns";
     private const string IgnoreTestsOption = "dotnet_diagnostic.ARCH027.ignore_tests";
+    private const int MaxConfiguredPatterns = 256;
+    private const int MaxConfiguredPatternLength = 256;
 
     private static readonly DiagnosticDescriptor Rule = new(
         id: RuleIdentifiers.PreventInfrastructureDependenciesInCoreLayers,
@@ -300,6 +302,7 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
             }
 
             var builder = ImmutableArray.CreateBuilder<string>();
+            var seenPatterns = new HashSet<string>(StringComparer.Ordinal);
 
             configuredValue = configuredValue.Trim().Trim('"');
 
@@ -307,9 +310,16 @@ public sealed class Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer
             {
                 var pattern = rawPattern.Trim();
 
-                if (pattern.Length > 0)
+                if (pattern.Length > 0
+                    && pattern.Length <= MaxConfiguredPatternLength
+                    && seenPatterns.Add(pattern))
                 {
                     builder.Add(pattern);
+
+                    if (builder.Count == MaxConfiguredPatterns)
+                    {
+                        break;
+                    }
                 }
             }
 

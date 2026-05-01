@@ -85,6 +85,8 @@ Valores ausentes usam uma configuracao conservadora:
 - permitidos: vazio
 - testes ignorados: `true`
 
+Listas configuraveis sao normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite sao ignoradas.
+
 A severidade pode ser configurada normalmente:
 
 ```ini

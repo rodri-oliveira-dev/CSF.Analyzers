@@ -14,6 +14,8 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
     private const string Category = "Maintainability";
     private const string AllowedPackagesOption = "dotnet_diagnostic.ARCH030.allowed_packages";
     private const string AllowedProjectPatternsOption = "dotnet_diagnostic.ARCH030.allowed_project_patterns";
+    private const int MaxConfiguredPatterns = 256;
+    private const int MaxConfiguredPatternLength = 256;
 
     private static readonly DiagnosticDescriptor Rule = new(
         id: RuleIdentifiers.AvoidDuplicatedPackageReferencesAcrossProjects,
@@ -230,7 +232,39 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
 
             return new DuplicatedPackageReferenceOptions(
                 ReadStringArray(options, AllowedPackagesOption, DefaultAllowedPackages).ToImmutableHashSet(StringComparer.OrdinalIgnoreCase),
-                ReadStringArray(options, AllowedProjectPatternsOption, ImmutableArray<string>.Empty).ToImmutableArray());
+                ReadAllowedProjectPatterns(options).ToImmutableArray());
+        }
+
+        private static IEnumerable<string> ReadAllowedProjectPatterns(AnalyzerConfigOptions options)
+        {
+            if (!options.TryGetValue(AllowedProjectPatternsOption, out var configuredValue)
+                || !TryParseJsonStringArray(configuredValue, out var parsedValues))
+            {
+                yield break;
+            }
+
+            var seenPatterns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var count = 0;
+
+            foreach (var parsedValue in parsedValues)
+            {
+                var pattern = parsedValue.Trim();
+
+                if (pattern.Length == 0
+                    || pattern.Length > MaxConfiguredPatternLength
+                    || !seenPatterns.Add(pattern))
+                {
+                    continue;
+                }
+
+                yield return pattern;
+                count++;
+
+                if (count == MaxConfiguredPatterns)
+                {
+                    yield break;
+                }
+            }
         }
 
         private static IEnumerable<string> ReadStringArray(

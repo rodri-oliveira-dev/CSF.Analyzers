@@ -78,6 +78,8 @@ dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj", "*.Bench
 
 `allowed_project_patterns` remove projetos inteiros da analise. Os padroes aceitam `*` e sao comparados com o nome do arquivo e com o caminho normalizado. O padrao e vazio.
 
+Listas configuraveis sao normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite sao ignoradas.
+
 A severidade pode ser configurada normalmente:
 
 ```ini

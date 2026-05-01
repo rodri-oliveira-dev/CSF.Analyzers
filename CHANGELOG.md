@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Hardened malformed and excessive analyzer configuration handling for ARCH020, ARCH027 and ARCH030.
 - Hardened MSBuild `AdditionalFiles` XML parsing in ARCH030 and ARCH032 with defensive size limits and DTD-prohibiting XML reader settings.
 
 ## [0.2.0] - 2026-04-30

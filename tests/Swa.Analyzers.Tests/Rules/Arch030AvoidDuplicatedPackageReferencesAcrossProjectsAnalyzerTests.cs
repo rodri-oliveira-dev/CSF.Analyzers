@@ -82,6 +82,60 @@ dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj"]
     }
 
     [Fact]
+    public async Task Large_allowed_project_patterns_configuration_does_not_break_analysis()
+    {
+        var editorConfig = $$"""
+root = true
+
+[*.csproj]
+dotnet_diagnostic.ARCH030.allowed_project_patterns = {{CreateJsonStringArray(Enumerable.Range(0, 300).Select(index => "src/Allowed" + index + ".csproj"))}}
+""";
+
+        await VerifyAsync(
+            editorConfig,
+            [
+                Project("src/App.Domain/App.Domain.csproj", "Serilog"),
+                Project("src/App.Application/App.Application.csproj", "Serilog"),
+            ],
+            Expected("src/App.Application/App.Application.csproj", "Serilog", "App.Application.csproj, App.Domain.csproj"));
+    }
+
+    [Fact]
+    public async Task Ignores_allowed_project_pattern_above_length_limit()
+    {
+        var editorConfig = $$"""
+root = true
+
+[*.csproj]
+dotnet_diagnostic.ARCH030.allowed_project_patterns = ["{{new string('*', 257)}}"]
+""";
+
+        await VerifyAsync(
+            editorConfig,
+            [
+                Project("src/App.Domain/App.Domain.csproj", "Serilog"),
+                Project("src/App.Application/App.Application.csproj", "Serilog"),
+            ],
+            Expected("src/App.Application/App.Application.csproj", "Serilog", "App.Application.csproj, App.Domain.csproj"));
+    }
+
+    [Fact]
+    public async Task Normalizes_duplicate_allowed_project_patterns()
+    {
+        const string editorConfig = """
+root = true
+
+[*.csproj]
+dotnet_diagnostic.ARCH030.allowed_project_patterns = [" *.Tests.csproj ", "*.Tests.csproj", "*.TESTS.csproj"]
+""";
+
+        await VerifyAsync(
+            editorConfig,
+            Project("src/App.Domain/App.Domain.csproj", "Serilog"),
+            Project("tests/App.Tests/App.Tests.csproj", "Serilog"));
+    }
+
+    [Fact]
     public async Task Reports_package_declared_with_include()
     {
         await VerifyAsync(
@@ -232,6 +286,13 @@ dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj"]
         return "<Project><ItemGroup>"
             + new string(' ', 1_000_001)
             + "<PackageReference Include=\"Serilog\" /></ItemGroup></Project>";
+    }
+
+    private static string CreateJsonStringArray(IEnumerable<string> values)
+    {
+        return "["
+            + string.Join(", ", values.Select(static value => "\"" + value + "\""))
+            + "]";
     }
 
     private static DiagnosticResult Expected(string path, string packageName, string projects)
