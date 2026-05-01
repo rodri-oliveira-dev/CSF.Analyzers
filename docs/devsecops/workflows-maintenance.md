@@ -24,3 +24,7 @@ Use nomes no formato `Dominio - Objetivo`, por exemplo `CI - Build and Test` ou 
 ## Cache e validacao .NET
 
 O cache NuGet deve continuar baseado nos lock files. Evite chaves amplas que ignorem `packages.lock.json`. A criacao de reusable workflow deve ser considerada apenas quando houver drift real entre CI e release.
+
+## Filtros de paths
+
+Evite filtros agressivos. Nao ignore mudancas em codigo, testes, regras, workflows, scripts, release metadata, changelog ou arquivos MSBuild. Filtros so devem ser usados quando houver ganho claro e sem reduzir validacoes de release e seguranca.
