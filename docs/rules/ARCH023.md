@@ -101,7 +101,7 @@ Usos simples dentro de argumentos de logging podem ser ignorados quando o time a
 dotnet_diagnostic.ARCH023.ignore_simple_logging = true
 ```
 
-Valores invalidos de configuracao sao ignorados de forma conservadora, sem suprimir diagnosticos.
+As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Valores invalidos de configuracao sao ignorados de forma conservadora, sem suprimir diagnosticos.
 
 ## Heuristica
 

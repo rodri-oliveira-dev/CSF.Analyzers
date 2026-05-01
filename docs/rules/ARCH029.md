@@ -89,7 +89,7 @@ dotnet_diagnostic.ARCH029.allow_internal_setters = false
 
 `allow_internal_setters` controla `internal set` e `protected internal set`. O valor padrao e `false`, portanto esses setters reportam diagnostico. Quando configurado como `true`, eles sao aceitos.
 
-Arrays JSON invalidos sao ignorados e os padroes continuam em uso. Valores booleanos invalidos usam o padrao `false`.
+As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Arrays JSON invalidos sao ignorados e os padroes continuam em uso. Valores booleanos invalidos usam o padrao `false`.
 
 A severidade pode ser configurada normalmente:
 

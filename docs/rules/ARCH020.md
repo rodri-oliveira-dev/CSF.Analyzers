@@ -70,7 +70,7 @@ dotnet_diagnostic.ARCH020.allowed_methods = ["Ping"]
 dotnet_diagnostic.ARCH020.ignored_namespaces = ["Sample.PublicEndpoints"]
 ```
 
-Se uma opcao JSON estiver malformada, a opcao e ignorada e a regra usa o comportamento mais restritivo. Isso evita liberar endpoints por configuracao invalida.
+As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Se uma opcao JSON estiver malformada, a opcao e ignorada e a regra usa o comportamento mais restritivo. Isso evita liberar endpoints por configuracao invalida.
 
 ## Excecoes padrao
 

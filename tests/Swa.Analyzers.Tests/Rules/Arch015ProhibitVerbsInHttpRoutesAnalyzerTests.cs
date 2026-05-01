@@ -645,6 +645,54 @@ public sealed class OrdersController
         await VerifyMvcAsync(source, EnglishEditorConfig, Expected(0, "cancel", "cancel", "en-US"));
     }
 
+    [Fact]
+    public async Task Respects_valid_additional_verbs_configuration()
+    {
+        const string editorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH015.route_language = en-US
+dotnet_diagnostic.ARCH015.additional_verbs = ["\u0061rchive"]
+""";
+
+        const string source = """
+using Microsoft.AspNetCore.Mvc;
+
+public sealed class CustomersController
+{
+    [HttpPost({|#0:"customers/archive"|})]
+    public void Archive() { }
+}
+""";
+
+        await VerifyMvcAsync(source, editorConfig, Expected(0, "archive", "archive", "en-US"));
+    }
+
+    [Fact]
+    public async Task Ignores_invalid_additional_verbs_configuration()
+    {
+        const string editorConfig = """
+root = true
+
+[*.cs]
+dotnet_diagnostic.ARCH015.route_language = en-US
+dotnet_diagnostic.ARCH015.additional_verbs = [archive]
+""";
+
+        const string source = """
+using Microsoft.AspNetCore.Mvc;
+
+public sealed class CustomersController
+{
+    [HttpPost("customers/archive")]
+    public void Archive() { }
+}
+""";
+
+        await VerifyMvcAsync(source, editorConfig);
+    }
+
     private static Task VerifyMvcAsync(string source, string? editorConfig, params DiagnosticResult[] expected)
     {
         return VerifyAsync(source + MvcStubs, editorConfig, expected);

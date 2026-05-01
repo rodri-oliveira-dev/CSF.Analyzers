@@ -54,7 +54,7 @@ O projeto mantem apenas propriedades especificas dele. As propriedades compartil
 
 ## Configuracao
 
-A regra aceita opcoes em `.editorconfig`:
+A regra aceita opcoes em `.editorconfig`. As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado:
 
 ```ini
 [*.csproj]

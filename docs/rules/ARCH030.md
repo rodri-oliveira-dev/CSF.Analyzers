@@ -66,7 +66,7 @@ Centralize a dependencia no projeto que realmente a utiliza ou exponha a funcion
 
 ## Configuracao
 
-A regra aceita arrays JSON em `.editorconfig`:
+A regra aceita arrays JSON em `.editorconfig`. As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado:
 
 ```ini
 [*.csproj]

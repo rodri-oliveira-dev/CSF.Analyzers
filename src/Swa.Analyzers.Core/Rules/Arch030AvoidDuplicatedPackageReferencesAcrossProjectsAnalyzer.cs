@@ -1,10 +1,11 @@
 using System.Collections.Immutable;
-using System.Text;
 using System.Xml.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+
+using Swa.Analyzers.Core.Common;
 
 namespace Swa.Analyzers.Core.Rules;
 
@@ -238,7 +239,7 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
         private static IEnumerable<string> ReadAllowedProjectPatterns(AnalyzerConfigOptions options)
         {
             if (!options.TryGetValue(AllowedProjectPatternsOption, out var configuredValue)
-                || !TryParseJsonStringArray(configuredValue, out var parsedValues))
+                || !JsonStringArrayOptionParser.TryParse(configuredValue, out var parsedValues))
             {
                 yield break;
             }
@@ -277,15 +278,9 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
                 return defaultValue;
             }
 
-            return TryParseJsonStringArray(configuredValue, out var parsedValues)
+            return JsonStringArrayOptionParser.TryParse(configuredValue, out var parsedValues)
                 ? parsedValues.Select(static value => value.Trim()).Where(static value => value.Length > 0)
                 : defaultValue;
-        }
-
-        private static bool TryParseJsonStringArray(string value, out ImmutableArray<string> items)
-        {
-            var parser = new JsonStringArrayParser(value);
-            return parser.TryParse(out items);
         }
 
         private static bool MatchesWildcard(string value, string pattern)
@@ -332,162 +327,4 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
         }
     }
 
-    private struct JsonStringArrayParser
-    {
-        private readonly string _value;
-        private int _position;
-
-        public JsonStringArrayParser(string value)
-        {
-            _value = value;
-            _position = 0;
-        }
-
-        public bool TryParse(out ImmutableArray<string> items)
-        {
-            var builder = ImmutableArray.CreateBuilder<string>();
-
-            SkipWhitespace();
-
-            if (!TryRead('['))
-            {
-                items = ImmutableArray<string>.Empty;
-                return false;
-            }
-
-            SkipWhitespace();
-
-            if (TryRead(']'))
-            {
-                SkipWhitespace();
-                if (_position != _value.Length)
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-
-                items = builder.ToImmutable();
-                return true;
-            }
-
-            while (true)
-            {
-                SkipWhitespace();
-
-                if (!TryReadString(out var item))
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-
-                builder.Add(item);
-                SkipWhitespace();
-
-                if (TryRead(']'))
-                {
-                    SkipWhitespace();
-                    if (_position != _value.Length)
-                    {
-                        items = ImmutableArray<string>.Empty;
-                        return false;
-                    }
-
-                    items = builder.ToImmutable();
-                    return true;
-                }
-
-                if (!TryRead(','))
-                {
-                    items = ImmutableArray<string>.Empty;
-                    return false;
-                }
-            }
-        }
-
-        private bool TryReadString(out string value)
-        {
-            var builder = new StringBuilder();
-
-            if (!TryRead('"'))
-            {
-                value = string.Empty;
-                return false;
-            }
-
-            while (_position < _value.Length)
-            {
-                var current = _value[_position++];
-
-                if (current == '"')
-                {
-                    value = builder.ToString();
-                    return true;
-                }
-
-                if (current == '\\')
-                {
-                    if (_position >= _value.Length)
-                    {
-                        value = string.Empty;
-                        return false;
-                    }
-
-                    var escaped = _value[_position++];
-
-                    switch (escaped)
-                    {
-                        case '"':
-                        case '\\':
-                        case '/':
-                            builder.Append(escaped);
-                            break;
-                        case 'b':
-                            builder.Append('\b');
-                            break;
-                        case 'f':
-                            builder.Append('\f');
-                            break;
-                        case 'n':
-                            builder.Append('\n');
-                            break;
-                        case 'r':
-                            builder.Append('\r');
-                            break;
-                        case 't':
-                            builder.Append('\t');
-                            break;
-                        default:
-                            value = string.Empty;
-                            return false;
-                    }
-
-                    continue;
-                }
-
-                builder.Append(current);
-            }
-
-            value = string.Empty;
-            return false;
-        }
-
-        private bool TryRead(char expected)
-        {
-            if (_position >= _value.Length || _value[_position] != expected)
-            {
-                return false;
-            }
-
-            _position++;
-            return true;
-        }
-
-        private void SkipWhitespace()
-        {
-            while (_position < _value.Length && char.IsWhiteSpace(_value[_position]))
-            {
-                _position++;
-            }
-        }
-    }
 }
