@@ -72,6 +72,14 @@ dotnet_diagnostic.ARCH020.ignored_namespaces = ["Sample.PublicEndpoints"]
 
 As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Se uma opcao JSON estiver malformada, a opcao e ignorada e a regra usa o comportamento mais restritivo. Isso evita liberar endpoints por configuracao invalida.
 
+### Fallback das opcoes
+
+- `allowed_routes`: array JSON de strings; default vazio. Rotas sao normalizadas e comparadas sem diferenciar maiusculas de minusculas. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
+- `allowed_methods`: array JSON de strings; default vazio. Nomes sao aparados e comparados com casing exato. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
+- `ignored_namespaces`: array JSON de strings; default vazio. Namespaces sao aparados e comparados com casing exato, incluindo namespaces filhos. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
+
+O fallback dessas opcoes e restritivo: configuracao ausente ou invalida nao libera endpoints.
+
 ## Excecoes padrao
 
 Para reduzir falsos positivos em endpoints tecnicos, a regra ignora rotas literais que contenham estes segmentos:

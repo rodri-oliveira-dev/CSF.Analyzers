@@ -80,6 +80,13 @@ dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj", "*.Bench
 
 Listas configuraveis sao normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite sao ignoradas.
 
+### Fallback das opcoes
+
+- `allowed_packages`: array JSON de strings; default e a allowlist padrao quando ausente ou malformado. Pacotes sao aparados e comparados sem diferenciar maiusculas de minusculas. Entradas vazias sao ignoradas. Um array JSON vazio substitui a allowlist por vazio.
+- `allowed_project_patterns`: array JSON de strings; default vazio. Padroes sao aparados, aceitam `*` e sao comparados sem diferenciar maiusculas de minusculas. Entradas vazias, duplicadas ou acima do limite sao ignoradas. JSON vazio, invalido ou malformado e ignorado.
+
+O fallback de `allowed_packages` preserva a allowlist padrao; o de `allowed_project_patterns` e restritivo, pois nao ignora projetos quando a configuracao e invalida.
+
 A severidade pode ser configurada normalmente:
 
 ```ini

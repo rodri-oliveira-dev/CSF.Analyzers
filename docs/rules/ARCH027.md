@@ -87,6 +87,15 @@ Valores ausentes usam uma configuracao conservadora:
 
 Listas configuraveis sao normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite sao ignoradas.
 
+### Fallback das opcoes
+
+- `core_namespace_patterns`: lista de padroes separada por `;`; default `*.Domain;*.Application` quando ausente. Valor configurado vazio resulta em lista vazia. Entradas vazias, duplicadas ou acima do limite sao ignoradas. Padroes sao comparados com casing exato. JSON nao se aplica.
+- `forbidden_namespace_patterns`: lista de padroes separada por `;`; default `Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql` quando ausente. Valor configurado vazio resulta em lista vazia. Entradas vazias, duplicadas ou acima do limite sao ignoradas. Padroes sao comparados com casing exato. JSON nao se aplica.
+- `allowed_namespace_patterns`: lista de padroes separada por `;`; default vazio. Entradas vazias, duplicadas ou acima do limite sao ignoradas. Padroes sao comparados com casing exato. JSON nao se aplica.
+- `ignore_tests`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `true`.
+
+O fallback das listas padrao e restritivo quando a opcao esta ausente. Um valor explicitamente vazio troca a lista por vazio e pode reduzir a analise daquela dimensao.
+
 A severidade pode ser configurada normalmente:
 
 ```ini

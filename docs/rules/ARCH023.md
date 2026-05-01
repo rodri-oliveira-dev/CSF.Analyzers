@@ -103,6 +103,14 @@ dotnet_diagnostic.ARCH023.ignore_simple_logging = true
 
 As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Valores invalidos de configuracao sao ignorados de forma conservadora, sem suprimir diagnosticos.
 
+### Fallback das opcoes
+
+- `allowed_namespaces`: array JSON de strings; default vazio. Namespaces sao aparados e comparados com casing exato. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
+- `allowed_types`: array JSON de strings; default vazio. Nomes de tipo sao aparados e comparados com casing exato. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
+- `ignore_simple_logging`: booleano; default `false`. Somente `true` habilita a excecao. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `false`.
+
+O fallback e restritivo: configuracao invalida nao suprime diagnosticos.
+
 ## Heuristica
 
 O analyzer usa analise semantica e reporta acessos a propriedades estaticas quando todos os pontos abaixo sao verdadeiros:

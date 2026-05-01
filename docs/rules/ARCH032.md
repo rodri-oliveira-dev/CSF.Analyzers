@@ -78,6 +78,13 @@ dotnet_diagnostic.ARCH032.compare_values = true
 - `true` (padrao): reporta apenas quando nome e valor sao iguais.
 - `false`: reporta quando o nome existe nos dois arquivos, mesmo com valores diferentes.
 
+### Fallback das opcoes
+
+- `ignored_properties`: array JSON de strings; default e a lista padrao quando ausente ou malformado. Propriedades sao aparadas e comparadas sem diferenciar maiusculas de minusculas. Entradas vazias sao ignoradas. Um array JSON vazio substitui a lista por vazio.
+- `compare_values`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `true`.
+
+O fallback preserva o comportamento padrao: propriedades comuns continuam ignoradas e a comparacao de valores permanece habilitada.
+
 A severidade pode ser configurada normalmente:
 
 ```ini

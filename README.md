@@ -144,6 +144,8 @@ dotnet_diagnostic.ARCH032.ignored_properties = ["TargetFramework", "TargetFramew
 dotnet_diagnostic.ARCH032.compare_values = true
 ```
 
+As paginas de cada regra documentam o fallback das opcoes publicas, incluindo valor default, tratamento de valores vazios, invalidos, casing inesperado e JSON malformado quando aplicavel. Em geral, arrays JSON malformados sao ignorados e booleanos invalidos voltam ao default da regra.
+
 ## Como validar
 
 - **Restore**: `dotnet restore ./Swa.Analyzers.slnx`
