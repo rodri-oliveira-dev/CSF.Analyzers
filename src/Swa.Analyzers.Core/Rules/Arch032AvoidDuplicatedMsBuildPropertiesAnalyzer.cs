@@ -73,7 +73,8 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
             }
 
             var sourceText = additionalFile.GetText(context.CancellationToken);
-            if (sourceText is null || !TryParseMsBuildFile(sourceText, out var document))
+            if (sourceText is null
+                || !MsBuildXmlDocumentReader.TryRead(sourceText, LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo, context.CancellationToken, out var document))
             {
                 continue;
             }
@@ -136,20 +137,6 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
                     projectProperty.Location,
                     projectProperty.Name));
             }
-        }
-    }
-
-    private static bool TryParseMsBuildFile(SourceText sourceText, out XDocument document)
-    {
-        try
-        {
-            document = XDocument.Parse(sourceText.ToString(), LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo);
-            return true;
-        }
-        catch (XmlException)
-        {
-            document = null!;
-            return false;
         }
     }
 

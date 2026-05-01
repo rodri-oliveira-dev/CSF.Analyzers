@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -77,7 +76,8 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
             }
 
             var sourceText = additionalFile.GetText(context.CancellationToken);
-            if (sourceText is null || !TryParseProjectFile(sourceText, out var document))
+            if (sourceText is null
+                || !MsBuildXmlDocumentReader.TryRead(sourceText, LoadOptions.PreserveWhitespace, context.CancellationToken, out var document))
             {
                 continue;
             }
@@ -129,20 +129,6 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
                 CreateStartLocation(firstReference.ProjectPath, firstReference.SourceText),
                 packageName,
                 projectNames));
-        }
-    }
-
-    private static bool TryParseProjectFile(SourceText sourceText, out XDocument document)
-    {
-        try
-        {
-            document = XDocument.Parse(sourceText.ToString(), LoadOptions.PreserveWhitespace);
-            return true;
-        }
-        catch (XmlException)
-        {
-            document = null!;
-            return false;
         }
     }
 

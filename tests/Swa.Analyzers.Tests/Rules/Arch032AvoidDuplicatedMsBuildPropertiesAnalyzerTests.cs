@@ -99,6 +99,49 @@ dotnet_diagnostic.ARCH032.compare_values = false
     }
 
     [Fact]
+    public async Task Ignores_empty_msbuild_files()
+    {
+        await VerifyAsync(
+            ("Directory.Build.props", string.Empty),
+            Project("src/App/App.csproj", ("Nullable", "enable")));
+
+        await VerifyAsync(
+            Props("Directory.Build.props", ("Nullable", "enable")),
+            ("src/App/App.csproj", string.Empty));
+    }
+
+    [Fact]
+    public async Task Ignores_msbuild_file_larger_than_limit()
+    {
+        await VerifyAsync(
+            ("Directory.Build.props", CreateLargeMsBuildFile("Nullable", "enable")),
+            Project("src/App/App.csproj", ("Nullable", "enable")));
+
+        await VerifyAsync(
+            Props("Directory.Build.props", ("Nullable", "enable")),
+            ("src/App/App.csproj", CreateLargeMsBuildFile("Nullable", "enable")));
+    }
+
+    [Fact]
+    public async Task Ignores_msbuild_file_with_dtd()
+    {
+        const string propsWithDtd = """
+<!DOCTYPE Project [
+  <!ENTITY nullable "enable">
+]>
+<Project>
+  <PropertyGroup>
+    <Nullable>&nullable;</Nullable>
+  </PropertyGroup>
+</Project>
+""";
+
+        await VerifyAsync(
+            ("Directory.Build.props", propsWithDtd),
+            Project("src/App/App.csproj", ("Nullable", "enable")));
+    }
+
+    [Fact]
     public async Task Reports_duplicates_in_multiple_projects()
     {
         await VerifyAsync(
@@ -220,6 +263,18 @@ dotnet_diagnostic.ARCH032.ignored_properties = ["TargetFramework",
 <Project{{projectAttributes}}>
   <PropertyGroup>
 {{propertyLines}}
+  </PropertyGroup>
+</Project>
+""";
+    }
+
+    private static string CreateLargeMsBuildFile(string name, string value)
+    {
+        return $$"""
+<Project>
+  <PropertyGroup>
+    <{{name}}>{{value}}</{{name}}>
+    <Large>{{new string(' ', 1_000_001)}}</Large>
   </PropertyGroup>
 </Project>
 """;

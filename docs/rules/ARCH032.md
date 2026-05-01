@@ -100,13 +100,17 @@ Em consumidores que usam o analyzer via MSBuild, inclua os arquivos quando neces
 
 Se nenhum `.csproj` ou nenhum `Directory.Build.props` for recebido como `AdditionalFiles`, a regra nao reporta diagnosticos.
 
+## Segurança e limites
+
+Arquivos MSBuild informados como `AdditionalFiles` sao processados com limites defensivos. Arquivos vazios, invalidos ou acima do limite configurado sao ignorados para evitar degradacao de build/IDE.
+
 ## Heuristica
 
 A regra:
 
 - filtra `AdditionalFiles` chamados `Directory.Build.props`;
 - filtra `AdditionalFiles` terminados em `.csproj`;
-- le XML com `System.Xml.Linq`;
+- le XML com parser endurecido e limite de tamanho;
 - extrai propriedades diretas de `PropertyGroup`;
 - ignora `PropertyGroup` com `Condition`;
 - ignora propriedades com `Condition`;

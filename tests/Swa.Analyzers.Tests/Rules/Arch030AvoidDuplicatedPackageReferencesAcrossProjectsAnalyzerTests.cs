@@ -106,6 +106,41 @@ dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj"]
     }
 
     [Fact]
+    public async Task Ignores_empty_project_file()
+    {
+        await VerifyAsync(
+            ("src/App.Domain/App.Domain.csproj", string.Empty),
+            Project("src/App.Application/App.Application.csproj", "Serilog"));
+    }
+
+    [Fact]
+    public async Task Ignores_project_file_larger_than_limit()
+    {
+        await VerifyAsync(
+            ("src/App.Domain/App.Domain.csproj", CreateLargeProjectFile()),
+            Project("src/App.Application/App.Application.csproj", "Serilog"));
+    }
+
+    [Fact]
+    public async Task Ignores_project_file_with_dtd()
+    {
+        const string projectWithDtd = """
+<!DOCTYPE Project [
+  <!ENTITY package "Serilog">
+]>
+<Project>
+  <ItemGroup>
+    <PackageReference Include="&package;" />
+  </ItemGroup>
+</Project>
+""";
+
+        await VerifyAsync(
+            ("src/App.Domain/App.Domain.csproj", projectWithDtd),
+            Project("src/App.Application/App.Application.csproj", "Serilog"));
+    }
+
+    [Fact]
     public async Task Reports_duplicate_package_with_different_casing()
     {
         await VerifyAsync(
@@ -190,6 +225,13 @@ dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj"]
   </ItemGroup>
 </Project>
 """);
+    }
+
+    private static string CreateLargeProjectFile()
+    {
+        return "<Project><ItemGroup>"
+            + new string(' ', 1_000_001)
+            + "<PackageReference Include=\"Serilog\" /></ItemGroup></Project>";
     }
 
     private static DiagnosticResult Expected(string path, string packageName, string projects)
