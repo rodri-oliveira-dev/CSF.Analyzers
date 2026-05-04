@@ -12,7 +12,7 @@
 
 ### Fixed
 
-- Nothing yet.
+- Fixed the release workflow order so the .NET SDK is installed before GitVersion runs `dotnet tool install`.
 
 ### Breaking Changes
 
