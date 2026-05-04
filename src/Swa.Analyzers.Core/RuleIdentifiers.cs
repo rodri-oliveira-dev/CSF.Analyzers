@@ -34,4 +34,5 @@ internal static class RuleIdentifiers
     public const string AvoidDuplicatedPackageReferencesAcrossProjects = "ARCH030";
     public const string PreferSystemThreadingLock = "ARCH031";
     public const string AvoidDuplicatedMsBuildProperties = "ARCH032";
+    public const string AvoidBuildServiceProviderDuringServiceRegistration = "ARCH033";
 }

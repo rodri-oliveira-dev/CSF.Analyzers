@@ -34,3 +34,4 @@
 | ARCH030 | Maintainability | Info     | Detect duplicated PackageReference items across projects. |
 | ARCH031 | Performance | Warning  | Prefer System.Threading.Lock over object lock monitors.  |
 | ARCH032 | Maintainability | Info     | Avoid duplicated MSBuild properties between project files and Directory.Build.props. |
+| ARCH033 | Reliability | Warning  | Avoid BuildServiceProvider during service registration.  |

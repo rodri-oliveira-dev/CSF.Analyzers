@@ -26,12 +26,14 @@ dotnet_diagnostic.ARCH028.severity = warning
 dotnet_diagnostic.ARCH029.severity = warning
 dotnet_diagnostic.ARCH030.severity = warning
 dotnet_diagnostic.ARCH031.severity = warning
+dotnet_diagnostic.ARCH033.severity = warning
 dotnet_diagnostic.ARCH015.route_language = pt-BR
 dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar"]
 dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Application"
 dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql"
 dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
 dotnet_diagnostic.ARCH027.ignore_tests = true
+dotnet_diagnostic.ARCH033.ignore_tests = true
 
 # O repositório eleva a categoria "Reliability" para error.
 # Aqui mantemos exemplos intencionalmente inválidos para demonstração.
@@ -138,3 +140,7 @@ dotnet_diagnostic.IDE0290.severity = none
 [Arch031/*.cs]
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0330.severity = none
+
+[Arch033/*.cs]
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.CA1062.severity = none

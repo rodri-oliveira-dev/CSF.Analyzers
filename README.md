@@ -48,6 +48,7 @@ Para introduzir o pacote em projetos existentes, veja o guia de [adocao gradual]
 | ARCH030 | Detect duplicated PackageReference across projects | Maintainability | Info              | [ARCH030](docs/rules/ARCH030.md) |
 | ARCH031 | Prefer System.Threading.Lock over object locks | Performance | Warning           | [ARCH031](docs/rules/ARCH031.md) |
 | ARCH032 | Avoid duplicated MSBuild properties             | Maintainability | Info              | [ARCH032](docs/rules/ARCH032.md) |
+| ARCH033 | Avoid BuildServiceProvider during service registration | Reliability | Warning           | [ARCH033](docs/rules/ARCH033.md) |
 
 ## Como configurar
 
@@ -144,6 +145,13 @@ Exemplo para `ARCH032`:
 [*.csproj]
 dotnet_diagnostic.ARCH032.ignored_properties = ["TargetFramework", "TargetFrameworks", "AssemblyName", "RootNamespace"]
 dotnet_diagnostic.ARCH032.compare_values = true
+```
+
+Exemplo para `ARCH033`:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH033.ignore_tests = true
 ```
 
 As paginas de cada regra documentam o fallback das opcoes publicas, incluindo valor default, tratamento de valores vazios, invalidos, casing inesperado e JSON malformado quando aplicavel. Em geral, arrays JSON malformados sao ignorados e booleanos invalidos voltam ao default da regra.
