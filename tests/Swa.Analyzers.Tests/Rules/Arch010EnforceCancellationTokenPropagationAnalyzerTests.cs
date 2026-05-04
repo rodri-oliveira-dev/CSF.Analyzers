@@ -227,6 +227,132 @@ public sealed class Sample
         await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(source, expected);
     }
 
+    [Fact]
+    public async Task Reports_for_ef_core_async_methods_when_token_is_available()
+    {
+        const string source = """
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
+namespace Microsoft.EntityFrameworkCore
+{
+    public sealed class DbContext
+    {
+        public Task<int> SaveChangesAsync() => Task.FromResult(0);
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken) => Task.FromResult(0);
+    }
+
+    public static class EntityFrameworkQueryableExtensions
+    {
+        public static Task<List<TSource>> ToListAsync<TSource>(this IQueryable<TSource> source) => Task.FromResult(new List<TSource>());
+        public static Task<List<TSource>> ToListAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken) => Task.FromResult(new List<TSource>());
+        public static Task<TSource?> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source) => Task.FromResult(default(TSource));
+        public static Task<TSource?> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken) => Task.FromResult(default(TSource));
+        public static Task<TSource?> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source) => Task.FromResult(default(TSource));
+        public static Task<TSource?> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken) => Task.FromResult(default(TSource));
+        public static Task<bool> AnyAsync<TSource>(this IQueryable<TSource> source) => Task.FromResult(false);
+        public static Task<bool> AnyAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken) => Task.FromResult(false);
+        public static Task<int> CountAsync<TSource>(this IQueryable<TSource> source) => Task.FromResult(0);
+        public static Task<int> CountAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken) => Task.FromResult(0);
+    }
+}
+
+public sealed class Customer
+{
+}
+
+public sealed class Repository
+{
+    public async Task ExecuteAsync(Microsoft.EntityFrameworkCore.DbContext dbContext, IQueryable<Customer> customers, CancellationToken token)
+    {
+        await dbContext.SaveChangesAsync();
+        await customers.ToListAsync();
+        await customers.FirstOrDefaultAsync();
+        await customers.SingleOrDefaultAsync();
+        await customers.AnyAsync();
+        await customers.CountAsync();
+    }
+}
+""";
+
+        var expectedSaveChanges = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(38, 25, 38, 41)
+            .WithArguments("SaveChangesAsync");
+        var expectedToList = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(39, 25, 39, 36)
+            .WithArguments("ToListAsync");
+        var expectedFirstOrDefault = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(40, 25, 40, 44)
+            .WithArguments("FirstOrDefaultAsync");
+        var expectedSingleOrDefault = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(41, 25, 41, 45)
+            .WithArguments("SingleOrDefaultAsync");
+        var expectedAny = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(42, 25, 42, 33)
+            .WithArguments("AnyAsync");
+        var expectedCount = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(43, 25, 43, 35)
+            .WithArguments("CountAsync");
+
+        await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(
+            source,
+            expectedSaveChanges,
+            expectedToList,
+            expectedFirstOrDefault,
+            expectedSingleOrDefault,
+            expectedAny,
+            expectedCount);
+    }
+
+    [Fact]
+    public async Task Reports_for_httpclient_async_methods_when_token_is_available()
+    {
+        const string source = """
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class ApiController
+{
+    public async Task ExecuteAsync(HttpClient httpClient, HttpRequestMessage request, HttpContent content, CancellationToken ct)
+    {
+        await httpClient.GetAsync("https://example.test");
+        await httpClient.PostAsync("https://example.test", content);
+        await httpClient.PutAsync("https://example.test", content);
+        await httpClient.DeleteAsync("https://example.test");
+        await httpClient.SendAsync(request);
+    }
+}
+""";
+
+        var expectedGet = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(9, 26, 9, 34)
+            .WithArguments("GetAsync");
+        var expectedPost = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(10, 26, 10, 35)
+            .WithArguments("PostAsync");
+        var expectedPut = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(11, 26, 11, 34)
+            .WithArguments("PutAsync");
+        var expectedDelete = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(12, 26, 12, 37)
+            .WithArguments("DeleteAsync");
+        var expectedSend = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(13, 26, 13, 35)
+            .WithArguments("SendAsync");
+
+        await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(
+            source,
+            expectedGet,
+            expectedPost,
+            expectedPut,
+            expectedDelete,
+            expectedSend);
+    }
+
     #endregion
 
     #region Valid scenarios
@@ -403,6 +529,38 @@ public sealed class Service
 public sealed class Sample
 {
     public async Task ExecuteAsync(Service service)
+    {
+        await service.DoWorkAsync(1, CancellationToken.None);
+    }
+}
+""";
+
+        await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(source);
+    }
+
+    [Fact]
+    public async Task Does_not_report_when_cancellationtoken_none_is_passed_even_if_token_is_available()
+    {
+        const string source = """
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Service
+{
+    public Task DoWorkAsync(int id)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task DoWorkAsync(int id, CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+}
+
+public sealed class Sample
+{
+    public async Task ExecuteAsync(Service service, CancellationToken cancellationToken)
     {
         await service.DoWorkAsync(1, CancellationToken.None);
     }

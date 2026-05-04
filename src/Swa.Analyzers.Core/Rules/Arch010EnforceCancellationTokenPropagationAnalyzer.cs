@@ -226,6 +226,11 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
             }
 
             var methodParams = method.Parameters;
+            if (method.ReducedFrom is not null)
+            {
+                methodParams = methodToCheck.Parameters;
+            }
+
             var candidateParams = candidate.Parameters;
 
             // Heuristic: overload has exactly one more parameter and the last one is CancellationToken.
@@ -237,7 +242,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
             bool prefixMatches = true;
             for (int i = 0; i < methodParams.Length; i++)
             {
-                if (!SymbolEqualityComparer.Default.Equals(methodParams[i].Type, candidateParams[i].Type))
+                if (!ParameterTypesMatch(methodParams[i].Type, candidateParams[i].Type))
                 {
                     prefixMatches = false;
                     break;
@@ -252,6 +257,18 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
         }
 
         return false;
+    }
+
+    private static bool ParameterTypesMatch(ITypeSymbol left, ITypeSymbol right)
+    {
+        if (SymbolEqualityComparer.Default.Equals(left, right))
+        {
+            return true;
+        }
+
+        return left is INamedTypeSymbol leftNamed
+            && right is INamedTypeSymbol rightNamed
+            && SymbolEqualityComparer.Default.Equals(leftNamed.OriginalDefinition, rightNamed.OriginalDefinition);
     }
 
     private static bool HasAvailableCancellationTokenInScope(

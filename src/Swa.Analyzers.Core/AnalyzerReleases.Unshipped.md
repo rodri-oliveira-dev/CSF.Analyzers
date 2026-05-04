@@ -11,7 +11,7 @@
 | ARCH007 | Performance | Info     | Detect string concatenation inside loops.                |
 | ARCH008 | Reliability | Info     | Prohibit manual path composition in filesystem sinks.    |
 | ARCH009 | Reliability | Warning  | Prohibit synchronous blocking of async operations.       |
-| ARCH010 | Reliability | Warning  | Enforce CancellationToken propagation.                   |
+| ARCH010 | Reliability | Warning  | Enforce CancellationToken propagation for async infrastructure calls. |
 | ARCH011 | Reliability | Warning  | Prohibit asynchronous or blocking logic in constructors. |
 | ARCH012 | Reliability | Info     | Prefer DateTimeOffset over DateTime.                     |
 | ARCH013 | TestQuality | Info     | Restrict mocking frameworks to NSubstitute.              |
