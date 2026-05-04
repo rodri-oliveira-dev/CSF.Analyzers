@@ -10,6 +10,8 @@ Analyzers Roslyn reutilizaveis para .NET, focados em convencoes de arquitetura, 
 
 Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos publicados pelo pacote usam *help links* absolutos para estes arquivos no repositorio publico, facilitando o acesso quando o analyzer e distribuido via NuGet.
 
+Para introduzir o pacote em projetos existentes, veja o guia de [adocao gradual](docs/adoption.md), com exemplos de severidades, suppressions e tratamento de legado.
+
 ## Regras existentes
 
 | ID      | Titulo (resumo)                                  | Categoria   | Severidade padrao | Doc                              |
