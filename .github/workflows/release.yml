@@ -20,11 +20,41 @@ jobs:
       attestations: write
       id-token: write
     outputs:
-      version: ${{ steps.package_version.outputs.version }}
+      version: ${{ steps.gitversion.outputs.semVer }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@bc6623af8fc07d5a8903052dd46da33403eec8e8
+        with:
+          versionSpec: 6.x
+
+      - name: Determine version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@bc6623af8fc07d5a8903052dd46da33403eec8e8
+        with:
+          configFilePath: GitVersion.yml
+
+      - name: Validate GitVersion package version
+        shell: bash
+        run: |
+          version="${{ steps.gitversion.outputs.semVer }}"
+
+          if [ -z "$version" ]; then
+            echo "GitVersion nao calculou a versao SemVer."
+            exit 1
+          fi
+
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
+            echo "GitVersion calculou uma versao invalida para PackageVersion: $version"
+            exit 1
+          fi
+
+          echo "GitVersion package version: $version"
 
       - name: Setup .NET SDK 10
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
@@ -46,25 +76,6 @@ jobs:
       - name: Build
         run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
 
-      - name: Read package version
-        id: package_version
-        shell: bash
-        run: |
-          version="$(grep -oPm1 '(?<=<VersionPrefix>)[^<]+' src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj)"
-
-          if [ -z "$version" ]; then
-            echo "VersionPrefix nao encontrado em src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj"
-            exit 1
-          fi
-
-          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
-            echo "VersionPrefix invalido: $version"
-            exit 1
-          fi
-
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "Package version: $version"
-
       # dotnet test against the .slnx currently fails before test discovery when
       # MSBuild runs with multiple nodes. Keep orchestration single-node while
       # preserving full solution test coverage.
@@ -72,7 +83,7 @@ jobs:
         run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
 
       - name: Pack analyzer
-        run: dotnet pack ./src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.package_version.outputs.version }}
+        run: dotnet pack ./src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
 
       - name: Attest NuGet packages
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26
@@ -123,7 +134,7 @@ jobs:
 
             try {
               await github.rest.repos.getReleaseByTag({ owner, repo, tag });
-              core.setFailed(`Release ${tag} already exists. Refusing to overwrite release assets.`);
+              core.setFailed(`Release ${tag} already exists. GitVersion calculated a version that was already released. Check existing tags and the semantic commit history before rerunning the release pipeline.`);
               return;
             } catch (error) {
               if (error.status !== 404) {
@@ -158,7 +169,7 @@ jobs:
                 ref: `tags/${tag}`,
               });
 
-              core.setFailed(`Tag ${tag} already exists. Refusing to create release for an existing version.`);
+              core.setFailed(`Tag ${tag} already exists. GitVersion calculated a version that was already released. Check existing tags and the semantic commit history before rerunning the release pipeline.`);
               return;
             } catch (error) {
               if (error.status !== 404) {
