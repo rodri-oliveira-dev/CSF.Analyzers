@@ -1,0 +1,22 @@
+workflow: TrunkBased/preview1
+tag-prefix: '[vV]'
+
+commit-message-incrementing: Enabled
+
+major-version-bump-message: "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([\\w\\s-,/\\\\]*\\))?(!:|:.*\\n\\n((.+\\n)+\\n)?BREAKING CHANGE:\\s.+)"
+minor-version-bump-message: "^(feat)(\\([\\w\\s-,/\\\\]*\\))?:"
+patch-version-bump-message: "^(fix|perf)(\\([\\w\\s-,/\\\\]*\\))?:"
+no-bump-message: "^(docs|style|test|chore|ci)(\\([\\w\\s-,/\\\\]*\\))?:(?![\\s\\S]*\\n\\n((.+\\n)+\\n)?BREAKING CHANGE:\\s.+)"
+
+branches:
+  main:
+    regex: ^main$
+    mode: ContinuousDeployment
+    label: ''
+    increment: Patch
+    is-main-branch: true
+
+  pull-request:
+    regex: ^(pull|pull-requests|pr)[/-]
+    mode: ContinuousDelivery
+    increment: Inherit

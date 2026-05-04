@@ -161,7 +161,13 @@ As paginas de cada regra documentam o fallback das opcoes publicas, incluindo va
 - **Restore**: `dotnet restore ./Swa.Analyzers.slnx`
 - **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore`
 - **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1` (a orquestracao do VSTest na `.slnx` falha antes da descoberta quando o MSBuild usa multiplos nos)
-- **Release check**: `pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1` (consistencia entre regras ARCH, docs, testes, SampleApp, changelog e versao)
+- **Release check**: `pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1` (consistencia entre regras ARCH, docs, testes, SampleApp e metadados de release)
 - **Manual**: veja [src/Swa.Analyzers.SampleApp/README.md](src/Swa.Analyzers.SampleApp/README.md) (exemplos por regra e build com diagnosticos)
 
 Detalhes das validacoes de release estao em [docs/release.md](docs/release.md).
+
+## Release e versionamento
+
+As releases usam GitVersion, configurado em [GitVersion.yml](GitVersion.yml), como fonte unica da versao publicada. O workflow de release usa a versao `semVer` calculada pelo GitVersion para o `PackageVersion` do NuGet, a tag `vX.Y.Z` e a GitHub Release.
+
+Nao atualize `VersionPrefix` manualmente para preparar releases. Commits semanticos determinam o incremento: `fix:` e `perf:` geram patch, `feat:` gera minor, e `!` ou `BREAKING CHANGE:` geram major. Commits `docs:`, `test:`, `style:`, `chore:` e `ci:` nao forcam incremento, salvo quando indicam breaking change.

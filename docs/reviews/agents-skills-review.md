@@ -4,7 +4,7 @@
 2026-05-04
 
 ## Versao da aplicacao identificada
-Versao oficial do pacote: `1.1.0`, identificada em `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj` no atributo `<VersionPrefix>`.
+Nota historica: quando esta revisao foi escrita, a versao oficial do pacote era `1.1.0` e ficava em `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj` no atributo `<VersionPrefix>`. O fluxo atual usa GitVersion, configurado em `GitVersion.yml`, como fonte da versao publicada.
 
 SDK .NET fixado: `10.0.203`, identificado em `global.json` com `rollForward` para `latestFeature`.
 
@@ -78,7 +78,7 @@ Target frameworks identificados:
   decisao tomada: remover a referencia legada e substituir o fluxo minimo por dados reais de stack e versao do `Swa.Analyzers`.
 
 ## Ajustes realizados
-- Atualizada `.agents/skills/semantic-versioning/SKILL.md` para refletir `VersionPrefix` atual `1.1.0`, SemVer pos-`1.0.0`, exemplos `1.x` e limite correto para bumps de versao.
+- Atualizada `.agents/skills/semantic-versioning/SKILL.md` para refletir o fluxo de versionamento vigente na epoca da revisao.
 - Normalizada `.agents/skills/semantic-versioning/SKILL.md` em ASCII para evitar ruido de encoding nas instrucoes consumidas por agentes.
 - Atualizada `.agents/skills/dotnet-service-change/SKILL.md` para remover contexto legado, explicitar a stack real do repositorio e reduzir ambiguidade sobre autenticacao/autorizacao.
 - Criado este relatorio em `docs/reviews/agents-skills-review.md`.

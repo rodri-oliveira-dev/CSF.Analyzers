@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Validates release consistency for Swa.Analyzers rules and package metadata.
+Validates release consistency for Swa.Analyzers rules and release metadata.
 #>
 [CmdletBinding()]
 param(
@@ -130,21 +130,6 @@ function Get-ArchIds {
         Sort-Object -Unique
 }
 
-function Get-VersionPrefix {
-    param([string]$Text)
-
-    if ([string]::IsNullOrWhiteSpace($Text)) {
-        return $null
-    }
-
-    $match = [regex]::Match($Text, "<VersionPrefix>\s*([^<]+?)\s*</VersionPrefix>")
-    if (-not $match.Success) {
-        return $null
-    }
-
-    return $match.Groups[1].Value.Trim()
-}
-
 $repoRoot = Invoke-Git @("rev-parse", "--show-toplevel")
 if (-not $repoRoot) {
     throw "release-check: nao foi possivel localizar a raiz do repositorio."
@@ -171,13 +156,10 @@ $rulesDirectory = Join-Path $repoRoot "src/Swa.Analyzers.Core/Rules"
 $ruleIdentifiersPath = "src/Swa.Analyzers.Core/RuleIdentifiers.cs"
 $readmePath = "README.md"
 $unshippedPath = "src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md"
-$coreProjectPath = "src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj"
-$changelogPath = "CHANGELOG.md"
 
 $ruleIdentifiersContent = Get-CurrentContent $ruleIdentifiersPath
 $readmeContent = Get-CurrentContent $readmePath
 $unshippedContent = Get-CurrentContent $unshippedPath
-$coreProjectContent = Get-CurrentContent $coreProjectPath
 
 if (-not $ruleIdentifiersContent) {
     Add-Failure "RuleIdentifiers.cs nao foi encontrado em '$ruleIdentifiersPath'."
@@ -232,16 +214,6 @@ foreach ($ruleId in $ruleIds) {
 }
 
 if ($resolvedBaseRef -and (Test-GitCommit $resolvedBaseRef)) {
-    $changedFiles = @(Invoke-Git @("diff", "--name-only", $resolvedBaseRef, $HeadRef) |
-        ForEach-Object { Get-RepositoryPath $_ })
-    $changedFiles += @(Invoke-Git @("diff", "--name-only", "--cached") |
-        ForEach-Object { Get-RepositoryPath $_ })
-    $changedFiles += @(Invoke-Git @("diff", "--name-only") |
-        ForEach-Object { Get-RepositoryPath $_ })
-    $changedFiles += @(Invoke-Git @("ls-files", "--others", "--exclude-standard") |
-        ForEach-Object { Get-RepositoryPath $_ })
-    $changedFiles = @($changedFiles | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique)
-
     $baseIdentifiersContent = Get-RefContent $resolvedBaseRef $ruleIdentifiersPath
     $baseRuleIds = @(Get-ArchIds $baseIdentifiersContent)
     $baseRuleIdSet = @{}
@@ -253,15 +225,6 @@ if ($resolvedBaseRef -and (Test-GitCommit $resolvedBaseRef)) {
         if (-not $baseRuleIdSet.ContainsKey($ruleId) -and $unshippedContent -notmatch [regex]::Escape($ruleId)) {
             Add-Failure "Nova regra '$ruleId' detectada, mas AnalyzerReleases.Unshipped.md nao contem esse ID."
         }
-    }
-
-    $baseProjectContent = Get-RefContent $resolvedBaseRef $coreProjectPath
-    $baseVersionPrefix = Get-VersionPrefix $baseProjectContent
-    $currentVersionPrefix = Get-VersionPrefix $coreProjectContent
-    $changelogChanged = $changedFiles -contains $changelogPath
-
-    if ($baseVersionPrefix -and $currentVersionPrefix -and $baseVersionPrefix -ne $currentVersionPrefix -and -not $changelogChanged) {
-        Add-Failure "VersionPrefix mudou de '$baseVersionPrefix' para '$currentVersionPrefix', mas CHANGELOG.md nao foi alterado no mesmo diff."
     }
 }
 elseif ($resolvedBaseRef) {

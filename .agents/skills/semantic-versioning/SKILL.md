@@ -5,37 +5,21 @@ description: Use esta skill ao alterar regras ARCH, severidades, opcoes de .edit
 
 # Objetivo
 
-Garantir que mudancas no pacote `Swa.Analyzers` sejam classificadas corretamente como PATCH, MINOR ou MAJOR, mantendo `VersionPrefix`, `CHANGELOG.md` e documentacao coerentes.
+Garantir que mudancas no pacote `Swa.Analyzers` sejam classificadas corretamente como PATCH, MINOR ou MAJOR, mantendo commits semanticos, `CHANGELOG.md` e documentacao coerentes.
 
-# Versao atual e fonte oficial
+# Fonte oficial da versao
 
-A versao oficial do pacote fica em:
+A versao publicada do pacote e calculada por GitVersion a partir de:
 
-`src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj`
-
-No atributo:
-
-```xml
-<VersionPrefix>x.y.z</VersionPrefix>
+```text
+GitVersion.yml
 ```
 
-A versao real identificada atualmente e `1.1.0`. Confirme sempre no arquivo antes de editar, porque `VersionPrefix` tambem alimenta o `dotnet pack`, a tag `v{VersionPrefix}` e a GitHub Release.
+O workflow `.github/workflows/release.yml` usa o output `semVer` do GitVersion como fonte unica para `PackageVersion`, tag `v{SemVer}` e GitHub Release.
 
-Sempre que uma tarefa alterar regras ARCH, empacotamento NuGet, severidade padrao, opcoes `.editorconfig` ou documentacao publica de release, o agente deve decidir se a mudanca exige novo numero de versao e atualizar esse atributo no mesmo PR quando aplicavel.
+Nao atualize `VersionPrefix` manualmente para preparar release. O projeto nao usa mais `VersionPrefix` como fonte da versao publicada.
 
-Nao deixe apenas como sugestao quando a mudanca exigir nova versao. Edite obrigatoriamente o `VersionPrefix`.
-
-Exemplo:
-
-```xml
-<VersionPrefix>1.1.0</VersionPrefix>
-```
-
-Se uma nova regra ARCH for criada:
-
-```xml
-<VersionPrefix>1.2.0</VersionPrefix>
-```
+Sempre que uma tarefa alterar regras ARCH, empacotamento NuGet, severidade padrao, opcoes `.editorconfig` ou documentacao publica de release, o agente deve decidir qual incremento semantico e esperado e garantir que a mensagem de commit reflita esse incremento.
 
 # Politica de versionamento
 
@@ -73,7 +57,7 @@ Exemplo:
 Ao aplicar PATCH, atualize:
 
 * `CHANGELOG.md`;
-* `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj`, atributo `<VersionPrefix>`.
+* mensagem de commit com `fix:` ou `perf:` quando a mudanca deve incrementar patch.
 
 # MINOR
 
@@ -94,7 +78,7 @@ Exemplo:
 Ao aplicar MINOR, atualize:
 
 * `CHANGELOG.md`;
-* `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj`, atributo `<VersionPrefix>`.
+* mensagem de commit com `feat:` quando a mudanca deve incrementar minor.
 
 # MAJOR / BREAKING CHANGE
 
@@ -118,7 +102,7 @@ Exemplo:
 Ao aplicar MAJOR, atualize:
 
 * `CHANGELOG.md`;
-* `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj`, atributo `<VersionPrefix>`;
+* mensagem de commit com `!` no tipo ou `BREAKING CHANGE:` no corpo;
 * documentacao da regra ou de release explicando o breaking change.
 
 # Regras para novas ARCH
@@ -133,7 +117,7 @@ Ao criar nova regra:
 * atualizar `README.md`;
 * atualizar `src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md`;
 * atualizar `CHANGELOG.md`;
-* atualizar obrigatoriamente o atributo `<VersionPrefix>` em `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj`.
+* usar commit `feat:` para que GitVersion incremente MINOR.
 
 Nova regra ARCH deve incrementar MINOR.
 
@@ -204,10 +188,10 @@ Antes de concluir a tarefa, responda internamente:
    * Nova opcao: MINOR.
    * Remocao, renomeacao ou default alterado: MAJOR.
 5. O `CHANGELOG.md` foi atualizado?
-6. O atributo `<VersionPrefix>` foi atualizado em `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj`?
-7. Se foi criada nova regra ARCH, o `VersionPrefix` incrementou MINOR?
-8. Se foi correcao sem regra nova, o `VersionPrefix` incrementou PATCH?
-9. Se foi breaking change, o `VersionPrefix` incrementou MAJOR?
+6. A mensagem de commit corresponde ao incremento esperado pelo GitVersion?
+7. Se foi criada nova regra ARCH, o commit usa `feat:`?
+8. Se foi correcao sem regra nova, o commit usa `fix:` ou `perf:` quando deve gerar PATCH?
+9. Se foi breaking change, o commit usa `!` ou corpo com `BREAKING CHANGE:`?
 10. README, documentacao, testes, SampleApp e `AnalyzerReleases.Unshipped.md` foram atualizados quando aplicavel?
 
 # Regra final obrigatoria
@@ -215,11 +199,7 @@ Antes de concluir a tarefa, responda internamente:
 Nao finalize uma tarefa que altere regras ARCH, severidades, opcoes `.editorconfig`, empacotamento NuGet ou documentacao de release publica sem verificar e, quando necessario, atualizar:
 
 ```text
-src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj
-```
-
-O atributo obrigatorio e:
-
-```xml
-<VersionPrefix>x.y.z</VersionPrefix>
+CHANGELOG.md
+GitVersion.yml
+docs/release.md
 ```
