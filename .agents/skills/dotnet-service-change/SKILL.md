@@ -17,9 +17,8 @@ Nao aplique orientacoes de servicos .NET neste repositorio, como:
 - migrations
 - Kafka
 - Outbox
-- autenticacao/autorizacao
+- implementacao de autenticacao/autorizacao de uma aplicacao ou API
 - ADRs de servico
-- `LedgerService.slnx`
 
 # Skill correta
 
@@ -36,4 +35,5 @@ Use uma das skills abaixo conforme a tarefa:
 1. Leia `AGENTS.md`.
 2. Escolha a skill Roslyn mais especifica.
 3. Trabalhe apenas nos arquivos relevantes ao projeto `Swa.Analyzers`.
-4. Valide com os comandos da solucao `Swa.Analyzers.slnx`.
+4. Considere a stack real do repositorio: pacote `Swa.Analyzers` em versao `1.1.0`, SDK .NET `10.0.203`, analyzers em `netstandard2.0`, SampleApp e testes em `net10.0`.
+5. Valide com os comandos da solucao `Swa.Analyzers.slnx`.

@@ -4,7 +4,7 @@
 
 ### Added
 
-- Nothing yet.
+- Added ARCH033 to detect `BuildServiceProvider()` calls on `IServiceCollection` during service registration, with `.editorconfig` support for `dotnet_diagnostic.ARCH033.ignore_tests`.
 
 ### Changed
 

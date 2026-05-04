@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Swa.Analyzers.SampleApp.Arch010;
 
 internal static class TokenPropagation_Valid
@@ -24,6 +26,17 @@ internal static class TokenPropagation_Valid
     {
         // Não há overload com CancellationToken — analyzer fica silencioso.
         await service.DoWorkAsync(1);
+    }
+
+    public static async Task ExecuteEfCoreAsync(DbContext dbContext, IQueryable<TokenPropagationCustomer> customers, CancellationToken token)
+    {
+        await dbContext.SaveChangesAsync(token);
+        await customers.ToListAsync(token);
+    }
+
+    public static async Task ExecuteHttpClientAsync(HttpClient httpClient, CancellationToken ct)
+    {
+        await httpClient.GetAsync("https://example.test", ct);
     }
 }
 
