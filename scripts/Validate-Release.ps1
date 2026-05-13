@@ -32,12 +32,15 @@ function Invoke-Git {
         $exitCode = $LASTEXITCODE
 
         if ($exitCode -ne 0) {
+            $global:LASTEXITCODE = 0
             return $null
         }
 
+        $global:LASTEXITCODE = 0
         return $output
     }
     catch {
+        $global:LASTEXITCODE = 0
         return $null
     }
     finally {
@@ -52,8 +55,8 @@ function Test-GitCommit {
         return $false
     }
 
-    $null = Invoke-Git @("rev-parse", "--verify", "$Ref^{commit}")
-    return $LASTEXITCODE -eq 0
+    $result = Invoke-Git @("rev-parse", "--verify", "$Ref^{commit}")
+    return $null -ne $result
 }
 
 function Resolve-BaseRef {
@@ -293,3 +296,4 @@ if ($failures.Count -gt 0) {
 }
 
 Write-Host "release-check: validacoes aprovadas"
+exit 0
