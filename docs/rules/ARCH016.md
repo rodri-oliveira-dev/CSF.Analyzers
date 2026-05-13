@@ -83,6 +83,17 @@ Para reduzir falsos positivos, a regra ignora:
 - código comum fora de fluxo de request;
 - tipos próprios que tenham métodos chamados `Task.Run`.
 
+## Configuração
+
+Esta regra não expõe opções customizadas de `.editorconfig`.
+
+A severidade padrão é `warning` e pode ser configurada normalmente:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARCH016.severity = warning
+```
+
 ## Limitações conhecidas
 
 - Handlers de Minimal API passados por method group ou variável não são inferidos nesta versão. A regra analisa apenas lambdas inline diretamente associadas à chamada `Map*`.
