@@ -5,12 +5,17 @@ Analyzers Roslyn reutilizaveis para .NET, focados em convencoes de arquitetura, 
 ## Projetos
 
 - `src/Swa.Analyzers.Core`: implementacao dos analyzers e descritores de diagnostico.
+- `src/Swa.Analyzers.CodeFixes`: implementacao dos code fixes distribuido junto ao pacote.
 - `tests/Swa.Analyzers.Tests`: testes automatizados dos analyzers.
 - `src/Swa.Analyzers.SampleApp`: exemplos manuais validos e invalidos para cada regra.
 
 Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos publicados pelo pacote usam *help links* absolutos para estes arquivos no repositorio publico, facilitando o acesso quando o analyzer e distribuido via NuGet.
 
 Para introduzir o pacote em projetos existentes, veja o guia de [adocao gradual](docs/adoption.md), com exemplos de severidades, suppressions e tratamento de legado. Se quiser partir de uma politica pronta, use os [perfis de adocao via `.editorconfig`](docs/editorconfig-profiles.md).
+
+## Code fixes
+
+Algumas regras mecanicas oferecem code fixes seguros na IDE. O suporte inicial esta disponivel para `ARCH001`, convertendo metodos concretos e funcoes locais `async void` diagnosticados para `async Task` quando a regra ja descartou event handlers padrao e contratos de interface/override.
 
 ## Regras existentes
 
