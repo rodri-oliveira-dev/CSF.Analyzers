@@ -9,10 +9,12 @@
 ### Changed
 
 - Migrated release versioning from project `VersionPrefix` to GitVersion, using semantic commits to calculate the NuGet package version and GitHub Release tag.
+- Formalized shipped and unshipped analyzer release metadata validation.
 
 ### Fixed
 
 - Fixed the release workflow order so the .NET SDK is installed before GitVersion runs `dotnet tool install`.
+- Fixed ARCH010 to ignore synchronous methods that expose `CancellationToken` parameters or overloads, keeping the rule scoped to async calls.
 
 ### Breaking Changes
 

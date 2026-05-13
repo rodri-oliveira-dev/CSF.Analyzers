@@ -7,25 +7,32 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-<ItemGroup>
-  <PackageReference Include="coverlet.collector">
-    <PrivateAssets>all</PrivateAssets>
-    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-  </PackageReference>
-  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
-  <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
-  <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
-  <PackageReference Include="Microsoft.NET.Test.Sdk" />
-  <PackageReference Include="xunit" />
-  <PackageReference Include="xunit.runner.visualstudio">
-    <PrivateAssets>all</PrivateAssets>
-    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-  </PackageReference>
-</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
-<ItemGroup>
-  <ProjectReference Include="..\..\src\Swa.Analyzers.Core\Swa.Analyzers.Core.csproj" />
-</ItemGroup>
+  <ItemGroup>
+    <PackageDownload Include="Microsoft.AspNetCore.App.Ref" Version="[$(MicrosoftAspNetCoreAppRefVersion)]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Swa.Analyzers.CodeFixes\Swa.Analyzers.CodeFixes.csproj" />
+    <ProjectReference Include="..\..\src\Swa.Analyzers.Core\Swa.Analyzers.Core.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />

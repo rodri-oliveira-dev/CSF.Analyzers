@@ -45,6 +45,11 @@ app.MapGet("/orders", () => Results.Ok())
 
 app.MapPost("/login", () => Results.Ok())
     .AllowAnonymous();
+
+var authorized = app.MapGroup("/api")
+    .RequireAuthorization();
+
+authorized.MapGet("/orders", () => Results.Ok());
 ```
 
 ## Configuracao
@@ -104,6 +109,7 @@ Para reduzir falsos positivos, a regra ignora:
 
 - endpoints que declaram autorizacao ou anonimato no proprio metodo/action;
 - actions que herdam `[Authorize]` ou `[AllowAnonymous]` do controller ou de uma base class;
+- Minimal APIs mapeadas a partir de um `MapGroup(...)` que ja declarou `.RequireAuthorization()` ou `.AllowAnonymous()`;
 - controllers abstratos;
 - atributos e metodos customizados com nomes parecidos, mas fora dos namespaces ASP.NET Core esperados;
 - Minimal APIs cuja rota tecnica esta na lista padrao ou em `allowed_routes`;
@@ -111,8 +117,8 @@ Para reduzir falsos positivos, a regra ignora:
 
 ## Limitacoes conhecidas
 
-- Minimal APIs sao consideradas conformes apenas quando `.RequireAuthorization()` ou `.AllowAnonymous()` aparecem no mesmo encadeamento estatico da chamada `Map*`.
-- A regra nao infere autorizacao aplicada por grupos, filtros, conventions, variaveis intermediarias ou extensoes customizadas.
+- Minimal APIs sao consideradas conformes quando `.RequireAuthorization()` ou `.AllowAnonymous()` aparecem no mesmo encadeamento estatico da chamada `Map*`, ou em um grupo criado em variavel local/propriedade com `MapGroup(...).RequireAuthorization()` ou `MapGroup(...).AllowAnonymous()`.
+- A regra nao infere autorizacao aplicada por filtros, conventions, reatribuicoes de variaveis intermediarias ou extensoes customizadas.
 - Actions sem atributo HTTP explicito sao ignoradas nesta versao para evitar diagnosticos em massa sobre controllers convencionais.
 - Rotas nao literais sao analisadas apenas para a decisao de autorizacao; excecoes por rota dependem de strings literais.
 

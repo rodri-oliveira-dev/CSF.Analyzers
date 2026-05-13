@@ -32,12 +32,15 @@ function Invoke-Git {
         $exitCode = $LASTEXITCODE
 
         if ($exitCode -ne 0) {
+            $global:LASTEXITCODE = 0
             return $null
         }
 
+        $global:LASTEXITCODE = 0
         return $output
     }
     catch {
+        $global:LASTEXITCODE = 0
         return $null
     }
     finally {
@@ -52,8 +55,8 @@ function Test-GitCommit {
         return $false
     }
 
-    $null = Invoke-Git @("rev-parse", "--verify", "$Ref^{commit}")
-    return $LASTEXITCODE -eq 0
+    $result = Invoke-Git @("rev-parse", "--verify", "$Ref^{commit}")
+    return $null -ne $result
 }
 
 function Resolve-BaseRef {
@@ -130,6 +133,17 @@ function Get-ArchIds {
         Sort-Object -Unique
 }
 
+function ConvertTo-Set {
+    param([string[]]$Values)
+
+    $set = @{}
+    foreach ($value in $Values) {
+        $set[$value] = $true
+    }
+
+    return $set
+}
+
 $repoRoot = Invoke-Git @("rev-parse", "--show-toplevel")
 if (-not $repoRoot) {
     throw "release-check: nao foi possivel localizar a raiz do repositorio."
@@ -155,10 +169,12 @@ else {
 $rulesDirectory = Join-Path $repoRoot "src/Swa.Analyzers.Core/Rules"
 $ruleIdentifiersPath = "src/Swa.Analyzers.Core/RuleIdentifiers.cs"
 $readmePath = "README.md"
+$shippedPath = "src/Swa.Analyzers.Core/AnalyzerReleases.Shipped.md"
 $unshippedPath = "src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md"
 
 $ruleIdentifiersContent = Get-CurrentContent $ruleIdentifiersPath
 $readmeContent = Get-CurrentContent $readmePath
+$shippedContent = Get-CurrentContent $shippedPath
 $unshippedContent = Get-CurrentContent $unshippedPath
 
 if (-not $ruleIdentifiersContent) {
@@ -169,15 +185,20 @@ if (-not $readmeContent) {
     Add-Failure "README.md nao foi encontrado."
 }
 
+if (-not $shippedContent) {
+    Add-Failure "AnalyzerReleases.Shipped.md nao foi encontrado em '$shippedPath'."
+}
+
 if (-not $unshippedContent) {
     Add-Failure "AnalyzerReleases.Unshipped.md nao foi encontrado em '$unshippedPath'."
 }
 
 $ruleIds = @(Get-ArchIds $ruleIdentifiersContent)
-$ruleIdSet = @{}
-foreach ($ruleId in $ruleIds) {
-    $ruleIdSet[$ruleId] = $true
-}
+$ruleIdSet = ConvertTo-Set $ruleIds
+$shippedIds = @(Get-ArchIds $shippedContent)
+$unshippedIds = @(Get-ArchIds $unshippedContent)
+$shippedIdSet = ConvertTo-Set $shippedIds
+$unshippedIdSet = ConvertTo-Set $unshippedIds
 
 $analyzerFiles = @(Get-ChildItem -LiteralPath $rulesDirectory -File -Filter "Arch*.cs" |
     Where-Object { $_.Name -match "^Arch(?<Number>\d{3}).*\.cs$" } |
@@ -190,40 +211,73 @@ foreach ($analyzerFile in $analyzerFiles) {
     if (-not $ruleIdSet.ContainsKey($ruleId)) {
         Add-Failure "$($analyzerFile.FullName): analyzer $($analyzerFile.Name) nao possui entrada '$ruleId' em RuleIdentifiers.cs."
     }
+}
+
+foreach ($ruleId in $ruleIds) {
+    $number = $ruleId.Substring(4)
 
     $docPath = Join-Path $repoRoot "docs/rules/$ruleId.md"
     if (-not (Test-Path -LiteralPath $docPath)) {
-        Add-Failure "$($analyzerFile.Name): documentacao obrigatoria ausente em docs/rules/$ruleId.md."
+        Add-Failure "${ruleId}: documentacao obrigatoria ausente em docs/rules/$ruleId.md."
     }
 
     $testFiles = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot "tests/Swa.Analyzers.Tests/Rules") -File -Filter "Arch$number*Tests.cs")
     if ($testFiles.Count -eq 0) {
-        Add-Failure "$($analyzerFile.Name): teste obrigatorio ausente em tests/Swa.Analyzers.Tests/Rules/Arch$number*Tests.cs."
+        Add-Failure "${ruleId}: teste obrigatorio ausente em tests/Swa.Analyzers.Tests/Rules/Arch$number*Tests.cs."
     }
 
     $sampleDirectory = Join-Path $repoRoot "src/Swa.Analyzers.SampleApp/Arch$number"
     if (-not (Test-Path -LiteralPath $sampleDirectory -PathType Container)) {
-        Add-Failure "$($analyzerFile.Name): pasta de SampleApp obrigatoria ausente em src/Swa.Analyzers.SampleApp/Arch$number."
+        Add-Failure "${ruleId}: pasta de SampleApp obrigatoria ausente em src/Swa.Analyzers.SampleApp/Arch$number."
+    }
+
+    $matchingAnalyzerFiles = @($analyzerFiles | Where-Object { $_.Name -match "^Arch$number" })
+    if ($matchingAnalyzerFiles.Count -eq 0) {
+        Add-Failure "${ruleId}: analyzer obrigatorio ausente em src/Swa.Analyzers.Core/Rules/Arch$number*.cs."
+    }
+
+    if ($readmeContent -notmatch [regex]::Escape($ruleId)) {
+        Add-Failure "RuleIdentifiers.cs contem '$ruleId', mas README.md nao possui entrada correspondente."
+    }
+
+    if (-not $shippedIdSet.ContainsKey($ruleId) -and -not $unshippedIdSet.ContainsKey($ruleId)) {
+        Add-Failure "RuleIdentifiers.cs contem '$ruleId', mas nenhum metadata de release shipped/unshipped contem esse ID."
     }
 }
 
-foreach ($ruleId in $ruleIds) {
-    if ($readmeContent -notmatch [regex]::Escape($ruleId)) {
-        Add-Failure "RuleIdentifiers.cs contem '$ruleId', mas README.md nao possui entrada correspondente."
+foreach ($ruleId in $shippedIds) {
+    if (-not $ruleIdSet.ContainsKey($ruleId)) {
+        Add-Failure "AnalyzerReleases.Shipped.md contem '$ruleId', mas RuleIdentifiers.cs nao possui entrada correspondente."
+    }
+
+    if ($unshippedIdSet.ContainsKey($ruleId)) {
+        Add-Failure "'$ruleId' aparece simultaneamente em AnalyzerReleases.Shipped.md e AnalyzerReleases.Unshipped.md."
+    }
+}
+
+foreach ($ruleId in $unshippedIds) {
+    if (-not $ruleIdSet.ContainsKey($ruleId)) {
+        Add-Failure "AnalyzerReleases.Unshipped.md contem '$ruleId', mas RuleIdentifiers.cs nao possui entrada correspondente."
     }
 }
 
 if ($resolvedBaseRef -and (Test-GitCommit $resolvedBaseRef)) {
     $baseIdentifiersContent = Get-RefContent $resolvedBaseRef $ruleIdentifiersPath
     $baseRuleIds = @(Get-ArchIds $baseIdentifiersContent)
-    $baseRuleIdSet = @{}
-    foreach ($ruleId in $baseRuleIds) {
-        $baseRuleIdSet[$ruleId] = $true
-    }
+    $baseRuleIdSet = ConvertTo-Set $baseRuleIds
+
+    $baseShippedContent = Get-RefContent $resolvedBaseRef $shippedPath
+    $baseShippedIds = @(Get-ArchIds $baseShippedContent)
 
     foreach ($ruleId in $ruleIds) {
         if (-not $baseRuleIdSet.ContainsKey($ruleId) -and $unshippedContent -notmatch [regex]::Escape($ruleId)) {
             Add-Failure "Nova regra '$ruleId' detectada, mas AnalyzerReleases.Unshipped.md nao contem esse ID."
+        }
+    }
+
+    foreach ($ruleId in $baseShippedIds) {
+        if (-not $shippedIdSet.ContainsKey($ruleId)) {
+            Add-Failure "Regra publicada '$ruleId' existia em AnalyzerReleases.Shipped.md na base, mas nao esta no arquivo atual."
         }
     }
 }
@@ -242,3 +296,4 @@ if ($failures.Count -gt 0) {
 }
 
 Write-Host "release-check: validacoes aprovadas"
+exit 0

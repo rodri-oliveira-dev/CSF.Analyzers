@@ -190,7 +190,9 @@ public sealed class Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer :
             return;
         }
 
-        if (OuterChainHasAuthorizationDecision(invocation, context.SemanticModel, context.CancellationToken))
+        if (OuterChainHasAuthorizationDecision(invocation, context.SemanticModel, context.CancellationToken)
+            || (invocation.Expression is MemberAccessExpressionSyntax memberAccess
+                && ReceiverHasAuthorizationDecision(memberAccess.Expression, context.SemanticModel, context.CancellationToken)))
         {
             return;
         }
@@ -387,6 +389,57 @@ public sealed class Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer :
         return false;
     }
 
+    private static bool ReceiverHasAuthorizationDecision(
+        ExpressionSyntax receiver,
+        SemanticModel semanticModel,
+        System.Threading.CancellationToken cancellationToken)
+    {
+        receiver = UnwrapExpression(receiver);
+
+        if (receiver is InvocationExpressionSyntax invocation)
+        {
+            return InvocationIsAuthorizationDecision(invocation, semanticModel, cancellationToken)
+                || (invocation.Expression is MemberAccessExpressionSyntax memberAccess
+                    && ReceiverHasAuthorizationDecision(memberAccess.Expression, semanticModel, cancellationToken));
+        }
+
+        if (semanticModel.GetSymbolInfo(receiver, cancellationToken).Symbol is not { } symbol)
+        {
+            return false;
+        }
+
+        foreach (var syntaxReference in symbol.DeclaringSyntaxReferences)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var syntax = syntaxReference.GetSyntax(cancellationToken);
+            if (syntax is VariableDeclaratorSyntax { Initializer.Value: { } initializer }
+                && ReceiverHasAuthorizationDecision(initializer, semanticModel, cancellationToken))
+            {
+                return true;
+            }
+
+            if (syntax is PropertyDeclarationSyntax { Initializer.Value: { } propertyInitializer }
+                && ReceiverHasAuthorizationDecision(propertyInitializer, semanticModel, cancellationToken))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool InvocationIsAuthorizationDecision(
+        InvocationExpressionSyntax invocation,
+        SemanticModel semanticModel,
+        System.Threading.CancellationToken cancellationToken)
+    {
+        return semanticModel.GetSymbolInfo(invocation, cancellationToken).Symbol is IMethodSymbol method
+            && (string.Equals(method.Name, RequireAuthorizationMethodName, StringComparison.Ordinal)
+                || string.Equals(method.Name, AllowAnonymousMethodName, StringComparison.Ordinal))
+            && IsEndpointConventionBuilderInvocation(invocation, method, semanticModel, cancellationToken);
+    }
+
     private static IEnumerable<InvocationExpressionSyntax> EnumerateOuterInvocations(InvocationExpressionSyntax invocation)
     {
         SyntaxNode? current = invocation;
@@ -556,6 +609,18 @@ public sealed class Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer :
         return invocation.Expression is MemberAccessExpressionSyntax memberAccess
             ? memberAccess.Name.GetLocation()
             : invocation.Expression.GetLocation();
+    }
+
+    private static ExpressionSyntax UnwrapExpression(ExpressionSyntax expression)
+    {
+        var current = expression;
+
+        while (current is ParenthesizedExpressionSyntax parenthesized)
+        {
+            current = parenthesized.Expression;
+        }
+
+        return current;
     }
 
     private readonly struct HttpRouteAttributeInfo

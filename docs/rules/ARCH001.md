@@ -56,10 +56,19 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH001.severity = warning
 ```
 
+## Code fix
+Esta regra oferece code fix para casos mecânicos e seguros:
+
+- métodos `async void` diagnosticados são convertidos para `async Task`;
+- funções locais `async void` diagnosticadas são convertidas para `async Task`;
+- `using System.Threading.Tasks;` é adicionado quando necessário.
+
+O code fix não é oferecido para funções anônimas, overrides ou métodos que implementam interfaces, porque esses casos podem alterar contratos e chamadores.
+
 ## Limitações conhecidas
 - A regra trata o padrão clássico `object sender, EventArgs e`, incluindo tipos derivados de `EventArgs`, como um formato permitido de event handler.
 - Eventos baseados em delegates customizados que não herdam de `EventArgs` não são isentos nesta primeira versão.
-- A regra intencionalmente não oferece code fix, porque alterar o tipo de retorno de `void` para `Task` pode exigir mudanças em chamadores, interfaces, overrides ou delegates.
+- O code fix altera apenas a declaração diagnosticada. Chamadores de métodos concretos podem precisar de ajustes manuais para aguardar a `Task` retornada.
 
 ## Quando não usar
 Não desabilite esta regra de forma ampla. Se o código realmente precisar seguir uma assinatura de event handler, mantenha o event handler pequeno e mova o trabalho real para um método `async Task`.

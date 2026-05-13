@@ -35,6 +35,8 @@ Valores comuns:
 
 Para adocao gradual, prefira `suggestion` ou `info` no primeiro ciclo. Regras arquiteturais costumam refletir convencoes de time e podem comecar como `info` antes de virarem `warning` ou `error`.
 
+Se o time quiser partir de uma politica pronta, veja os [perfis de adocao via `.editorconfig`](editorconfig-profiles.md). Eles cobrem os perfis `recommended`, `strict`, `security`, `architecture`, `testing` e `legacy-safe`, com exemplos copiaveis e um mapa de risco de ruido por regra.
+
 ## Estrategia por fases
 
 ### 1. Modo informativo

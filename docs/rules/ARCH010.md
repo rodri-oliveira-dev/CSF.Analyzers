@@ -150,7 +150,7 @@ public sealed class Consumer
 ```
 
 ## Cobertura
-ARCH010 usa analise semantica para detectar chamadas que podem receber `CancellationToken` por:
+ARCH010 usa analise semantica para detectar chamadas a metodos assincronos que retornam `Task`, `Task<T>`, `ValueTask` ou `ValueTask<T>` e que podem receber `CancellationToken` por:
 
 - Parametro opcional omitido, por exemplo `DoWorkAsync(id, CancellationToken cancellationToken = default)`.
 - Sobrecarga com a mesma assinatura de prefixo e um parametro final adicional `CancellationToken`.
@@ -195,5 +195,6 @@ O analyzer permanece silencioso quando:
 
 - Nenhum `CancellationToken` esta disponivel no escopo lexico atual.
 - A invocacao ja passa um argumento `CancellationToken`.
+- O metodo invocado e sincrono, mesmo que tenha parametro opcional ou sobrecarga com `CancellationToken`.
 - O metodo invocado nao tem sobrecarga ou parametro opcional que aceite `CancellationToken`.
 - A unica sobrecarga com `CancellationToken` tem uma assinatura de parametros fundamentalmente diferente.

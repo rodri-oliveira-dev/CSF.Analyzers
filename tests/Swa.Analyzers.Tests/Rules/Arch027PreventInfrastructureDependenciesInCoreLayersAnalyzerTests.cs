@@ -117,6 +117,31 @@ public sealed class RequestContext
     }
 
     [Fact]
+    public async Task Does_not_report_similar_namespace_that_is_not_forbidden()
+    {
+        const string source = """
+using Microsoft.EntityFrameworkCoreLike;
+
+namespace Billing.Domain
+{
+    public sealed class Invoice
+    {
+        private readonly DbContext _dbContext;
+    }
+}
+
+namespace Microsoft.EntityFrameworkCoreLike
+{
+    public sealed class DbContext
+    {
+    }
+}
+""";
+
+        await VerifyAsync(source);
+    }
+
+    [Fact]
     public async Task Reports_system_net_http_when_configured_as_forbidden()
     {
         const string editorConfig = """

@@ -85,7 +85,7 @@ dotnet_diagnostic.ARCH032.compare_values = true
 
 O fallback preserva o comportamento padrao: propriedades comuns continuam ignoradas e a comparacao de valores permanece habilitada.
 
-A severidade pode ser configurada normalmente:
+A severidade padrao da regra e `Info`, conforme o descriptor do analyzer. Ela pode ser sobrescrita normalmente via `.editorconfig`. Por exemplo, para elevar a regra para `warning`:
 
 ```ini
 [*.csproj]
