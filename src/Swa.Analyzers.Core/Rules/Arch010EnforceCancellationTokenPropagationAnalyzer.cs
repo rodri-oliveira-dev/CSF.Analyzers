@@ -32,23 +32,45 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
         context.RegisterCompilationStartAction(static compilationContext =>
         {
             var cancellationTokenType = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.CancellationToken");
+            var taskType = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
+            var genericTaskType = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
+            var valueTaskType = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask");
+            var genericValueTaskType = compilationContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.ValueTask`1");
+
             if (cancellationTokenType is null)
             {
                 return;
             }
 
             compilationContext.RegisterSyntaxNodeAction(
-                syntaxContext => AnalyzeInvocation(syntaxContext, cancellationTokenType),
+                syntaxContext => AnalyzeInvocation(
+                    syntaxContext,
+                    cancellationTokenType,
+                    taskType,
+                    genericTaskType,
+                    valueTaskType,
+                    genericValueTaskType),
                 SyntaxKind.InvocationExpression);
         });
     }
 
-    private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context, INamedTypeSymbol cancellationTokenType)
+    private static void AnalyzeInvocation(
+        SyntaxNodeAnalysisContext context,
+        INamedTypeSymbol cancellationTokenType,
+        INamedTypeSymbol? taskType,
+        INamedTypeSymbol? genericTaskType,
+        INamedTypeSymbol? valueTaskType,
+        INamedTypeSymbol? genericValueTaskType)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
         var semanticModel = context.SemanticModel;
 
         if (semanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol is not IMethodSymbol targetMethod)
+        {
+            return;
+        }
+
+        if (!IsAsyncReturnType(targetMethod.ReturnType, taskType, genericTaskType, valueTaskType, genericValueTaskType))
         {
             return;
         }
@@ -74,6 +96,26 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
 
         var location = GetMethodNameLocation(invocation);
         context.ReportDiagnostic(Diagnostic.Create(Rule, location, targetMethod.Name));
+    }
+
+    private static bool IsAsyncReturnType(
+        ITypeSymbol returnType,
+        INamedTypeSymbol? taskType,
+        INamedTypeSymbol? genericTaskType,
+        INamedTypeSymbol? valueTaskType,
+        INamedTypeSymbol? genericValueTaskType)
+    {
+        if (returnType is not INamedTypeSymbol namedReturnType)
+        {
+            return false;
+        }
+
+        var originalDefinition = namedReturnType.OriginalDefinition;
+
+        return SymbolEqualityComparer.Default.Equals(originalDefinition, taskType)
+            || SymbolEqualityComparer.Default.Equals(originalDefinition, genericTaskType)
+            || SymbolEqualityComparer.Default.Equals(originalDefinition, valueTaskType)
+            || SymbolEqualityComparer.Default.Equals(originalDefinition, genericValueTaskType);
     }
 
     private static bool CanAcceptCancellationToken(

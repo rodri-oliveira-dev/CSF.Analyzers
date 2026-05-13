@@ -74,6 +74,42 @@ public sealed class Sample
     }
 
     [Fact]
+    public async Task Reports_when_valuetask_overload_with_cancellationtoken_exists_and_token_is_available()
+    {
+        const string source = """
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Service
+{
+    public ValueTask DoWorkAsync(int id)
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask DoWorkAsync(int id, CancellationToken cancellationToken)
+    {
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class Sample
+{
+    public async ValueTask ExecuteAsync(Service service, CancellationToken cancellationToken)
+    {
+        await service.DoWorkAsync(1);
+    }
+}
+""";
+
+        var expected = Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.Diagnostic("ARCH010")
+            .WithSpan(21, 23, 21, 34)
+            .WithArguments("DoWorkAsync");
+
+        await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(source, expected);
+    }
+
+    [Fact]
     public async Task Reports_when_local_cancellationtoken_is_available()
     {
         const string source = """
@@ -606,6 +642,60 @@ using System.Threading;
 public sealed class Service
 {
     public void DoWork(int id)
+    {
+    }
+}
+
+public sealed class Sample
+{
+    public void Execute(Service service, CancellationToken cancellationToken)
+    {
+        service.DoWork(1);
+    }
+}
+""";
+
+        await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(source);
+    }
+
+    [Fact]
+    public async Task Does_not_report_for_sync_method_with_optional_cancellationtoken()
+    {
+        const string source = """
+using System.Threading;
+
+public sealed class Service
+{
+    public void DoWork(int id, CancellationToken cancellationToken = default)
+    {
+    }
+}
+
+public sealed class Sample
+{
+    public void Execute(Service service, CancellationToken cancellationToken)
+    {
+        service.DoWork(1);
+    }
+}
+""";
+
+        await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(source);
+    }
+
+    [Fact]
+    public async Task Does_not_report_for_sync_method_with_cancellationtoken_overload()
+    {
+        const string source = """
+using System.Threading;
+
+public sealed class Service
+{
+    public void DoWork(int id)
+    {
+    }
+
+    public void DoWork(int id, CancellationToken cancellationToken)
     {
     }
 }

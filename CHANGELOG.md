@@ -14,6 +14,7 @@
 ### Fixed
 
 - Fixed the release workflow order so the .NET SDK is installed before GitVersion runs `dotnet tool install`.
+- Fixed ARCH010 to ignore synchronous methods that expose `CancellationToken` parameters or overloads, keeping the rule scoped to async calls.
 
 ### Breaking Changes
 
