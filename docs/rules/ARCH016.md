@@ -83,11 +83,11 @@ Para reduzir falsos positivos, a regra ignora:
 - código comum fora de fluxo de request;
 - tipos próprios que tenham métodos chamados `Task.Run`.
 
-## Configuração
+## Configuração e severidade
 
 Esta regra não expõe opções customizadas de `.editorconfig`.
 
-A severidade padrão é `warning` e pode ser configurada normalmente:
+A severidade padrão do descriptor é `warning`. Ela pode ser ajustada normalmente por diagnóstico:
 
 ```ini
 [*.cs]
