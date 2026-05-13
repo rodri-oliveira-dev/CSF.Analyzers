@@ -96,11 +96,13 @@ Para reduzir falsos positivos, a regra nao reporta:
 - metodos de instancia chamados `BuildServiceProvider` em tipos customizados;
 - extension methods chamadas `BuildServiceProvider` cujo receiver nao e `IServiceCollection`;
 - codigo que recebe `IServiceProvider` legitimamente em runtime;
+- namespaces, tipos ou paths de tooling/design-time reconhecidos por segmentos `Tooling` ou `DesignTime`;
 - contextos de teste reconhecidos quando `ignore_tests = true`.
 
 ## Limitacoes conhecidas
 
 - A regra nao tenta provar que a chamada acontece exclusivamente durante startup; ela foca chamadas feitas sobre `IServiceCollection`, que normalmente representam registro de servicos.
+- A deteccao de tooling/design-time e baseada em nomes de namespace, tipo ou pasta; use suppressions pontuais para outros utilitarios controlados.
 - Testes sao ignorados apenas quando o analyzer consegue reconhecer atributos xUnit, NUnit ou MSTest disponiveis na compilacao.
 - Chamadas dinamicas ou via reflection nao sao analisadas.
 

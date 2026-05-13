@@ -102,6 +102,14 @@ public sealed class Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer : Diagno
             return;
         }
 
+        var materializedType = TryGetMaterializedType(targetMethod);
+        if (queryChain.RootEntityType is not null
+            && materializedType is not null
+            && !SymbolEqualityComparer.Default.Equals(queryChain.RootEntityType, materializedType))
+        {
+            return;
+        }
+
         var containingMethod = invocation.FirstAncestorOrSelf<BaseMethodDeclarationSyntax>();
         if (containingMethod is not null
             && HasEntityMutationPersistedInMethod(containingMethod, context.SemanticModel, context.CancellationToken))
@@ -146,6 +154,7 @@ public sealed class Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer : Diagno
             if (IsDbSet(type, dbSetType))
             {
                 info.StartsFromDbSet = true;
+                info.RootEntityType = GetDbSetEntityType(type);
             }
 
             if (current is InvocationExpressionSyntax invocation)
@@ -188,6 +197,20 @@ public sealed class Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer : Diagno
         return SymbolEqualityComparer.Default.Equals(namedType.OriginalDefinition, dbSetType);
     }
 
+    private static ITypeSymbol? GetDbSetEntityType(ITypeSymbol? type)
+    {
+        return type is INamedTypeSymbol { TypeArguments.Length: 1 } namedType
+            ? namedType.TypeArguments[0]
+            : null;
+    }
+
+    private static ITypeSymbol? TryGetMaterializedType(IMethodSymbol materializer)
+    {
+        return materializer.TypeArguments.Length == 1
+            ? materializer.TypeArguments[0]
+            : null;
+    }
+
     private static bool HasEntityMutationPersistedInMethod(
         BaseMethodDeclarationSyntax containingMethod,
         SemanticModel semanticModel,
@@ -224,7 +247,34 @@ public sealed class Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer : Diagno
             }
         }
 
-        return hasMemberAssignment;
+        return hasMemberAssignment || HasEntityStateMutationCall(containingMethod, semanticModel, cancellationToken);
+    }
+
+    private static bool HasEntityStateMutationCall(
+        BaseMethodDeclarationSyntax containingMethod,
+        SemanticModel semanticModel,
+        System.Threading.CancellationToken cancellationToken)
+    {
+        foreach (var invocation in containingMethod.DescendantNodes().OfType<InvocationExpressionSyntax>())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (semanticModel.GetSymbolInfo(invocation, cancellationToken).Symbol is IMethodSymbol method
+                && IsEntityStateMutationMethod(method))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsEntityStateMutationMethod(IMethodSymbol method)
+    {
+        return (string.Equals(method.Name, "Attach", StringComparison.Ordinal)
+                || string.Equals(method.Name, "Update", StringComparison.Ordinal)
+                || string.Equals(method.Name, "Remove", StringComparison.Ordinal))
+            && IsEfCoreNamespace(method.ContainingType?.ContainingNamespace);
     }
 
     private static bool IsSaveChangesMethod(IMethodSymbol method)
@@ -325,5 +375,7 @@ public sealed class Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer : Diagno
         public bool StartsFromDbSet { get; set; }
 
         public bool HasExplicitTrackingDecision { get; set; }
+
+        public ITypeSymbol? RootEntityType { get; set; }
     }
 }

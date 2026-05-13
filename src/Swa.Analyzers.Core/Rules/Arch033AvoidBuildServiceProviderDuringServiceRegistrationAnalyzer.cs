@@ -77,6 +77,11 @@ public sealed class Arch033AvoidBuildServiceProviderDuringServiceRegistrationAna
             return;
         }
 
+        if (IsDesignTimeOrToolingContext(context.ContainingSymbol, invocation.SyntaxTree.FilePath))
+        {
+            return;
+        }
+
         if (context.SemanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol is not IMethodSymbol method
             || !IsDependencyInjectionBuildServiceProvider(method, serviceCollectionType))
         {
@@ -90,6 +95,58 @@ public sealed class Arch033AvoidBuildServiceProviderDuringServiceRegistrationAna
         }
 
         context.ReportDiagnostic(Diagnostic.Create(Rule, memberAccess.Name.GetLocation()));
+    }
+
+    private static bool IsDesignTimeOrToolingContext(ISymbol? containingSymbol, string filePath)
+    {
+        var namespaceName = containingSymbol?.ContainingNamespace?.ToDisplayString();
+        if (ContainsDesignTimeOrToolingSegment(namespaceName))
+        {
+            return true;
+        }
+
+        for (var type = containingSymbol?.ContainingType; type is not null; type = type.ContainingType)
+        {
+            if (type.Name.IndexOf("DesignTime", StringComparison.OrdinalIgnoreCase) >= 0
+                || type.Name.IndexOf("Tooling", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+        }
+
+        return ContainsPathSegment(filePath, "DesignTime")
+            || ContainsPathSegment(filePath, "Tooling");
+    }
+
+    private static bool ContainsDesignTimeOrToolingSegment(string? namespaceName)
+    {
+        if (string.IsNullOrWhiteSpace(namespaceName))
+        {
+            return false;
+        }
+
+        var segments = namespaceName!.Split('.');
+        foreach (var segment in segments)
+        {
+            if (string.Equals(segment, "DesignTime", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(segment, "Tooling", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool ContainsPathSegment(string filePath, string segment)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            return false;
+        }
+
+        return filePath.IndexOf("\\" + segment + "\\", StringComparison.OrdinalIgnoreCase) >= 0
+            || filePath.IndexOf("/" + segment + "/", StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     private static bool IsDependencyInjectionBuildServiceProvider(

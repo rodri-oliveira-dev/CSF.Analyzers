@@ -165,6 +165,28 @@ namespace Xunit
     }
 
     [Fact]
+    public async Task Does_not_report_design_time_or_tooling_context()
+    {
+        const string source = """
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Billing.Infrastructure.DesignTime
+{
+    public sealed class BillingDesignTimeFactory
+    {
+        public void Create()
+        {
+            var services = new ServiceCollection();
+            services.BuildServiceProvider();
+        }
+    }
+}
+""";
+
+        await VerifyAsync(source);
+    }
+
+    [Fact]
     public async Task Reports_tests_when_ignore_tests_is_false()
     {
         const string editorConfig = """

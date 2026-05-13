@@ -137,6 +137,27 @@ public static class Routes
     }
 
     [Fact]
+    public async Task Does_not_report_minimal_api_when_group_declares_authorization_decision()
+    {
+        const string source = """
+using Microsoft.AspNetCore.Builder;
+
+public static class Routes
+{
+    public static void Map(IEndpointRouteBuilder app)
+    {
+        var authorized = app.MapGroup("/api").RequireAuthorization();
+        authorized.MapGet("/orders", () => { });
+
+        app.MapGroup("/public").AllowAnonymous().MapGet("/status", () => { });
+    }
+}
+""";
+
+        await VerifyMinimalApiAsync(source);
+    }
+
+    [Fact]
     public async Task Does_not_report_default_technical_routes()
     {
         const string source = """
@@ -506,9 +527,17 @@ namespace Microsoft.AspNetCore.Builder
 
         public static IEndpointConventionBuilder MapPost(this IEndpointRouteBuilder endpoints, string pattern, System.Action handler) => new EndpointConventionBuilder();
 
-        public static IEndpointConventionBuilder RequireAuthorization(this IEndpointConventionBuilder builder) => builder;
+        public static RouteGroupBuilder MapGroup(this IEndpointRouteBuilder endpoints, string prefix) => new RouteGroupBuilder();
 
-        public static IEndpointConventionBuilder AllowAnonymous(this IEndpointConventionBuilder builder) => builder;
+        public static TBuilder RequireAuthorization<TBuilder>(this TBuilder builder)
+            where TBuilder : IEndpointConventionBuilder => builder;
+
+        public static TBuilder AllowAnonymous<TBuilder>(this TBuilder builder)
+            where TBuilder : IEndpointConventionBuilder => builder;
+
+        public sealed class RouteGroupBuilder : IEndpointRouteBuilder, IEndpointConventionBuilder
+        {
+        }
 
         private sealed class EndpointConventionBuilder : IEndpointConventionBuilder
         {

@@ -242,6 +242,32 @@ public sealed class CustomerService
     }
 
     [Fact]
+    public async Task Does_not_report_preformatted_message_variable_in_ILogger_call()
+    {
+        const string source = """
+using Microsoft.Extensions.Logging;
+
+public sealed class CustomerService
+{
+    private readonly ILogger _logger;
+
+    public CustomerService(ILogger logger)
+    {
+        _logger = logger;
+    }
+
+    public void Create(int id)
+    {
+        var message = $"Customer {id} created";
+        _logger.LogInformation(message);
+    }
+}
+""";
+
+        await VerifyAsync(source);
+    }
+
+    [Fact]
     public async Task Does_not_report_non_logger_method_with_same_name()
     {
         const string source = """

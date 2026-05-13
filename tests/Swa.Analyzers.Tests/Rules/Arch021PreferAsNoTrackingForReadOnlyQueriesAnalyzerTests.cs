@@ -25,6 +25,12 @@ namespace Microsoft.EntityFrameworkCore
         {
             return Task.FromResult(0);
         }
+
+        public void Attach<TEntity>(TEntity entity) { }
+
+        public void Update<TEntity>(TEntity entity) { }
+
+        public void Remove<TEntity>(TEntity entity) { }
     }
 
     public abstract class DbSet<TEntity> : IQueryable<TEntity>
@@ -136,7 +142,7 @@ public sealed class OrdersQuery
     }
 
     [Fact]
-    public async Task Reports_Select_ToListAsync_query_without_AsNoTracking()
+    public async Task Does_not_report_simple_projection_ToListAsync_query_without_AsNoTracking()
     {
         const string source = """
 using System.Linq;
@@ -164,7 +170,44 @@ public sealed class OrdersQuery
 
     public async Task ExecuteAsync()
     {
-        var orderIds = await _db.Orders.Select(order => order.Id).{|#0:ToListAsync|}();
+        var orderIds = await _db.Orders.Select(order => order.Id).ToListAsync();
+    }
+}
+""";
+
+        await VerifyAsync(source);
+    }
+
+    [Fact]
+    public async Task Reports_identity_projection_ToListAsync_query_without_AsNoTracking()
+    {
+        const string source = """
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
+public sealed class OrdersDbContext : DbContext
+{
+    public DbSet<Order> Orders => throw new System.NotImplementedException();
+}
+
+public sealed class Order
+{
+    public int Id { get; set; }
+}
+
+public sealed class OrdersQuery
+{
+    private readonly OrdersDbContext _db;
+
+    public OrdersQuery(OrdersDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task ExecuteAsync()
+    {
+        var orders = await _db.Orders.Select(order => order).{|#0:ToListAsync|}();
     }
 }
 """;
@@ -274,6 +317,43 @@ public sealed class OrdersCommand
     {
         var order = await _db.Orders.FirstOrDefaultAsync();
         order!.Status = "Processed";
+        await _db.SaveChangesAsync();
+    }
+}
+""";
+
+        await VerifyAsync(source);
+    }
+
+    [Fact]
+    public async Task Does_not_report_query_when_entity_is_attached_updated_or_removed_and_persisted()
+    {
+        const string source = """
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
+public sealed class OrdersDbContext : DbContext
+{
+    public DbSet<Order> Orders => throw new System.NotImplementedException();
+}
+
+public sealed class Order
+{
+}
+
+public sealed class OrdersCommand
+{
+    private readonly OrdersDbContext _db;
+
+    public OrdersCommand(OrdersDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task ExecuteAsync()
+    {
+        var order = await _db.Orders.FirstOrDefaultAsync();
+        _db.Update(order!);
         await _db.SaveChangesAsync();
     }
 }

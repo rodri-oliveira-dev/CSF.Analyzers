@@ -71,6 +71,14 @@ order!.Status = "Processed";
 await _db.SaveChangesAsync();
 ```
 
+Projecoes simples que nao materializam a entidade rastreada tambem sao consideradas conformes:
+
+```csharp
+var orderIds = await _db.Orders
+    .Select(order => order.Id)
+    .ToListAsync();
+```
+
 ## Configuracao
 
 Esta regra nao expoe opcoes customizadas de `.editorconfig` na primeira versao.
@@ -91,12 +99,14 @@ O analyzer usa analise semantica e reporta apenas quando todos os pontos abaixo 
 - a materializacao e uma chamada EF Core conhecida em `Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions`;
 - o metodo chamado e `ToListAsync`, `FirstOrDefaultAsync` ou `SingleOrDefaultAsync`;
 - a cadeia da consulta parte de um `Microsoft.EntityFrameworkCore.DbSet<T>`;
+- a materializacao retorna o mesmo tipo de entidade do `DbSet<T>`, sem projecao para escalar ou DTO;
 - a cadeia nao contem `AsNoTracking()` nem `AsTracking()`;
 - o codigo nao esta dentro de contexto de teste reconhecido pelo projeto.
 
 Para reduzir falsos positivos, a regra nao reporta quando:
 
 - o metodo contem chamada a `SaveChanges()` ou `SaveChangesAsync()` e tambem atribuicao a membro/propriedade;
+- o metodo contem chamada a `SaveChanges()` ou `SaveChangesAsync()` e tambem `Attach`, `Update` ou `Remove` do EF Core;
 - a regra encontra configuracao global `UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)` no mesmo tipo;
 - a consulta nao pode ser confirmada semanticamente como EF Core.
 
