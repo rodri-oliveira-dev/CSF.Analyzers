@@ -66,6 +66,8 @@ Centralize a dependencia no projeto que realmente a utiliza ou exponha a funcion
 
 ## Configuracao
 
+A severidade padrao da regra e `Info`, conforme o descriptor do analyzer e a tabela publica do README.
+
 A regra aceita arrays JSON em `.editorconfig`. As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado:
 
 ```ini
@@ -87,7 +89,7 @@ Listas configuraveis sao normalizadas e possuem limites defensivos de quantidade
 
 O fallback de `allowed_packages` preserva a allowlist padrao; o de `allowed_project_patterns` e restritivo, pois nao ignora projetos quando a configuracao e invalida.
 
-A severidade pode ser configurada normalmente:
+A severidade pode ser elevada normalmente via override de `.editorconfig` quando o projeto quiser tratar duplicidades como aviso:
 
 ```ini
 [*.csproj]
