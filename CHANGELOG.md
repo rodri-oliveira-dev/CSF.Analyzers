@@ -9,6 +9,7 @@
 ### Changed
 
 - Migrated release versioning from project `VersionPrefix` to GitVersion, using semantic commits to calculate the NuGet package version and GitHub Release tag.
+- Formalized shipped and unshipped analyzer release metadata validation.
 
 ### Fixed
 

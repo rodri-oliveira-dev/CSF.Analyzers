@@ -176,3 +176,5 @@ Detalhes das validacoes de release estao em [docs/release.md](docs/release.md).
 As releases usam GitVersion, configurado em [GitVersion.yml](GitVersion.yml), como fonte unica da versao publicada. O workflow de release usa a versao `semVer` calculada pelo GitVersion para o `PackageVersion` do NuGet, a tag `vX.Y.Z` e a GitHub Release.
 
 Nao atualize `VersionPrefix` manualmente para preparar releases. Commits semanticos determinam o incremento: `fix:` e `perf:` geram patch, `feat:` gera minor, e `!` ou `BREAKING CHANGE:` geram major. Commits `docs:`, `test:`, `style:`, `chore:` e `ci:` nao forcam incremento, salvo quando indicam breaking change.
+
+Os metadados de regras publicadas ficam em `src/Swa.Analyzers.Core/AnalyzerReleases.Shipped.md`; regras novas ainda nao publicadas ficam em `src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md`. O release check valida que os IDs em `RuleIdentifiers.cs`, docs, README, testes, SampleApp e metadados shipped/unshipped permanecam consistentes.
