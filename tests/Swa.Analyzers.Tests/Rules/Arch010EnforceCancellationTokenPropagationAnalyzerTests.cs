@@ -684,6 +684,33 @@ public sealed class Sample
     }
 
     [Fact]
+    public async Task Does_not_report_for_sync_method_with_optional_cancellationtoken_inside_async_scope()
+    {
+        const string source = """
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Service
+{
+    public void DoWork(int id, CancellationToken cancellationToken = default)
+    {
+    }
+}
+
+public sealed class Sample
+{
+    public async Task ExecuteAsync(Service service, CancellationToken cancellationToken)
+    {
+        service.DoWork(1);
+        await Task.CompletedTask;
+    }
+}
+""";
+
+        await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(source);
+    }
+
+    [Fact]
     public async Task Does_not_report_for_sync_method_with_cancellationtoken_overload()
     {
         const string source = """
@@ -705,6 +732,37 @@ public sealed class Sample
     public void Execute(Service service, CancellationToken cancellationToken)
     {
         service.DoWork(1);
+    }
+}
+""";
+
+        await Verifier<Arch010EnforceCancellationTokenPropagationAnalyzer>.VerifyAnalyzerAsync(source);
+    }
+
+    [Fact]
+    public async Task Does_not_report_for_sync_method_with_cancellationtoken_overload_inside_async_scope()
+    {
+        const string source = """
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class Service
+{
+    public void DoWork(int id)
+    {
+    }
+
+    public void DoWork(int id, CancellationToken cancellationToken)
+    {
+    }
+}
+
+public sealed class Sample
+{
+    public async Task ExecuteAsync(Service service, CancellationToken cancellationToken)
+    {
+        service.DoWork(1);
+        await Task.CompletedTask;
     }
 }
 """;
