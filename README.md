@@ -13,6 +13,10 @@ Cada regra tem documentação própria em [docs/rules](docs/rules). Os diagnóst
 
 Para introduzir o pacote em projetos existentes, veja o guia de [adoção gradual](docs/adoption.md), com exemplos de severidades, suppressions e tratamento de legado. Se quiser partir de uma política pronta, use os [perfis de adoção via `.editorconfig`](docs/editorconfig-profiles.md).
 
+## Documentação complementar
+
+- [Sobreposição entre regras Swa.Analyzers e analyzers externos](docs/reviews/rules-analyzer-overlap.md)
+
 ## Code fixes
 
 Algumas regras mecânicas oferecem code fixes seguros na IDE. O suporte inicial está disponível para `ARCH001`, convertendo métodos concretos e funções locais `async void` diagnosticados para `async Task` quando a regra já descartou event handlers padrão e contratos de interface/override.
