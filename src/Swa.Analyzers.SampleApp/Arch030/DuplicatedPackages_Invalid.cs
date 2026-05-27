@@ -11,5 +11,5 @@ internal static class DuplicatedPackagesInvalid
     // <PackageReference Include="Serilog" />
     //
     // Quando estes .csproj chegam como AdditionalFiles, ARCH030 reporta o
-    // pacote repetido para revisao.
+    // pacote repetido para revisão.
 }

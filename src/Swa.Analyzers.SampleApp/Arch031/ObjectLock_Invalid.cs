@@ -14,7 +14,7 @@ public sealed class ObjectLock_Invalid
 
     public void ExecuteWithNewObject()
     {
-        // ARCH031: um object novo no lock nao sincroniza chamadas diferentes.
+        // ARCH031: um object novo no lock não sincroniza chamadas diferentes.
         lock (new object())
         {
         }

@@ -2,7 +2,7 @@
 
 App de console usado para **validação manual** e **demonstração** dos analyzers do repositório.
 
-Este projeto referencia `Swa.Analyzers.Core` como **analyzer** (via `ProjectReference` com `OutputItemType="Analyzer"`). Por isso, ao compilar, os diagnósticos `ARCH*` aparecem como warnings/erros no output do build.
+Este projeto referência `Swa.Analyzers.Core` como **analyzer** (via `ProjectReference` com `OutputItemType="Analyzer"`). Por isso, ao compilar, os diagnósticos `ARCH*` aparecem como warnings/erros no output do build.
 
 ## Como usar
 

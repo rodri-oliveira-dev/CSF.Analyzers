@@ -1,14 +1,14 @@
-# ARCH022: Evite materializacao prematura em consultas
+# ARCH022: Evite materialização prematura em consultas
 
 ## Objetivo
 
-Evitar que consultas EF Core sejam materializadas em memoria antes de filtros, projecoes, paginacao ou ordenacao que poderiam compor a query enviada ao banco.
+Evitar que consultas EF Core sejam materializadas em memória antes de filtros, projeções, paginação ou ordenação que poderiam compor a query enviada ao banco.
 
 ## Motivacao
 
-Chamadas como `ToList()` e `ToArray()` encerram a composicao da consulta. Quando `Where`, `Select`, `Skip`, `Take` ou `OrderBy` aparecem depois da materializacao, o trabalho passa a acontecer em memoria, normalmente trazendo mais dados do que o necessario e aumentando custo de CPU, memoria e rede.
+Chamadas como `ToList()` e `ToArray()` encerram a composição da consulta. Quando `Where`, `Select`, `Skip`, `Take` ou `OrderBy` aparecem depois da materialização, o trabalho passa a acontecer em memória, normalmente trazendo mais dados do que o necessário e aumentando custo de CPU, memória e rede.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -31,14 +31,14 @@ public sealed class OrdersQuery
 }
 ```
 
-Tambem e considerado nao conforme quando a materializacao assincrona e imediatamente seguida de filtro em memoria:
+Também e considerado não conforme quando a materialização assincrona é imediatamente seguida de filtro em memória:
 
 ```csharp
 var orders = await _db.Orders.ToListAsync();
 var openOrders = orders.Where(order => order.IsOpen);
 ```
 
-## Codigo conforme
+## Código conforme
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -61,15 +61,15 @@ public sealed class OrdersQuery
 }
 ```
 
-Materializacao no fim da cadeia tambem e conforme:
+Materializacao no fim da cadeia também é conforme:
 
 ```csharp
 var orders = _db.Orders.ToList();
 ```
 
-## Configuracao
+## Configuração
 
-Esta regra nao expoe opcoes customizadas de `.editorconfig` na primeira versao.
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
 A severidade pode ser configurada normalmente:
 
@@ -78,34 +78,34 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH022.severity = warning
 ```
 
-Use supressao pontual ou reduza a severidade quando a materializacao antes do filtro for intencional, por exemplo para reutilizar uma colecao em memoria em multiplas enumeracoes.
+Use supressao pontual ou reduza a severidade quando a materialização antes do filtro for intencional, por exemplo para reutilizar uma coleção em memória em multiplas enumeracoes.
 
-## Heuristica
+## Heurística
 
-O analyzer usa analise semantica e reporta apenas quando todos os pontos abaixo sao verdadeiros:
+O analyzer usa análise semântica e reporta apenas quando todos os pontos abaixo são verdadeiros:
 
 - a cadeia parte de um `Microsoft.EntityFrameworkCore.DbSet<T>`;
-- a materializacao sincronica e `ToList()` ou `ToArray()`;
-- a chamada imediatamente apos a materializacao e `Where`, `Select`, `Skip`, `Take`, `OrderBy`, `OrderByDescending`, `ThenBy` ou `ThenByDescending`;
-- no caso assincrono, a declaracao local usa `await query.ToListAsync()` e o proximo statement usa a variavel com um dos operadores listados.
+- a materialização sincronica e `ToList()` ou `ToArray()`;
+- a chamada imediatamente após a materialização e `Where`, `Select`, `Skip`, `Take`, `OrderBy`, `OrderByDescending`, `ThenBy` ou `ThenByDescending`;
+- no caso assíncrono, a declaração local usa `await query.ToListAsync()` e o próximo statement usa a variável com um dos operadores listados.
 
-Para reduzir falsos positivos, a regra nao reporta quando:
+Para reduzir falsos positivos, a regra não reporta quando:
 
 - `ToList()` ou `ToArray()` aparece no fim da cadeia;
-- a origem e LINQ to Objects ou uma colecao em memoria;
-- a origem nao pode ser confirmada semanticamente como EF Core;
-- o filtro em memoria nao esta imediatamente ligado ao materializador;
-- `OrderBy`/`ThenBy` usa comparer explicito, pois mover essa ordenacao para o provedor pode mudar a semantica.
+- a origem é LINQ to Objects ou uma coleção em memória;
+- a origem não pode ser confirmada semanticamente como EF Core;
+- o filtro em memória não está imediatamente ligado ao materializador;
+- `OrderBy`/`ThenBy` usa comparer explícito, pois mover essa ordenação para o provedor pode mudar a semântica.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A regra nao acompanha fluxo entre metodos, campos, propriedades ou statements distantes.
-- A regra nao tenta provar intencao de cache, multiplas enumeracoes ou alteracoes semanticas complexas.
-- A regra nao sugere code fix nem reescreve a consulta automaticamente.
-- Pode haver falso negativo quando a consulta vem de uma abstracao que retorna `IQueryable<T>` sem expor diretamente `DbSet<T>`.
+- A regra não acompanha fluxo entre métodos, campos, propriedades ou statements distantes.
+- A regra não tenta provar intenção de cache, multiplas enumeracoes ou alterações semânticas complexas.
+- A regra não sugere code fix nem reescreve a consulta automaticamente.
+- Pode haver falso negativo quando a consulta vem de uma abstração que retorna `IQueryable<T>` sem expor diretamente `DbSet<T>`.
 
 ## Impacto esperado
 
-- Reduz consultas que trazem dados demais para memoria.
-- Mantem filtros, projecoes e paginacao no provedor de query quando isso e seguro.
-- Evita ruido em colecoes locais e em casos onde a regra nao consegue confirmar origem EF Core.
+- Reduz consultas que trazem dados demais para memória.
+- Mantem filtros, projeções e paginação no provedor de query quando isso é seguro.
+- Evita ruído em coleções locais e em casos onde a regra não consegue confirmar origem EF Core.

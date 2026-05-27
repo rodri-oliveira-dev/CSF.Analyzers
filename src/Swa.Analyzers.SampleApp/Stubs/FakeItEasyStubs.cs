@@ -1,7 +1,7 @@
-// Minimal stubs so ARCH013 can detect FakeItEasy-like APIs
-// without referencing the real FakeItEasy package.
+// Stubs mínimos para que ARCH013 detecte APIs parecidas com FakeItEasy
+// sem referenciar o pacote real FakeItEasy.
 //
-// IMPORTANT: These are NOT production implementations.
+// IMPORTANTE: estes NÃO são implementações de produção.
 
 namespace FakeItEasy;
 

@@ -1,24 +1,24 @@
 ---
 name: dotnet-service-change
-description: Compatibilidade temporaria. Este repositorio nao e um servico .NET; para alteracoes neste projeto, use as skills de Roslyn analyzer.
+description: Compatibilidade temporária. Este repositório não é um serviço .NET; para alterações neste projeto, use as skills de Roslyn analyzer.
 ---
 
-# Skill substituida para este repositorio
+# Skill substituída para este repositório
 
-Este repositorio e o `Swa.Analyzers`, um projeto de Roslyn analyzers reutilizaveis para .NET.
+Este repositório é o `Swa.Analyzers`, um projeto de Roslyn analyzers reutilizáveis para .NET.
 
-Nao aplique orientacoes de servicos .NET neste repositorio, como:
+Não aplique orientações de serviços .NET neste repositório, como:
 
-- Clean Architecture de aplicacao
-- DDD de dominio de negocio
+- Clean Architecture de aplicação
+- DDD de domínio de negócio
 - controllers
 - middlewares
 - EF Core
 - migrations
 - Kafka
 - Outbox
-- implementacao de autenticacao/autorizacao de uma aplicacao ou API
-- ADRs de servico
+- implementação de autenticação/autorização de uma aplicação ou API
+- ADRs de serviço
 
 # Skill correta
 
@@ -30,10 +30,10 @@ Use uma das skills abaixo conforme a tarefa:
 - `roslyn-analyzer-sample-app-change`
 - `roslyn-analyzer-packaging-release-change`
 
-# Fluxo minimo
+# Fluxo mínimo
 
 1. Leia `AGENTS.md`.
-2. Escolha a skill Roslyn mais especifica.
+2. Escolha a skill Roslyn mais específica.
 3. Trabalhe apenas nos arquivos relevantes ao projeto `Swa.Analyzers`.
-4. Considere a stack real do repositorio: pacote `Swa.Analyzers` em versao `1.1.0`, SDK .NET `10.0.203`, analyzers em `netstandard2.0`, SampleApp e testes em `net10.0`.
-5. Valide com os comandos da solucao `Swa.Analyzers.slnx`.
+4. Considere a stack real do repositório: pacote `Swa.Analyzers` em versão `1.1.0`, SDK .NET `10.0.203`, analyzers em `netstandard2.0`, SampleApp e testes em `net10.0`.
+5. Valide com os comandos da solução `Swa.Analyzers.slnx`.

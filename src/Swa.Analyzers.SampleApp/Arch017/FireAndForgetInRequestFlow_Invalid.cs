@@ -7,7 +7,7 @@ public sealed class FireAndForgetInvalidController : ControllerBase
 {
     public void Post()
     {
-        // ARCH017: Avoid fire-and-forget in ASP.NET request flow.
+        // ARCH017: evite fire-and-forget no fluxo de request ASP.NET.
         _ = SaveAsync();
     }
 
@@ -20,7 +20,7 @@ public static class FireAndForgetInvalidMinimalApi
     {
         app.MapPost("/orders", () =>
         {
-            // ARCH017: Avoid fire-and-forget in ASP.NET request flow.
+            // ARCH017: evite fire-and-forget no fluxo de request ASP.NET.
             _ = PublishAsync();
         });
     }

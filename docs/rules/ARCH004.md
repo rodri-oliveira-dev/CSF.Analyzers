@@ -6,7 +6,7 @@ Exigir a convenção de nome `_sut` para o campo principal de *system under test
 ## Motivação
 Usar um nome consistente para o principal sujeito sob teste reduz a carga cognitiva ao ler testes:
 
-- `_sut` é fácil de reconhecer rapidamente
+- `_sut` é fácil de reconhecer rápidamente
 - evita discussões sobre nomes de variáveis para o objeto principal sob teste
 - torna os padrões de setup de testes mais uniformes em toda a base de código
 
@@ -49,7 +49,7 @@ dotnet_diagnostic.ARCH004.severity = info
 ```
 
 ## Limitações conhecidas
-- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referenciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
+- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referênciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
 - O analyzer é intencionalmente conservador para evitar ruído:
   - analisa apenas **tipos de teste** (tipos que contêm pelo menos um método de teste conhecido)
   - reporta apenas quando consegue inferir um único campo candidato claro a SUT

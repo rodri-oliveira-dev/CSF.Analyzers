@@ -75,20 +75,20 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
             return;
         }
 
-        // Check if the invoked method has an optional/unsupplied CancellationToken parameter,
-        // or if there's an overload that accepts CancellationToken before inspecting arguments.
+        // Verifica se o método invocado tem parâmetro CancellationToken opcional/não informado,
+        // ou se há overload que aceita CancellationToken antes de inspecionar argumentos.
         if (!CanAcceptCancellationToken(targetMethod, invocation, cancellationTokenType))
         {
             return;
         }
 
-        // Skip if the invocation already passes a CancellationToken.
+        // Ignora se a invocação já passa um CancellationToken.
         if (HasCancellationTokenArgument(invocation, targetMethod, semanticModel, cancellationTokenType, context.CancellationToken))
         {
             return;
         }
 
-        // Check if a CancellationToken is available in the current scope.
+        // Verifica se há um CancellationToken disponível no escopo atual.
         if (!HasAvailableCancellationTokenInScope(context, invocation, cancellationTokenType))
         {
             return;
@@ -152,7 +152,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
                 return true;
             }
 
-            // Also check if this argument maps to a CancellationToken parameter.
+            // Também verifica se este argumento mapeia para um parâmetro CancellationToken.
             var parameter = GetParameterForArgument(targetMethod, invocation, i);
             if (parameter is not null && SymbolEqualityComparer.Default.Equals(parameter.Type, cancellationTokenType))
             {
@@ -170,7 +170,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
     {
         var argument = invocation.ArgumentList!.Arguments[argumentIndex];
 
-        // If named argument, find parameter by name.
+        // Se for argumento nomeado, encontra o parâmetro pelo nome.
         if (argument.NameColon is not null)
         {
             var name = argument.NameColon.Name.Identifier.ValueText;
@@ -185,13 +185,13 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
             return null;
         }
 
-        // Positional argument.
+        // Argumento posicional.
         if (argumentIndex < method.Parameters.Length)
         {
             return method.Parameters[argumentIndex];
         }
 
-        // Could be params parameter.
+        // Pode ser parâmetro params.
         if (method.Parameters.Length > 0 && method.Parameters[method.Parameters.Length - 1].IsParams)
         {
             return method.Parameters[method.Parameters.Length - 1];
@@ -275,7 +275,7 @@ public sealed class Arch010EnforceCancellationTokenPropagationAnalyzer : Diagnos
 
             var candidateParams = candidate.Parameters;
 
-            // Heuristic: overload has exactly one more parameter and the last one is CancellationToken.
+            // Heurística: o overload tem exatamente um parâmetro a mais e o último é CancellationToken.
             if (candidateParams.Length != methodParams.Length + 1)
             {
                 continue;

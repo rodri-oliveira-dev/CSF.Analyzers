@@ -35,14 +35,14 @@ public sealed class Arch014PreferIsEquivalentOverArgIsAnalyzer : DiagnosticAnaly
             var testMethodAttributes = TestContextHelper.GetKnownTestMethodAttributes(compilationContext.Compilation);
             if (testMethodAttributes.IsDefaultOrEmpty)
             {
-                // Avoid noise outside test projects.
+                // Evita ruído fora de projetos de teste.
                 return;
             }
 
             var nsubstituteArgType = compilationContext.Compilation.GetTypeByMetadataName("NSubstitute.Arg");
             if (nsubstituteArgType is null)
             {
-                // Avoid false positives when NSubstitute isn't referenced.
+                // Evita falsos positivos quando NSubstitute não é referenciado.
                 return;
             }
 
@@ -70,7 +70,7 @@ public sealed class Arch014PreferIsEquivalentOverArgIsAnalyzer : DiagnosticAnaly
 
         if (!SymbolEqualityComparer.Default.Equals(targetMethod.ContainingType, nsubstituteArgType))
         {
-            // Ensure we only target NSubstitute.Arg.Is()
+            // Garante que apenas NSubstitute.Arg.Is() seja alvo.
             return;
         }
 
@@ -79,8 +79,8 @@ public sealed class Arch014PreferIsEquivalentOverArgIsAnalyzer : DiagnosticAnaly
             return;
         }
 
-        // Do not provide a CodeFix because the replacement (Is.Equivalent) may not be universally applicable.
-        // For example, if the Arg.Is predicate is complex or stateful, a simple Is.Equivalent call might not be equivalent.
+        // Não fornece CodeFix porque a substituição (Is.Equivalent) pode não ser universalmente aplicável.
+        // Por exemplo, se o predicado Arg.Is for complexo ou tiver estado, uma chamada simples a Is.Equivalent pode não ser equivalente.
         context.ReportDiagnostic(Diagnostic.Create(Rule, GetArgIsLocation(invocation.Syntax)));
     }
 

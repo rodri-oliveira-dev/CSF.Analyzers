@@ -35,14 +35,14 @@ public sealed class Arch005RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
             var testMethodAttributes = TestContextHelper.GetKnownTestMethodAttributes(compilationContext.Compilation);
             if (testMethodAttributes.IsDefaultOrEmpty)
             {
-                // Avoid noise outside test projects.
+                // Evita ruído fora de projetos de teste.
                 return;
             }
 
             var nsubstituteArgType = compilationContext.Compilation.GetTypeByMetadataName("NSubstitute.Arg");
             if (nsubstituteArgType is null)
             {
-                // Avoid false positives when NSubstitute isn't referenced.
+                // Evita falsos positivos quando NSubstitute não é referenciado.
                 return;
             }
 
@@ -70,7 +70,7 @@ public sealed class Arch005RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
 
         if (!SymbolEqualityComparer.Default.Equals(targetMethod.ContainingType, nsubstituteArgType))
         {
-            // Ensure we only target NSubstitute.Arg.Any()
+            // Garante que apenas NSubstitute.Arg.Any() seja alvo.
             return;
         }
 
@@ -89,20 +89,20 @@ public sealed class Arch005RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
 
     private static bool IsAllowedByConvention(IInvocationOperation argAnyInvocation)
     {
-        // Convention: allow Arg.Any() only when used directly as an argument
-        // of an invocation in a call chain that is preceded by DidNotReceive()/DidNotReceiveWithAnyArgs().
-        // Example:
+        // Convenção: permite Arg.Any() apenas quando usado diretamente como argumento
+        // de uma invocação em cadeia precedida por DidNotReceive()/DidNotReceiveWithAnyArgs().
+        // Exemplo:
         //   substitute.DidNotReceive().Foo(Arg.Any<int>());
 
-        // We intentionally use the *operation* tree (semantic) to locate the argument owner invocation,
-        // which is robust to casts/conversions around Arg.Any().
+        // Usa intencionalmente a árvore de *operation* (semântica) para localizar a invocação dona do argumento,
+        // o que é robusto a casts/conversões em torno de Arg.Any().
 
         IOperation? current = argAnyInvocation;
         while (current is not null)
         {
             if (current.Parent is IArgumentOperation argumentOperation)
             {
-                // Next parent should be the invocation receiving the argument
+                // O próximo pai deve ser a invocação que recebe o argumento.
                 if (argumentOperation.Parent is IInvocationOperation receivingInvocation)
                 {
                     if (!IsDirectArgumentValue(argumentOperation, argAnyInvocation))
@@ -122,8 +122,8 @@ public sealed class Arch005RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
 
     private static bool IsDirectArgumentValue(IArgumentOperation argumentOperation, IInvocationOperation argAnyInvocation)
     {
-        // Only allow when Arg.Any() is the argument value itself (ignoring implicit conversions).
-        // This avoids allowing "matcher" usage inside expressions like: Foo(Arg.Any<int>() + 1).
+        // Permite apenas quando Arg.Any() é o próprio valor do argumento, ignorando conversões implícitas.
+        // Isso evita permitir uso de "matcher" dentro de expressões como: Foo(Arg.Any<int>() + 1).
         IOperation? value = argumentOperation.Value;
 
         while (value is IConversionOperation conversion)
@@ -136,8 +136,8 @@ public sealed class Arch005RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
 
     private static bool HasDidNotReceiveInReceiverChain(IInvocationOperation receivingInvocation)
     {
-        // We want: X.DidNotReceive().Foo(...Arg.Any...)
-        // So the instance for Foo is itself an invocation operation with name DidNotReceive or DidNotReceiveWithAnyArgs.
+        // Queremos: X.DidNotReceive().Foo(...Arg.Any...)
+        // Portanto, a instância de Foo é uma operação de invocação chamada DidNotReceive ou DidNotReceiveWithAnyArgs.
         var instance = receivingInvocation.Instance;
         if (instance is null)
         {
@@ -149,9 +149,9 @@ public sealed class Arch005RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
             return IsDidNotReceiveMethod(didNotReceiveInvocation.TargetMethod);
         }
 
-        // Conditional access: `sub.DidNotReceive()?.Foo(Arg.Any<int>())`
-        // In this shape, the Foo invocation's Instance is a placeholder (IConditionalAccessInstanceOperation)
-        // and the DidNotReceive invocation is available as the conditional's Operation.
+        // Acesso condicional: `sub.DidNotReceive()?.Foo(Arg.Any<int>())`
+        // Nesse formato, a Instance da invocação Foo é um placeholder (IConditionalAccessInstanceOperation)
+        // e a invocação DidNotReceive fica disponível como Operation do condicional.
         if (instance is IConditionalAccessInstanceOperation
             && receivingInvocation.Parent is IConditionalAccessOperation conditionalAccess
             && conditionalAccess.Operation is IInvocationOperation conditionalReceiverInvocation)
@@ -170,7 +170,7 @@ public sealed class Arch005RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        // Avoid allowing custom lookalike APIs.
+        // Evita permitir APIs customizadas parecidas.
         return IsInNSubstituteNamespace(method.ContainingNamespace);
     }
 

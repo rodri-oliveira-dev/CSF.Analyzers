@@ -1,7 +1,7 @@
-// Minimal stubs so the analyzers that scope to test contexts (ARCH003-ARCH006/005)
-// can run in this SampleApp without adding external dependencies.
+// Stubs mínimos para que analyzers escopados a contextos de teste (ARCH003-ARCH006/005)
+// possam rodar neste SampleApp sem adicionar dependências externas.
 //
-// IMPORTANT: These are NOT production implementations.
+// IMPORTANTE: estes NÃO são implementações de produção.
 
 namespace Xunit;
 

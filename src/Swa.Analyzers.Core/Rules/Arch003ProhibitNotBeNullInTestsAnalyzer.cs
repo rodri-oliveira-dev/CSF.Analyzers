@@ -35,7 +35,7 @@ public sealed class Arch003ProhibitNotBeNullInTestsAnalyzer : DiagnosticAnalyzer
             var testMethodAttributes = TestContextHelper.GetKnownTestMethodAttributes(compilationContext.Compilation);
             if (testMethodAttributes.IsDefaultOrEmpty)
             {
-                // Avoid false positives outside test projects.
+                // Evita falsos positivos fora de projetos de teste.
                 return;
             }
 
@@ -67,7 +67,7 @@ public sealed class Arch003ProhibitNotBeNullInTestsAnalyzer : DiagnosticAnalyzer
 
         if (!TestContextHelper.IsWithinTestContext(context.ContainingSymbol, testMethodAttributes, isTestTypeCache))
         {
-            // Limit the rule to actual test contexts.
+            // Limita a regra a contextos reais de teste.
             return;
         }
 

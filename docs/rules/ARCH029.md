@@ -1,12 +1,12 @@
-# ARCH029: Proiba setters publicos em entidades de dominio
+# ARCH029: Proiba setters públicos em entidades de domínio
 
 ## Objetivo
 
-Detectar propriedades mutaveis em entidades de dominio quando elas expõem `public set` ou `internal set` nao autorizado.
+Detectar propriedades mutáveis em entidades de domínio quando elas expõem `public set` ou `internal set` não autorizado.
 
-Entidades de dominio devem proteger invariantes. Alterar estado livremente por setters publicos tende a espalhar regras de negocio para fora da entidade e favorece modelos anemicos.
+Entidades de domínio devem proteger invariantes. Alterar estado livremente por setters públicos tende a espalhar regras de negócio para fora da entidade e favorece modelos anêmicos.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 namespace MyApp.Domain.Entities;
@@ -17,7 +17,7 @@ public sealed class Customer
 }
 ```
 
-Tambem ha diagnostico quando a entidade e identificada por tipo base:
+Também há diagnóstico quando a entidade é identificada por tipo base:
 
 ```csharp
 public sealed class Order : Entity
@@ -26,9 +26,9 @@ public sealed class Order : Entity
 }
 ```
 
-## Codigo conforme
+## Código conforme
 
-Prefira setter privado e metodos de dominio para preservar invariantes:
+Prefira setter privado e métodos de domínio para preservar invariantes:
 
 ```csharp
 public sealed class Customer
@@ -42,7 +42,7 @@ public sealed class Customer
 }
 ```
 
-Use propriedade somente leitura quando o valor e definido no construtor ou calculado:
+Use propriedade somente leitura quando o valor é definido no construtor ou calculado:
 
 ```csharp
 public sealed class Customer
@@ -51,7 +51,7 @@ public sealed class Customer
 }
 ```
 
-`init` tambem nao e reportado:
+`init` também não é reportado:
 
 ```csharp
 public sealed class Customer
@@ -60,21 +60,21 @@ public sealed class Customer
 }
 ```
 
-## Heuristica de entidade
+## Heurística de entidade
 
-A regra e conservadora. Uma classe e considerada entidade quando pelo menos uma das condicoes abaixo for verdadeira:
+A regra é conservadora. Uma classe é considerada entidade quando pelo menos uma das condicoes abaixo for verdadeira:
 
-- o namespace contem `.Domain.Entities`, `.Domain.Entity`, `.Domain.Aggregates` ou `.Domain.Aggregate`;
+- o namespace contém `.Domain.Entities`, `.Domain.Entity`, `.Domain.Aggregates` ou `.Domain.Aggregate`;
 - algum tipo base se chama `Entity`, `Entity<T>`, `AggregateRoot` ou `AggregateRoot<T>`;
 - alguma interface implementada se chama `IEntity`, `IEntity<T>`, `IAggregateRoot` ou `IAggregateRoot<T>`;
 - o namespace corresponde a um prefixo configurado em `.editorconfig`;
 - algum tipo base ou interface corresponde a um nome configurado em `.editorconfig`.
 
-A regra ignora records, structs, propriedades estaticas, propriedades sem setter, `private set`, `protected set`, `init`, classes fora da heuristica de entidade e classes de teste.
+A regra ignora records, structs, propriedades estáticas, propriedades sem setter, `private set`, `protected set`, `init`, classes fora da heurística de entidade e classes de teste.
 
-## Configuracao
+## Configuração
 
-A regra aceita as opcoes abaixo em `.editorconfig`:
+A regra aceita as opções abaixo em `.editorconfig`:
 
 ```ini
 [*.cs]
@@ -83,21 +83,21 @@ dotnet_diagnostic.ARCH029.entity_base_types = ["Entity", "AggregateRoot"]
 dotnet_diagnostic.ARCH029.allow_internal_setters = false
 ```
 
-`entity_namespaces` adiciona namespaces considerados dominio. O valor configurado vale para o namespace exato e para namespaces filhos.
+`entity_namespaces` adiciona namespaces considerados domínio. O valor configurado vale para o namespace exato e para namespaces filhos.
 
-`entity_base_types` adiciona nomes de classes base ou interfaces que identificam entidades. Use o nome simples do tipo, sem namespace e sem aridade generica.
+`entity_base_types` adiciona nomes de classes base ou interfaces que identificam entidades. Use o nome simples do tipo, sem namespace e sem aridade genérica.
 
-`allow_internal_setters` controla `internal set` e `protected internal set`. O valor padrao e `false`, portanto esses setters reportam diagnostico. Quando configurado como `true`, eles sao aceitos.
+`allow_internal_setters` controla `internal set` e `protected internal set`. O valor padrão e `false`, portanto esses setters reportam diagnóstico. Quando configurado como `true`, eles são aceitos.
 
-As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Arrays JSON invalidos sao ignorados e os padroes continuam em uso. Valores booleanos invalidos usam o padrao `false`.
+As opções em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Arrays JSON inválidos são ignorados e os padrões continuam em uso. Valores booleanos inválidos usam o padrão `false`.
 
-### Fallback das opcoes
+### Fallback das opções
 
-- `entity_namespaces`: array JSON de strings; default vazio, somado aos marcadores nativos de dominio. Namespaces sao aparados e comparados com casing exato, incluindo namespaces filhos. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado.
-- `entity_base_types`: array JSON de strings; default vazio, somado aos tipos nativos de entidade. Nomes sao aparados e comparados com casing exato. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado.
-- `allow_internal_setters`: booleano; default `false`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `false`.
+- `entity_namespaces`: array JSON de strings; default vazio, somado aos marcadores nativos de domínio. Namespaces são aparados e comparados com casing exato, incluindo namespaces filhos. Entradas vazias são ignoradas. JSON vazio, inválido ou malformado e ignorado.
+- `entity_base_types`: array JSON de strings; default vazio, somado aos tipos nativos de entidade. Nomes são aparados e comparados com casing exato. Entradas vazias são ignoradas. JSON vazio, inválido ou malformado e ignorado.
+- `allow_internal_setters`: booleano; default `false`. Valores booleanos aceitam casing variado; valor ausente, vazio ou inválido usa `false`.
 
-O fallback e restritivo: configuracao invalida nao amplia a heuristica de entidade nem permite setters internos.
+O fallback é restritivo: configuração inválida não amplia a heurística de entidade nem permite setters internos.
 
 A severidade pode ser configurada normalmente:
 
@@ -106,15 +106,15 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH029.severity = warning
 ```
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
 - A regra usa nomes simples para classes base e interfaces, sem validar o namespace do tipo.
-- A regra nao tenta inferir entidades por atributos, campos `Id` ou convencoes de nome como `Customer`.
-- A regra nao analisa mutabilidade indireta por campos, colecoes ou metodos que alteram estado interno.
-- DTOs fora da heuristica de entidade nao sao reportados, mesmo que tenham setters publicos.
+- A regra não tenta inferir entidades por atributos, campos `Id` ou convenções de nome como `Customer`.
+- A regra não analisa mutabilidade indireta por campos, coleções ou métodos que alteram estado interno.
+- DTOs fora da heurística de entidade não são reportados, mesmo que tenham setters públicos.
 
 ## Impacto esperado
 
-- Reduz alteracoes livres no estado de entidades.
-- Incentiva construtores, setters privados e metodos de comportamento.
-- Mantem baixo ruido ao restringir diagnosticos a tipos com sinais claros de entidade de dominio.
+- Reduz alterações livres no estado de entidades.
+- Incentiva construtores, setters privados e métodos de comportamento.
+- Mantem baixo ruído ao restringir diagnósticos a tipos com sinais claros de entidade de domínio.

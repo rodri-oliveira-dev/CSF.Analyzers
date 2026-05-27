@@ -1,5 +1,5 @@
 # Testes de performance
 
-Estes testes sao guardrails conservadores contra regressoes graves no tempo de execucao dos analyzers. Eles nao sao benchmarks e nao devem orientar decisoes de micro-otimizacao.
+Estes testes são guardrails conservadores contra regressões graves no tempo de execução dos analyzers. Eles não são benchmarks e não devem orientar decisões de micro-otimização.
 
-Os cenarios usam fontes multiarquivo geradas com stubs de ASP.NET Core, EF Core e logging para que a suite regular exercite analise semantica sem adicionar pacotes externos.
+Os cenários usam fontes multiarquivo geradas com stubs de ASP.NET Core, EF Core e logging para que a suite regular exercite análise semântica sem adicionar pacotes externos.

@@ -7,7 +7,7 @@ namespace Swa.Analyzers.SampleApp.Arch019;
 [AllowAnonymous]
 public sealed class PublicOrdersController : ControllerBase
 {
-    // ARCH019: [Authorize] is ineffective because the controller allows anonymous access.
+    // ARCH019: [Authorize] é inefetivo porque o controller permite acesso anônimo.
     [Authorize]
     [HttpGet("orders")]
     public void Get()
@@ -18,7 +18,7 @@ public sealed class PublicOrdersController : ControllerBase
 [Authorize]
 public sealed class ProtectedHealthController : ControllerBase
 {
-    // ARCH019: public exception in a protected controller must be reviewed explicitly.
+    // ARCH019: exceção pública em controller protegido deve ser revisada explicitamente.
     [AllowAnonymous]
     [HttpGet("health")]
     public void Health()
@@ -28,7 +28,7 @@ public sealed class ProtectedHealthController : ControllerBase
 
 public sealed class MixedMetadataController : ControllerBase
 {
-    // ARCH019: avoid combining both authorization metadata on the same action.
+    // ARCH019: evite combinar os dois metadados de autorização na mesma action.
     [Authorize]
     [AllowAnonymous]
     [HttpGet("profile")]
@@ -41,7 +41,7 @@ public static class ConflictingAuthorizationMinimalApi
 {
     public static void Map(IEndpointRouteBuilder app)
     {
-        // ARCH019: avoid RequireAuthorization and AllowAnonymous on the same endpoint.
+        // ARCH019: evite RequireAuthorization e AllowAnonymous no mesmo endpoint.
         app.MapGet("/orders", () => { })
             .RequireAuthorization()
             .AllowAnonymous();

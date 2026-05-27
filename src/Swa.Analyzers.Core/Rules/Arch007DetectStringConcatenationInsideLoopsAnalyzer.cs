@@ -37,11 +37,11 @@ public sealed class Arch007DetectStringConcatenationInsideLoopsAnalyzer : Diagno
     {
         var loop = (ILoopOperation)context.Operation;
 
-        // Reduce noise for loops that are used as a scope, or that are known to
-        // not execute (while/for false), or run only once (do/while false).
-        // Examples:
-        //   while (false) { ... }       // never runs
-        //   do { ... } while (false);  // runs once
+        // Reduz ruído para loops usados como escopo ou conhecidos por
+        // não executar (while/for false) ou executar apenas uma vez (do/while false).
+        // Exemplos:
+        //   while (false) { ... }       // nunca executa
+        //   do { ... } while (false);  // executa uma vez
         if (HasConstantFalseCondition(loop))
         {
             return;
@@ -53,7 +53,7 @@ public sealed class Arch007DetectStringConcatenationInsideLoopsAnalyzer : Diagno
             return;
         }
 
-        // Report at most once per target symbol per loop to avoid spamming diagnostics.
+        // Reporta no máximo uma vez por símbolo alvo por loop para evitar excesso de diagnósticos.
         var reportedTargets = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
 
         var stack = new Stack<IOperation>();
@@ -67,13 +67,13 @@ public sealed class Arch007DetectStringConcatenationInsideLoopsAnalyzer : Diagno
 
             if (current is ILoopOperation)
             {
-                // Nested loops are handled by their own callbacks.
+                // Loops aninhados são tratados por seus próprios callbacks.
                 continue;
             }
 
             if (current is IAnonymousFunctionOperation || current is ILocalFunctionOperation)
             {
-                // Avoid false positives in delayed execution contexts.
+                // Evita falsos positivos em contextos de execução adiada.
                 continue;
             }
 
@@ -114,13 +114,13 @@ public sealed class Arch007DetectStringConcatenationInsideLoopsAnalyzer : Diagno
         if (loop.Syntax is DoStatementSyntax doStatement
             && doStatement.Condition.IsKind(SyntaxKind.FalseLiteralExpression))
         {
-            // Intentionally treat do/while(false) as a trivial loop (runs once).
+            // Trata intencionalmente do/while(false) como loop trivial, que executa uma vez.
             return true;
         }
 
-        // ILoopOperation doesn't expose a universal Condition for all loop kinds.
-        // We intentionally keep this heuristic narrow and only treat a literal `false`
-        // (or equivalent constant) as a special case.
+        // ILoopOperation não expõe uma Condition universal para todos os tipos de loop.
+        // Mantém esta heurística intencionalmente estreita e trata apenas o literal `false`
+        // ou constante equivalente como caso especial.
         IOperation? condition = loop switch
         {
             IWhileLoopOperation whileLoop => whileLoop.Condition,
@@ -139,9 +139,9 @@ public sealed class Arch007DetectStringConcatenationInsideLoopsAnalyzer : Diagno
 
     private static bool ShouldReport(ILoopOperation loop, SyntaxNode loopBodySyntax, ISymbol target)
     {
-        // False-positive reduction: ignore locals declared inside the loop body,
-        // because they're re-initialized per iteration and usually indicate a per-item
-        // formatting operation rather than incremental string building.
+        // Redução de falso positivo: ignora locais declarados dentro do corpo do loop,
+        // porque são reinicializados a cada iteração e normalmente indicam uma operação por item
+        // de formatação, não construção incremental de string.
         if (target is ILocalSymbol local && IsLocalDeclaredInsideLoopBody(local, loopBodySyntax))
         {
             return false;
@@ -180,21 +180,21 @@ public sealed class Arch007DetectStringConcatenationInsideLoopsAnalyzer : Diagno
             return false;
         }
 
-        // Pattern 1: s = s + expr  (and variants like: s = s + a + b)
+        // Padrão 1: s = s + expr  (e variantes como: s = s + a + b)
         if (TryGetBinaryStringAdd(simpleAssignment.Value, out var binaryAdd)
             && ContainsTargetReference(binaryAdd, target))
         {
             return true;
         }
 
-        // Pattern 2: s = $"{s}{expr}" (interpolated strings)
+        // Padrão 2: s = $"{s}{expr}" (strings interpoladas)
         if (TryGetOperation<IInterpolatedStringOperation>(simpleAssignment.Value, out var interpolatedString)
             && ContainsTargetReference(interpolatedString, target))
         {
             return true;
         }
 
-        // Pattern 3: s = string.Concat(s, expr)
+        // Padrão 3: s = string.Concat(s, expr)
         if (TryGetOperation<IInvocationOperation>(simpleAssignment.Value, out var invocation)
             && IsSystemStringConcat(invocation.TargetMethod)
             && InvocationArgumentsContainTargetReference(invocation, target))
@@ -267,7 +267,7 @@ public sealed class Arch007DetectStringConcatenationInsideLoopsAnalyzer : Diagno
 
             if (current is IAnonymousFunctionOperation || current is ILocalFunctionOperation)
             {
-                // Do not traverse delayed execution contexts.
+                // Não percorre contextos de execução adiada.
                 continue;
             }
 

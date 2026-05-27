@@ -1,7 +1,7 @@
-// Minimal stubs so ARCH013 can detect Moq-like APIs
-// without referencing the real Moq package.
+// Stubs mínimos para que ARCH013 detecte APIs parecidas com Moq
+// sem referenciar o pacote real Moq.
 //
-// IMPORTANT: These are NOT production implementations.
+// IMPORTANTE: estes NÃO são implementações de produção.
 
 namespace Moq;
 

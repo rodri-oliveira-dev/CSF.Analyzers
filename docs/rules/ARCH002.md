@@ -1,7 +1,7 @@
 # ARCH002: Evite Task.ContinueWith
 
 ## Objetivo
-Evitar o uso de `Task.ContinueWith(...)` e incentivar `await` como fluxo assíncrono preferencial.
+Evitar o uso de `Task.ContinueWith(...)` e incentivar `await` como fluxo assíncrono preferêncial.
 
 ## Motivação
 `ContinueWith` tende a produzir código em estilo de callback, mais difícil de ler e manter do que código linear com `async`/`await`.
@@ -88,7 +88,7 @@ dotnet_diagnostic.ARCH002.severity = warning
 - Nenhum code fix é fornecido porque substituir `ContinueWith` por `await` não é determinístico e pode alterar semântica (tipos de retorno, agendamento, comportamento de cancelamento, uso de contexto de sincronização etc.).
 
 ## Quando não usar
-Em casos raros, você pode usar `ContinueWith` intencionalmente para composição de tarefas de baixo nivel ou para evitar state machines `async` em caminhos muito quentes.
+Em casos raros, você pode usar `ContinueWith` intencionalmente para composição de tarefas de baixo nível ou para evitar state machines `async` em caminhos muito quentes.
 
 Se mantiver `ContinueWith`, garanta que você entende e revisou:
 
@@ -99,7 +99,7 @@ Se mantiver `ContinueWith`, garanta que você entende e revisou:
 ## Impacto esperado
 - Uso mais consistente de `async`/`await` em toda a base de código
 - Menos cadeias de continuação e código assíncrono em estilo callback
-- Padroes mais previsíveis de propagação de exceções
+- Padrões mais previsíveis de propagação de exceções
 
 ## Observações sobre falsos positivos / heurísticas
 O analyzer usa informações semânticas para mirar apenas `System.Threading.Tasks.Task.ContinueWith` e `Task<T>.ContinueWith`.

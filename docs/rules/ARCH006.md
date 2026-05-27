@@ -71,7 +71,7 @@ Apesar do alerta, existem casos em que excluir pode ser aceitável. Exemplos tí
 - Propriedades **não determinísticas** ou geradas pelo sistema (timestamps, GUIDs, campos de auditoria) quando:
   - elas não fazem parte do comportamento sob teste, e
   - existe outro teste ou asserção dedicada cobrindo o contrato dessas propriedades
-- Comparações em cenários de migração/refactor onde a equivalência completa não é viável temporariamente (use com parcimônia e com intenção explícita)
+- Comparações em cenários de migração/refactor onde a equivalência completa não é viável temporáriamente (use com parcimônia e com intenção explícita)
 
 Nesses casos, ainda é recomendado:
 

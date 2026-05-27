@@ -54,7 +54,7 @@ Esta regra não oferece opções de configuração.
 ## Limitações conhecidas
 
 - A regra detecta apenas chamadas ao método `Is` do tipo `NSubstitute.Arg`, incluindo usos via alias.
-- A regra só é ativada quando a compilação referencia um tipo `NSubstitute.Arg` e também contém atributos de métodos de teste conhecidos.
+- A regra só é ativada quando a compilação referência um tipo `NSubstitute.Arg` e também contém atributos de métodos de teste conhecidos.
 - A regra reporta diagnósticos apenas dentro de tipos de teste, ou seja, tipos que contêm métodos reconhecidos como testes.
 - A regra não verifica se `Is.Equivalent` existe no projeto consumidor.
 - A regra não fornece code fix porque a substituição adequada depende do caso de uso específico e da API de equivalência adotada pelo consumidor.
@@ -71,7 +71,7 @@ Esta regra pode não ser adequada se:
 
 - **Qualidade de código**: mais consistência e legibilidade entre suítes de teste
 - **Manutencao**: mais fácilidade para atualizar padrões de asserção de forma centralizada
-- **Padroes do time**: reforca a adoção de convenções de teste compartilhádas pelo time
+- **Padrões do time**: reforca a adoção de convenções de teste compartilhádas pelo time
 
 ## Observações
 

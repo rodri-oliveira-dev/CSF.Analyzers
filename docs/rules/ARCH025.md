@@ -2,15 +2,15 @@
 
 ## Objetivo
 
-Garantir que `ILogger<TCategoryName>` use como categoria o proprio tipo da classe onde o logger esta declarado ou injetado.
+Garantir que `ILogger<TCategoryName>` use como categoria o proprio tipo da classe onde o logger está declarado ou injetado.
 
 ## Motivacao
 
-O tipo generico de `ILogger<T>` define a categoria de log usada pelos providers. Quando uma classe injeta `ILogger<OutroTipo>`, os eventos passam a aparecer associados ao componente errado, dificultando filtros, dashboards, alertas e investigacao de incidentes.
+O tipo genérico de `ILogger<T>` define a categoria de log usada pelos providers. Quando uma classe injeta `ILogger<OutroTipo>`, os eventos passam a aparecer associados ao componente errado, dificultando filtros, dashboards, alertas e investigação de incidentes.
 
-Manter a categoria alinhada com o tipo que emite o log deixa a observabilidade mais previsivel e evita que refactors ou copias de codigo contaminem os nomes de categoria.
+Manter a categoria alinhada com o tipo que emite o log deixa a observabilidade mais previsível e evita que refactors ou cópias de código contaminem os nomes de categoria.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 using Microsoft.Extensions.Logging;
@@ -32,7 +32,7 @@ public sealed class OrderService
 }
 ```
 
-## Codigo conforme
+## Código conforme
 
 ```csharp
 using Microsoft.Extensions.Logging;
@@ -50,7 +50,7 @@ public sealed class CustomerService
 }
 ```
 
-Classes genericas tambem sao aceitas quando a categoria corresponde ao tipo construido da classe:
+Classes genéricas também são aceitas quando a categoria corresponde ao tipo construído da classe:
 
 ```csharp
 using Microsoft.Extensions.Logging;
@@ -66,7 +66,7 @@ public sealed class Repository<TEntity>
 }
 ```
 
-## Configuracao
+## Configuração
 
 A severidade pode ser configurada normalmente:
 
@@ -75,27 +75,27 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH025.severity = warning
 ```
 
-A regra nao possui opcoes proprias.
+A regra não possui opções próprias.
 
-## Heuristica
+## Heurística
 
-O analyzer usa analise semantica e reporta `Microsoft.Extensions.Logging.ILogger<TCategoryName>` quando todos os pontos abaixo sao verdadeiros:
+O analyzer usa análise semântica e reporta `Microsoft.Extensions.Logging.ILogger<TCategoryName>` quando todos os pontos abaixo são verdadeiros:
 
-- o logger aparece em campo, propriedade ou parametro de construtor;
-- o tipo esta dentro de uma classe;
-- `TCategoryName` nao e o simbolo da classe atual;
-- o contexto nao e reconhecido como teste por atributos comuns de xUnit, NUnit ou MSTest.
+- o logger aparece em campo, propriedade ou parâmetro de construtor;
+- o tipo está dentro de uma classe;
+- `TCategoryName` não é o símbolo da classe atual;
+- o contexto não é reconhecido como teste por atributos comuns de xUnit, NUnit ou MSTest.
 
-`ILogger` sem tipo generico nao e reportado. Comparacoes sao feitas por simbolo, nao por nome textual, para reduzir falsos positivos com namespaces, classes genericas e tipos aninhados.
+`ILogger` sem tipo genérico não é reportado. Comparações são feitas por símbolo, não por nome textual, para reduzir falsos positivos com namespaces, classes genéricas e tipos aninhados.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A regra cobre apenas declaracoes diretas de `ILogger<T>` em campos, propriedades e parametros de construtor.
-- A regra nao valida factories customizadas nem categorias criadas manualmente por `ILoggerFactory.CreateLogger`.
-- Quando uma categoria diferente for intencional, configure a severidade por arquivo ou trecho conforme a politica do projeto.
+- A regra cobre apenas declarações diretas de `ILogger<T>` em campos, propriedades e parâmetros de construtor.
+- A regra não valida factories customizadas nem categorias criadas manualmente por `ILoggerFactory.CreateLogger`.
+- Quando uma categoria diferente for intencional, configure a severidade por arquivo ou trecho conforme a política do projeto.
 
 ## Impacto esperado
 
 - Categorias de log alinhadas ao componente que emite os eventos.
-- Filtros e dashboards por categoria mais confiaveis.
-- Menos ruido causado por copias de codigo que mantem `ILogger<T>` apontando para outro tipo.
+- Filtros e dashboards por categoria mais confiáveis.
+- Menos ruído causado por cópias de código que mantém `ILogger<T>` apontando para outro tipo.

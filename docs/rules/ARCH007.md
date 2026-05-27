@@ -85,7 +85,7 @@ A regra reporta quando encontra, **dentro do corpo de um loop**, uma atribuiçã
 4. **`string.Concat` com auto-referência**: `s = string.Concat(s, expr)`
 
 ### Reducao de falsó positivo
-- A regra **não reporta** concatenação em variáveis locais do tipo `string` **declaradas dentro do corpo do loop**. Exemplo tipico: construir uma string temporaria por iteração.
+- A regra **não reporta** concatenação em variáveis locais do tipo `string` **declaradas dentro do corpo do loop**. Exemplo tipico: construir uma string temporária por iteração.
 - A regra **não reporta** quando o valor atribuido não faz referência ao próprio alvo (ex.: `s = x + y`).
 - A regra **não reporta** loops com condição constante `false` (ex.: `while(false)`), porque o corpo nunca executa.
 - A regra **não reporta** `do { ... } while(false)` porque, apesar de executar uma vez, é um caso tipicamente trivial.

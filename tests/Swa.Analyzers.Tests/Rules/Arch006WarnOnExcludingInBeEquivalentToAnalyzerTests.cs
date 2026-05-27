@@ -369,7 +369,7 @@ public sealed class SampleTests
     [Xunit.Fact]
     public void Test()
     {
-        // This is intentionally outside any BeEquivalentTo options delegate.
+        // Isto está intencionalmente fora de qualquer delegate de opções de BeEquivalentTo.
         var options = new FluentAssertions.Equivalency.EquivalencyAssertionOptions();
         options.Excluding(x => true);
     }

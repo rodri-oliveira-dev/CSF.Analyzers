@@ -414,7 +414,7 @@ public sealed class Derived : Base
 }
 """;
 
-        // Only the abstract base declaration is reported; the override is not.
+        // Apenas a declaração da base abstrata é reportada; o override não é.
         var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
             .WithSpan(5, 21, 5, 29);
 
@@ -438,7 +438,7 @@ public sealed class Provider : IDateTimeProvider
 }
 """;
 
-        // Only the interface declaration is reported; the explicit implementation is not.
+        // Apenas a declaração da interface é reportada; a implementação explícita não é.
         var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
             .WithSpan(5, 5, 5, 13);
 
@@ -462,7 +462,7 @@ public sealed class Provider : IDateTimeProvider
 }
 """;
 
-        // Only the interface declaration is reported; the implicit implementation is not.
+        // Apenas a declaração da interface é reportada; a implementação implícita não é.
         var expected = Verifier<Arch012PreferDateTimeOffsetOverDateTimeAnalyzer>.Diagnostic("ARCH012")
             .WithSpan(5, 5, 5, 13);
 
