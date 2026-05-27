@@ -1,12 +1,12 @@
-# ARCH026: Evite configuracao insegura de CORS
+# ARCH026: Evite configuração insegura de CORS
 
 ## Objetivo
 
-Detectar politicas CORS do ASP.NET Core que combinam origem wildcard com credenciais.
+Detectar políticas CORS do ASP.NET Core que combinam origem wildcard com credenciais.
 
-`AllowAnyOrigin()` junto com `AllowCredentials()` cria uma politica perigosa: cookies, certificados de cliente ou cabecalhos de autorizacao podem ser aceitos em uma configuracao que comunica permissao ampla demais. A alternativa segura e declarar origens explicitas com `WithOrigins(...)` quando credenciais forem necessarias.
+`AllowAnyOrigin()` junto com `AllowCredentials()` cria uma política perigosa: cookies, certificados de cliente ou cabecalhos de autorização podem ser aceitos em uma configuração que comunica permissao ampla demais. A alternativa segura e declarar origens explicitas com `WithOrigins(...)` quando credenciais forem necessárias.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -24,7 +24,7 @@ public static class CorsConfiguration
 }
 ```
 
-## Codigo conforme
+## Código conforme
 
 ```csharp
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -43,24 +43,24 @@ public static class CorsConfiguration
 }
 ```
 
-## Configuracao
+## Configuração
 
-Por padrao, `AllowAnyOrigin()` isolado e permitido. Essa escolha evita falso positivo em APIs publicas que nao aceitam credenciais.
+Por padrão, `AllowAnyOrigin()` isolado é permitido. Essa escolha evita falso positivo em APIs públicas que não aceitam credenciais.
 
-Projetos que querem uma politica mais rigida podem bloquear tambem qualquer uso de `AllowAnyOrigin()`:
+Projetos que querem uma política mais rigida podem bloquear também qualquer uso de `AllowAnyOrigin()`:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH026.disallow_any_origin = true
 ```
 
-Valores ausentes, `false` ou invalidos mantem o comportamento padrao.
+Valores ausentes, `false` ou inválidos mantém o comportamento padrão.
 
-### Fallback das opcoes
+### Fallback das opções
 
-- `disallow_any_origin`: booleano; default `false`. Somente `true` habilita a politica mais rigida. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `false`.
+- `disallow_any_origin`: booleano; default `false`. Somente `true` habilita a política mais rigida. Valores booleanos aceitam casing variado; valor ausente, vazio ou inválido usa `false`.
 
-O fallback e permissivo apenas para o bloqueio opcional de `AllowAnyOrigin()` isolado; a combinacao `AllowAnyOrigin()` com `AllowCredentials()` continua sendo reportada.
+O fallback é permissivo apenas para o bloqueio opcional de `AllowAnyOrigin()` isolado; a combinacao `AllowAnyOrigin()` com `AllowCredentials()` continua sendo reportada.
 
 A severidade pode ser configurada normalmente:
 
@@ -69,9 +69,9 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH026.severity = warning
 ```
 
-## Heuristica
+## Heurística
 
-O analyzer usa analise semantica e reconhece apenas chamadas em `Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder`.
+O analyzer usa análise semântica e reconhece apenas chamadas em `Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder`.
 
 A regra reporta quando encontra:
 
@@ -81,19 +81,19 @@ A regra reporta quando encontra:
 Para reduzir falsos positivos, a regra ignora:
 
 - `WithOrigins("https://...")` com `AllowCredentials()`;
-- `AllowAnyOrigin()` sem credenciais quando a opcao rigida nao esta habilitada;
-- codigo dentro de contexto de teste xUnit, NUnit ou MSTest reconhecido pelo projeto;
-- metodos customizados com os mesmos nomes fora de `CorsPolicyBuilder`;
-- codigo gerado, seguindo a configuracao padrao dos analyzers do projeto.
+- `AllowAnyOrigin()` sem credenciais quando a opção rigida não está habilitada;
+- código dentro de contexto de teste xUnit, NUnit ou MSTest reconhecido pelo projeto;
+- métodos customizados com os mesmos nomes fora de `CorsPolicyBuilder`;
+- código gerado, seguindo a configuração padrão dos analyzers do projeto.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A regra analisa apenas cadeias fluentemente encadeadas no codigo fonte. Ela nao infere chamadas separadas por variaveis intermediarias ou metodos auxiliares.
-- Configuracoes aplicadas dinamicamente por delegates, reflection ou extensoes customizadas nao sao expandidas nesta versao.
-- A opcao `disallow_any_origin` e booleana: apenas `true` habilita a politica mais restritiva.
+- A regra analisa apenas cadeias fluentemente encadeadas no código fonte. Ela não infere chamadas separadas por variáveis intermediarias ou métodos auxiliares.
+- Configuracoes aplicadas dinamicamente por delegates, reflection ou extensões customizadas não são expandidas nesta versão.
+- A opção `disallow_any_origin` é booleana: apenas `true` habilita a política mais restritiva.
 
 ## Impacto esperado
 
 - Menos risco de expor endpoints autenticados para origens amplas demais.
 - Politicas CORS com credenciais ficam mais faceis de auditar.
-- Times que exigem allowlist de origem podem reforcar essa decisao por `.editorconfig`.
+- Times que exigem allowlist de origem podem reforcar essa decisão por `.editorconfig`.

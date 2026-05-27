@@ -45,7 +45,7 @@ public sealed class Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer : Diagnostic
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 
-#pragma warning disable RS1013 // ARCH032 intentionally inspects MSBuild AdditionalFiles once at compilation end.
+#pragma warning disable RS1013 // ARCH032 inspeciona intencionalmente AdditionalFiles MSBuild uma vez ao fim da compilação.
         context.RegisterCompilationStartAction(static compilationContext =>
         {
             var optionsProvider = compilationContext.Options.AnalyzerConfigOptionsProvider;

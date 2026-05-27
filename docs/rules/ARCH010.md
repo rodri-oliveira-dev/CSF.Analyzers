@@ -1,16 +1,16 @@
 # ARCH010: Exija propagacao de CancellationToken
 
 ## Objetivo
-Detectar invocacoes de metodos assincronos que podem aceitar um `CancellationToken` quando um token ja esta disponivel no escopo atual, mas nao esta sendo passado.
+Detectar invocações de métodos assíncronos que podem aceitar um `CancellationToken` quando um token já está disponível no escopo atual, mas não está sendo passado.
 
 ## Motivacao
-Cancelamento cooperativo e uma base importante de codigo assincrono responsivo e escalavel. Quando um metodo recebe um `CancellationToken` e chama outro metodo que suporta cancelamento, deixar de propagar o token:
+Cancelamento cooperativo é uma base importante de código assíncrono responsivo e escalavel. Quando um método recebe um `CancellationToken` e chama outro método que suporta cancelamento, deixar de propagar o token:
 
 - Impede que o trabalho chamado seja cancelado quando o chamador for cancelado.
 - Obriga o chamador a esperar a conclusao completa de suboperacoes que poderiam ser canceladas.
 - Torna APIs menos previsiveis, porque consumidores esperam que o cancelamento flua pela pilha de chamadas.
 
-## Nao conforme
+## Não conforme
 
 ```csharp
 using System.Threading;
@@ -150,18 +150,18 @@ public sealed class Consumer
 ```
 
 ## Cobertura
-ARCH010 usa analise semantica para detectar chamadas a metodos assincronos que retornam `Task`, `Task<T>`, `ValueTask` ou `ValueTask<T>` e que podem receber `CancellationToken` por:
+ARCH010 usa análise semântica para detectar chamadas a métodos assíncronos que retornam `Task`, `Task<T>`, `ValueTask` ou `ValueTask<T>` e que podem receber `CancellationToken` por:
 
 - Parametro opcional omitido, por exemplo `DoWorkAsync(id, CancellationToken cancellationToken = default)`.
-- Sobrecarga com a mesma assinatura de prefixo e um parametro final adicional `CancellationToken`.
-- Extension methods reduzidos, incluindo metodos comuns de consulta do Entity Framework Core como `ToListAsync`, `FirstOrDefaultAsync`, `SingleOrDefaultAsync`, `AnyAsync` e `CountAsync`.
+- Sobrecarga com a mesma assinatura de prefixo e um parâmetro final adicional `CancellationToken`.
+- Extension methods reduzidos, incluindo métodos comuns de consulta do Entity Framework Core como `ToListAsync`, `FirstOrDefaultAsync`, `SingleOrDefaultAsync`, `AnyAsync` e `CountAsync`.
 - APIs de infraestrutura comuns com overload de token, incluindo `HttpClient.GetAsync`, `PostAsync`, `PutAsync`, `DeleteAsync` e `SendAsync`.
 - Metodos de persistencia como `SaveChangesAsync`.
 
-O token disponivel pode vir de parametros, variaveis locais, campos ou propriedades no escopo acessivel. A regra e baseada no tipo `System.Threading.CancellationToken`, entao nomes como `cancellationToken`, `ct` e `token` sao aceitos.
+O token disponível pode vir de parâmetros, variáveis locais, campos ou propriedades no escopo acessível. A regra é baseada no tipo `System.Threading.CancellationToken`, entao nomes como `cancellationToken`, `ct` e `token` são aceitos.
 
-## Configuracao
-Esta regra nao expoe opcoes customizadas de `.editorconfig`.
+## Configuração
+Esta regra não expõe opções customizadas de `.editorconfig`.
 
 A severidade pode ser configurada normalmente:
 
@@ -170,31 +170,31 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH010.severity = warning
 ```
 
-## Limitacoes conhecidas
-- A deteccao de overloads e conservadora: a sobrecarga deve ter exatamente um parametro a mais do que o metodo invocado, os parametros de prefixo devem ter tipos compativeis, e o parametro adicional deve ser `CancellationToken`.
-- Sobrecargas com rearranjo de parametros, parametros intermediarios extras ou escolhas dependentes de conversoes complexas podem nao ser sinalizadas.
-- A regra nao tenta escolher qual token deve ser propagado quando mais de um `CancellationToken` esta disponivel.
-- A regra nao avalia se uma variavel `CancellationToken` e de fato utilizavel, se ja foi cancelada, ou se representa `CancellationToken.None`.
-- Uma chamada que passa explicitamente `CancellationToken.None` ou `default` e tratada como uma decisao intencional e nao gera diagnostico.
+## Limitações conhecidas
+- A detecção de overloads é conservadora: a sobrecarga deve ter exatamente um parâmetro a mais do que o método invocado, os parâmetros de prefixo devem ter tipos compatíveis, e o parâmetro adicional deve ser `CancellationToken`.
+- Sobrecargas com rearranjo de parâmetros, parâmetros intermediarios extras ou escolhas dependentes de conversoes complexas podem não ser sinalizadas.
+- A regra não tenta escolher qual token deve ser propagado quando mais de um `CancellationToken` está disponível.
+- A regra não avalia se uma variável `CancellationToken` e de fato utilizável, se já foi cancelada, ou se representa `CancellationToken.None`.
+- Uma chamada que passa explicitamente `CancellationToken.None` ou `default` e tratada como uma decisão intencional e não gera diagnóstico.
 
-## Quando nao usar
+## Quando não usar
 Em casos raros, voce pode omitir um token intencionalmente:
 
 - Quando a suboperacao precisa terminar completamente mesmo que a operacao pai seja cancelada.
-- Quando a API chamada e conhecida por ignorar o token e passa-lo adiciona ruido.
+- Quando a API chamada e conhecida por ignorar o token e passa-lo adiciona ruído.
 
-Nesses casos, suprima o diagnostico com um comentario claro explicando a omissao intencional.
+Nesses casos, suprima o diagnóstico com um comentário claro explicando a omissao intencional.
 
 ## Impacto esperado
-- Melhor resposta a cancelamento em toda a aplicacao.
+- Melhor resposta a cancelamento em toda a aplicação.
 - Menor latencia quando usuarios ou sistemas solicitam cancelamento.
-- Comportamento mais previsivel de APIs assincronas.
+- Comportamento mais previsível de APIs assincronas.
 
-## Observacoes sobre falsos positivos / heuristicas
+## Observacoes sobre falsos positivos / heurísticas
 O analyzer permanece silencioso quando:
 
-- Nenhum `CancellationToken` esta disponivel no escopo lexico atual.
-- A invocacao ja passa um argumento `CancellationToken`.
-- O metodo invocado e sincrono, mesmo que tenha parametro opcional ou sobrecarga com `CancellationToken`.
-- O metodo invocado nao tem sobrecarga ou parametro opcional que aceite `CancellationToken`.
-- A unica sobrecarga com `CancellationToken` tem uma assinatura de parametros fundamentalmente diferente.
+- Nenhum `CancellationToken` está disponível no escopo lexico atual.
+- A invocacao já passa um argumento `CancellationToken`.
+- O método invocado e sincrono, mesmo que tenha parâmetro opcional ou sobrecarga com `CancellationToken`.
+- O método invocado não tem sobrecarga ou parâmetro opcional que aceite `CancellationToken`.
+- A única sobrecarga com `CancellationToken` tem uma assinatura de parâmetros fundamentalmente diferente.

@@ -35,8 +35,8 @@ internal static class RealFrameworkVerifier<TAnalyzer>
             ReferenceAssemblies = TargetReferenceAssemblies,
         };
 
-        // These tests complement the fast stub-based suite by compiling against real
-        // framework metadata, including extension methods, namespaces, and overloads.
+        // Estes testes complementam a suíte rápida baseada em stubs compilando contra metadados reais
+        // de frameworks, incluindo extension methods, namespaces e overloads.
         foreach (var reference in CreateReferences(frameworkAssemblies).Concat(CreateReferences(referenceAssemblyPaths)))
         {
             test.TestState.AdditionalReferences.Add(reference);

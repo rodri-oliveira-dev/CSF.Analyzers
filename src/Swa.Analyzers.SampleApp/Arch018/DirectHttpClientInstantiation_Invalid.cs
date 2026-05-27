@@ -6,7 +6,7 @@ public sealed class DirectHttpClientInstantiationInvalid
 {
     public void Send()
     {
-        // ARCH018: Avoid direct HttpClient instantiation.
+        // ARCH018: evite instanciação direta de HttpClient.
         using var client = new HttpClient();
     }
 }

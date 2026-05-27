@@ -28,7 +28,7 @@ internal static class AnalyzerPerformanceRunner
     {
         var compilation = CreateCompilation(sources);
 
-        // These tests are guardrails for gross regressions, not scientific benchmarks.
+        // Estes testes são guardrails contra regressões grandes, não benchmarks científicos.
         var stopwatch = Stopwatch.StartNew();
         var diagnostics = await compilation
             .WithAnalyzers(ImmutableArray.Create(analyzer), options: null)

@@ -24,7 +24,7 @@ public sealed class Arch008ProhibitManualPathCompositionAnalyzer : DiagnosticAna
 
     private static readonly ImmutableHashSet<string> PathParameterNames = ImmutableHashSet.Create(
         StringComparer.OrdinalIgnoreCase,
-        // Common BCL names for path parameters.
+        // Nomes comuns da BCL para parâmetros de path.
         "path",
         "fileName",
         "sourceFileName",
@@ -155,7 +155,7 @@ public sealed class Arch008ProhibitManualPathCompositionAnalyzer : DiagnosticAna
 
     private static bool IsMeaningfulInterpolatedString(IInterpolatedStringOperation interpolatedString)
     {
-        // Avoid noise for identity interpolations like $"{path}".
+        // Evita ruído para interpolações de identidade como $"{path}".
         if (interpolatedString.Syntax is InterpolatedStringExpressionSyntax syntax)
         {
             if (syntax.Contents.Count == 1 && syntax.Contents[0] is InterpolationSyntax)

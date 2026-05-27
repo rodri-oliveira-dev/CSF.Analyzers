@@ -21,7 +21,7 @@ public sealed class PrematureOrdersQuery
 
     public async Task<IEnumerable<Order>> FilterAfterAsyncMaterializationAsync()
     {
-        // ARCH022: filtro imediatamente apos ToListAsync() acontece em memoria.
+        // ARCH022: filtro imediatamente após ToListAsync() acontece em memória.
         var orders = await _db.Orders.ToListAsync();
         return orders.Where(order => order.IsOpen);
     }

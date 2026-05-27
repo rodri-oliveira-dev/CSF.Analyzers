@@ -45,7 +45,7 @@ public sealed class Arch030AvoidDuplicatedPackageReferencesAcrossProjectsAnalyze
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 
-#pragma warning disable RS1013 // ARCH030 intentionally inspects all project AdditionalFiles once at compilation end.
+#pragma warning disable RS1013 // ARCH030 inspeciona intencionalmente todos os AdditionalFiles de projeto uma vez ao fim da compilação.
         context.RegisterCompilationStartAction(static compilationContext =>
         {
             var optionsProvider = compilationContext.Options.AnalyzerConfigOptionsProvider;

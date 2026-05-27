@@ -61,7 +61,7 @@ dotnet_diagnostic.ARCH003.severity = info
 
 ## Limitações conhecidas
 - O analyzer mira apenas `NotBeNull()` do **FluentAssertions**.
-- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referenciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
+- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referênciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
 - O analyzer reporta quando a invocação está dentro de um método de teste conhecido (por exemplo `[Fact]` / `[Theory]`) **ou** dentro de um *tipo de teste* (um tipo que contém pelo menos um método de teste conhecido).
 
 ## Quando não usar

@@ -35,14 +35,14 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
             var testMethodAttributes = TestContextHelper.GetKnownTestMethodAttributes(compilationContext.Compilation);
             if (testMethodAttributes.IsDefaultOrEmpty)
             {
-                // Avoid noise outside test projects.
+                // Evita ruído fora de projetos de teste.
                 return;
             }
 
             var presentFrameworks = GetPresentDisallowedFrameworks(compilationContext.Compilation);
             if (presentFrameworks.IsDefaultOrEmpty)
             {
-                // Fast exit when no known disallowed mocking framework is referenced.
+                // Saída rápida quando nenhum framework de mock proibido conhecido é referenciado.
                 return;
             }
 
@@ -85,7 +85,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
     {
         if (IsDeclaredInsideDisallowedFramework(context.ContainingSymbol, frameworksByRootNamespace))
         {
-            // Avoid reporting inside the framework itself (relevant for tests that stub the framework in-source).
+            // Evita reportar dentro do próprio framework, relevante para testes com stubs no código fonte.
             return;
         }
 
@@ -129,8 +129,8 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
 
         if (creation.Syntax is ImplicitObjectCreationExpressionSyntax && ShouldSkipImplicitNewDiagnostic(creation.Syntax))
         {
-            // Avoid double-reporting when the type is already explicit at the declaration site
-            // (e.g., `Moq.Mock<IFoo> mock = new();`). In those cases, the declaration type is already reported.
+            // Evita diagnóstico duplicado quando o tipo já está explícito no ponto de declaração
+            // (ex.: `Moq.Mock<IFoo> mock = new();`). Nesses casos, o tipo da declaração já é reportado.
             return;
         }
 
@@ -190,17 +190,17 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
 
         if (method.MethodKind is MethodKind.PropertyGet or MethodKind.PropertySet)
         {
-            // Property types are handled by AnalyzeProperty.
+            // Tipos de propriedade são tratados por AnalyzeProperty.
             return;
         }
 
         if (method.MethodKind is MethodKind.EventAdd or MethodKind.EventRemove)
         {
-            // Event accessors are not interesting for this rule.
+            // Accessors de evento não interessam para esta regra.
             return;
         }
 
-        // Return type
+        // Tipo de retorno
         if (TryGetDisallowedFrameworkName(method.ReturnType, frameworksByRootNamespace, out var returnFrameworkName))
         {
             var location = GetReturnTypeLocation(method);
@@ -210,7 +210,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
             }
         }
 
-        // Parameters
+        // Parâmetros
         foreach (var parameter in method.Parameters)
         {
             if (!TryGetDisallowedFrameworkName(parameter.Type, frameworksByRootNamespace, out var frameworkName))
@@ -237,13 +237,13 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
 
         var declaration = (VariableDeclarationSyntax)context.Node;
 
-        // Only local variable declarations (fields are handled by symbol analysis)
+        // Apenas declarações de variáveis locais; campos são tratados pela análise de símbolos
         if (declaration.Parent is not (LocalDeclarationStatementSyntax or ForStatementSyntax))
         {
             return;
         }
 
-        // Skip 'var' declarations to avoid noise where the type is inferred
+        // Ignora declarações `var` para evitar ruído quando o tipo é inferido
         if (declaration.Type is IdentifierNameSyntax identifierName && identifierName.Identifier.Text == "var")
         {
             return;
@@ -282,7 +282,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
             return;
         }
 
-        // `using X = ...;` still uses Name to represent the imported namespace/type.
+        // `using X = ...;` ainda usa Name para representar o namespace/tipo importado.
         var symbol = context.SemanticModel.GetSymbolInfo(usingDirective.Name, context.CancellationToken).Symbol;
         if (symbol is null)
         {
@@ -338,7 +338,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
             return true;
         }
 
-        // Arrays (e.g., Mock<T>[] or List<Mock<T>>[])
+        // Arrays (ex.: Mock<T>[] ou List<Mock<T>>[])
         if (type is IArrayTypeSymbol arrayType)
         {
             return TryGetDisallowedFrameworkName(arrayType.ElementType, frameworksByRootNamespace, out frameworkName);
@@ -532,10 +532,10 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
 
     private static bool ShouldSkipImplicitNewDiagnostic(SyntaxNode implicitObjectCreationSyntax)
     {
-        // We only want to skip when there is an explicit type declaration near the `new()` site,
-        // because the symbol analyzers / variable declaration analysis already report the same framework.
+        // Só queremos ignorar quando há declaração explícita de tipo perto do ponto de `new()`,
+        // porque os analyzers de símbolo/análise de declaração de variável já reportam o mesmo framework.
 
-        // Local/field variable declaration: `SomeType x = new();`
+        // Declaração de variável local/campo: `SomeType x = new();`
         if (implicitObjectCreationSyntax.Parent is EqualsValueClauseSyntax equalsValue
             && equalsValue.Parent is VariableDeclaratorSyntax declarator
             && declarator.Parent is VariableDeclarationSyntax variableDeclaration)
@@ -543,14 +543,14 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
             return !IsVarTypeSyntax(variableDeclaration.Type);
         }
 
-        // Property initializer: `SomeType X { get; } = new();`
+        // Inicializador de propriedade: `SomeType X { get; } = new();`
         if (implicitObjectCreationSyntax.Parent is EqualsValueClauseSyntax propertyEqualsValue
             && propertyEqualsValue.Parent is PropertyDeclarationSyntax propertyDeclaration)
         {
             return !IsVarTypeSyntax(propertyDeclaration.Type);
         }
 
-        // Parameter default: `SomeType x = new()`
+        // Valor padrão de parâmetro: `SomeType x = new()`
         if (implicitObjectCreationSyntax.Parent is EqualsValueClauseSyntax parameterEqualsValue
             && parameterEqualsValue.Parent is ParameterSyntax parameterSyntax
             && parameterSyntax.Type is not null)
@@ -569,8 +569,8 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
 
     private static Location GetObjectCreationTypeLocation(SyntaxNode syntax)
     {
-        // For regular object creation, report on the explicit type.
-        // For target-typed `new()` (implicit object creation), fall back to the `new` keyword.
+        // Para criação regular de objeto, reporta no tipo explícito.
+        // Para `new()` com tipo alvo (criação implícita), usa a palavra-chave `new` como fallback.
         return syntax switch
         {
             ObjectCreationExpressionSyntax creation => GetTypeSyntaxNameLocation(creation.Type),
@@ -593,7 +593,7 @@ public sealed class Arch013RestrictMockingFrameworksToNSubstituteAnalyzer : Diag
 
     private static Location GetUsingDirectiveRootNameLocation(NameSyntax nameSyntax)
     {
-        // For `using Moq.Language.Flow;` we want to highlight the root `Moq`.
+        // Para `using Moq.Language.Flow;`, queremos destacar a raiz `Moq`.
         return nameSyntax switch
         {
             QualifiedNameSyntax qualified => GetUsingDirectiveRootNameLocation(qualified.Left),

@@ -11,5 +11,5 @@ internal static class DuplicatedMsBuildPropertiesValid
     // MyApp.csproj
     // <OutputType>Exe</OutputType>
     //
-    // O projeto mantem apenas propriedades especificas dele.
+    // O projeto mantém apenas propriedades específicas dele.
 }

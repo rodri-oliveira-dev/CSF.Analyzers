@@ -1,12 +1,12 @@
-# ARCH028: Proiba propriedades mutaveis em records
+# ARCH028: Proiba propriedades mutáveis em records
 
 ## Objetivo
 
-Detectar propriedades com `set` mutavel em `record`, `record class`, `record struct` e `readonly record struct`.
+Detectar propriedades com `set` mutável em `record`, `record class`, `record struct` e `readonly record struct`.
 
-Records normalmente representam estado imutavel, eventos, comandos, respostas ou modelos de transporte. Um setter mutavel permite alteracao depois da criacao do objeto e reduz a previsibilidade do codigo que consome esse valor.
+Records normalmente representam estado imutável, eventos, comandos, respostas ou modelos de transporte. Um setter mutável permite alteração depois da criação do objeto e reduz a previsibilidade do código que consome esse valor.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 public record Customer
@@ -15,7 +15,7 @@ public record Customer
 }
 ```
 
-Tambem ha diagnostico para propriedades `required` quando o setter continua mutavel:
+Também há diagnóstico para propriedades `required` quando o setter continua mutável:
 
 ```csharp
 public record Customer
@@ -24,9 +24,9 @@ public record Customer
 }
 ```
 
-## Codigo conforme
+## Código conforme
 
-Use construtor primario quando o valor faz parte do estado principal do record:
+Use construtor primário quando o valor faz parte do estado principal do record:
 
 ```csharp
 public record Customer(string Name);
@@ -41,7 +41,7 @@ public record Customer
 }
 ```
 
-Use propriedade somente leitura quando o valor e calculado ou definido internamente:
+Use propriedade somente leitura quando o valor é calculado ou definido internamente:
 
 ```csharp
 public record Customer
@@ -50,7 +50,7 @@ public record Customer
 }
 ```
 
-Por padrao, setters nao publicos sao permitidos:
+Por padrão, setters não públicos são permitidos:
 
 ```csharp
 public record Customer
@@ -59,31 +59,31 @@ public record Customer
 }
 ```
 
-## Configuracao
+## Configuração
 
-A regra aceita a opcao abaixo em `.editorconfig`:
+A regra aceita a opção abaixo em `.editorconfig`:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH028.allow_non_public_setters = true
 ```
 
-O valor padrao e `true`. Com esse valor, `private set`, `protected set`, `internal set` e `protected internal set` nao reportam diagnostico.
+O valor padrão e `true`. Com esse valor, `private set`, `protected set`, `internal set` e `protected internal set` não reportam diagnóstico.
 
-Quando configurado como `false`, qualquer setter explicito em record reporta diagnostico, exceto `init`.
+Quando configurado como `false`, qualquer setter explícito em record reporta diagnóstico, exceto `init`.
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH028.allow_non_public_setters = false
 ```
 
-Valores invalidos usam o padrao `true`.
+Valores inválidos usam o padrão `true`.
 
-### Fallback das opcoes
+### Fallback das opções
 
-- `allow_non_public_setters`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `true`.
+- `allow_non_public_setters`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou inválido usa `true`.
 
-O fallback e permissivo para setters nao publicos, preservando o comportamento padrao; setters publicos continuam sendo reportados.
+O fallback é permissivo para setters não públicos, preservando o comportamento padrão; setters públicos continuam sendo reportados.
 
 A severidade pode ser configurada normalmente:
 
@@ -92,27 +92,27 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH028.severity = warning
 ```
 
-## Heuristica
+## Heurística
 
-O analyzer registra propriedades (`PropertyDeclaration`) e verifica o tipo mais proximo que contem a propriedade.
+O analyzer registra propriedades (`PropertyDeclaration`) e verifica o tipo mais próximo que contém a propriedade.
 
 A regra reporta quando:
 
-- o tipo mais proximo e um record;
+- o tipo mais próximo é um record;
 - a propriedade declara accessor `set`;
-- o setter nao e `init`;
-- o setter e publico/sem modificador ou `allow_non_public_setters = false`.
+- o setter não é `init`;
+- o setter é público/sem modificador ou `allow_non_public_setters = false`.
 
-Propriedades geradas pelo construtor primario do record nao aparecem como declaracoes de propriedade no codigo fonte e, por isso, nao sao reportadas.
+Propriedades geradas pelo construtor primário do record não aparecem como declarações de propriedade no código fonte e, por isso, não são reportadas.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A regra analisa declaracoes sintaticas de propriedades. Ela nao tenta inferir mutabilidade por metodos que alteram campos internos.
-- Um setter sem modificador em propriedade nao publica ainda e reportado, porque representa mutabilidade explicita dentro do record.
-- Setters com modificadores invalidos para o contexto ainda podem ser reportados pela sintaxe antes do erro de compilacao do C#.
+- A regra analisa declarações sintaticas de propriedades. Ela não tenta inferir mutabilidade por métodos que alteram campos internos.
+- Um setter sem modificador em propriedade não pública ainda é reportado, porque representa mutabilidade explícita dentro do record.
+- Setters com modificadores inválidos para o contexto ainda podem ser reportados pela sintaxe antes do erro de compilação do C#.
 
 ## Impacto esperado
 
-- Incentiva records com estado previsivel e imutavel.
-- Evita alteracoes acidentais apos a criacao de objetos de transporte.
-- Torna excecoes para setters nao publicos explicitas via `.editorconfig`.
+- Incentiva records com estado previsível e imutável.
+- Evita alterações acidentais após a criação de objetos de transporte.
+- Torna exceções para setters não públicos explicitas via `.editorconfig`.

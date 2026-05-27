@@ -549,7 +549,7 @@ namespace Xunit
     public sealed class FactAttribute : Attribute { }
 }
 
-// Make the real framework "present" for the analyzer.
+// Torna o framework real "presente" para o analyzer.
 namespace Moq
 {
     public sealed class Mock<T> { }

@@ -35,7 +35,7 @@ public sealed class Arch004EnforceSutNamingInUnitTestsAnalyzer : DiagnosticAnaly
             var testMethodAttributes = TestContextHelper.GetKnownTestMethodAttributes(compilationContext.Compilation);
             if (testMethodAttributes.IsDefaultOrEmpty)
             {
-                // Avoid noise outside test projects.
+                // Evita ruído fora de projetos de teste.
                 return;
             }
 
@@ -66,16 +66,16 @@ public sealed class Arch004EnforceSutNamingInUnitTestsAnalyzer : DiagnosticAnaly
 
         if (!TryInferSutTypeNameFromTestTypeName(type.Name, out var inferredSutTypeName))
         {
-            // Intentionally conservative: if we cannot infer the SUT type from the test type name,
-            // the analyzer stays silent to avoid false positives.
+            // Conservador de propósito: se não for possível inferir o tipo do SUT pelo nome do tipo de teste,
+            // o analyzer permanece silencioso para evitar falsos positivos.
             return;
         }
 
         ImmutableArray<IFieldSymbol> sutCandidates = GetSutFieldCandidates(type, inferredSutTypeName);
         if (sutCandidates.Length != 1)
         {
-            // If there is no clear single candidate, stay silent to avoid noise
-            // for helper fields, fixtures, and multiple-subject test types.
+            // Se não houver um candidato único claro, permanece silencioso para evitar ruído
+            // em campos auxiliares, fixtures e tipos de teste com múltiplos sujeitos.
             return;
         }
 
@@ -106,14 +106,14 @@ public sealed class Arch004EnforceSutNamingInUnitTestsAnalyzer : DiagnosticAnaly
                 continue;
             }
 
-            // We intentionally use a naming heuristic based on the test type name.
-            // For example: `OrderServiceTests` -> SUT type name `OrderService`.
+            // Usa intencionalmente uma heurística de nome baseada no tipo de teste.
+            // Exemplo: `OrderServiceTests` -> nome do tipo SUT `OrderService`.
             if (!string.Equals(field.Type.Name, inferredSutTypeName, StringComparison.Ordinal))
             {
                 continue;
             }
 
-            // Keep the analyzer predictable by reporting only for fields declared in source.
+            // Mantém o analyzer previsível reportando apenas campos declarados no código fonte.
             if (field.DeclaringSyntaxReferences.IsDefaultOrEmpty)
             {
                 continue;
@@ -127,7 +127,7 @@ public sealed class Arch004EnforceSutNamingInUnitTestsAnalyzer : DiagnosticAnaly
 
     private static bool TryInferSutTypeNameFromTestTypeName(string testTypeName, out string inferredSutTypeName)
     {
-        // This list is intentionally small; broader patterns can be added later if needed.
+        // Esta lista é intencionalmente pequena; padrões mais amplos podem ser adicionados depois.
         ReadOnlySpan<string> suffixes = ["Tests", "Test", "Specs", "Spec"];
 
         foreach (var suffix in suffixes)

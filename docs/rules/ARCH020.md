@@ -1,12 +1,12 @@
-# ARCH020: Exija autorizacao explicita em endpoints HTTP
+# ARCH020: Exija autorização explícita em endpoints HTTP
 
 ## Objetivo
 
-Garantir que cada endpoint HTTP declare uma decisao explicita de autorizacao: protegido por `[Authorize]`/`RequireAuthorization()` ou intencionalmente publico por `[AllowAnonymous]`/`AllowAnonymous()`.
+Garantir que cada endpoint HTTP declare uma decisão explícita de autorização: protegido por `[Authorize]`/`RequireAuthorization()` ou intencionalmente público por `[AllowAnonymous]`/`AllowAnonymous()`.
 
-A regra evita endpoints novos sem metadado de autorizacao por esquecimento, mas e conservadora para nao bloquear endpoints tecnicos comuns.
+A regra evita endpoints novos sem metadado de autorização por esquecimento, mas e conservadora para não bloquear endpoints tecnicos comuns.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ public sealed class OrdersController : ControllerBase
 app.MapGet("/orders", () => Results.Ok());
 ```
 
-## Codigo conforme
+## Código conforme
 
 ```csharp
 using Microsoft.AspNetCore.Authorization;
@@ -52,16 +52,16 @@ var authorized = app.MapGroup("/api")
 authorized.MapGet("/orders", () => Results.Ok());
 ```
 
-## Configuracao
+## Configuração
 
-`allowed_routes` permite rotas publicas tecnicas sem metadado explicito. O valor deve ser um array JSON de strings. Rotas sao comparadas sem diferenciar maiusculas de minusculas; valores terminados em `*` funcionam como prefixo:
+`allowed_routes` permite rotas públicas técnicas sem metadado explícito. O valor deve ser um array JSON de strings. Rotas são comparadas sem diferenciar maiúsculas de minúsculas; valores terminados em `*` funcionam como prefixo:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH020.allowed_routes = ["/internal/status", "/diagnostics/*"]
 ```
 
-`allowed_methods` permite nomes de actions ou metodos `Map*` sem metadado explicito:
+`allowed_methods` permite nomes de actions ou métodos `Map*` sem metadado explícito:
 
 ```ini
 [*.cs]
@@ -75,17 +75,17 @@ dotnet_diagnostic.ARCH020.allowed_methods = ["Ping"]
 dotnet_diagnostic.ARCH020.ignored_namespaces = ["Sample.PublicEndpoints"]
 ```
 
-As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Se uma opcao JSON estiver malformada, a opcao e ignorada e a regra usa o comportamento mais restritivo. Isso evita liberar endpoints por configuracao invalida.
+As opções em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Se uma opção JSON estiver malformada, a opção é ignorada e a regra usa o comportamento mais restritivo. Isso evita liberar endpoints por configuração inválida.
 
-### Fallback das opcoes
+### Fallback das opções
 
-- `allowed_routes`: array JSON de strings; default vazio. Rotas sao normalizadas e comparadas sem diferenciar maiusculas de minusculas. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
-- `allowed_methods`: array JSON de strings; default vazio. Nomes sao aparados e comparados com casing exato. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
-- `ignored_namespaces`: array JSON de strings; default vazio. Namespaces sao aparados e comparados com casing exato, incluindo namespaces filhos. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
+- `allowed_routes`: array JSON de strings; default vazio. Rotas são normalizadas e comparadas sem diferenciar maiúsculas de minúsculas. Entradas vazias são ignoradas. JSON vazio, inválido ou malformado e ignorado, sem criar exceções.
+- `allowed_methods`: array JSON de strings; default vazio. Nomes são aparados e comparados com casing exato. Entradas vazias são ignoradas. JSON vazio, inválido ou malformado e ignorado, sem criar exceções.
+- `ignored_namespaces`: array JSON de strings; default vazio. Namespaces são aparados e comparados com casing exato, incluindo namespaces filhos. Entradas vazias são ignoradas. JSON vazio, inválido ou malformado e ignorado, sem criar exceções.
 
-O fallback dessas opcoes e restritivo: configuracao ausente ou invalida nao libera endpoints.
+O fallback dessas opções é restritivo: configuração ausente ou inválida não libera endpoints.
 
-## Excecoes padrao
+## Excecoes padrão
 
 Para reduzir falsos positivos em endpoints tecnicos, a regra ignora rotas literais que contenham estes segmentos:
 
@@ -93,11 +93,11 @@ Para reduzir falsos positivos em endpoints tecnicos, a regra ignora rotas litera
 health, healthz, swagger, metrics, ready, readiness, live, liveness
 ```
 
-Endpoints tecnicos fora dessa lista devem usar `[AllowAnonymous]`, `.AllowAnonymous()` ou uma excecao configurada em `.editorconfig`.
+Endpoints tecnicos fora dessa lista devem usar `[AllowAnonymous]`, `.AllowAnonymous()` ou uma exceção configurada em `.editorconfig`.
 
-## Heuristica
+## Heurística
 
-O analyzer usa analise semantica e reconhece apenas simbolos ASP.NET Core conhecidos:
+O analyzer usa análise semântica e reconhece apenas símbolos ASP.NET Core conhecidos:
 
 - controllers derivados de `Microsoft.AspNetCore.Mvc.ControllerBase` ou `Controller`;
 - actions com atributos HTTP de `Microsoft.AspNetCore.Mvc`, como `HttpGetAttribute`, `HttpPostAttribute`, `HttpPutAttribute`, `HttpPatchAttribute`, `HttpDeleteAttribute`, `HttpHeadAttribute`, `HttpOptionsAttribute` ou `RouteAttribute`;
@@ -107,23 +107,23 @@ O analyzer usa analise semantica e reconhece apenas simbolos ASP.NET Core conhec
 
 Para reduzir falsos positivos, a regra ignora:
 
-- endpoints que declaram autorizacao ou anonimato no proprio metodo/action;
+- endpoints que declaram autorização ou anonimato no proprio método/action;
 - actions que herdam `[Authorize]` ou `[AllowAnonymous]` do controller ou de uma base class;
-- Minimal APIs mapeadas a partir de um `MapGroup(...)` que ja declarou `.RequireAuthorization()` ou `.AllowAnonymous()`;
+- Minimal APIs mapeadas a partir de um `MapGroup(...)` que já declarou `.RequireAuthorization()` ou `.AllowAnonymous()`;
 - controllers abstratos;
-- atributos e metodos customizados com nomes parecidos, mas fora dos namespaces ASP.NET Core esperados;
-- Minimal APIs cuja rota tecnica esta na lista padrao ou em `allowed_routes`;
+- atributos e métodos customizados com nomes parecidos, mas fora dos namespaces ASP.NET Core esperados;
+- Minimal APIs cuja rota tecnica está na lista padrão ou em `allowed_routes`;
 - namespaces configurados em `ignored_namespaces`.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- Minimal APIs sao consideradas conformes quando `.RequireAuthorization()` ou `.AllowAnonymous()` aparecem no mesmo encadeamento estatico da chamada `Map*`, ou em um grupo criado em variavel local/propriedade com `MapGroup(...).RequireAuthorization()` ou `MapGroup(...).AllowAnonymous()`.
-- A regra nao infere autorizacao aplicada por filtros, conventions, reatribuicoes de variaveis intermediarias ou extensoes customizadas.
-- Actions sem atributo HTTP explicito sao ignoradas nesta versao para evitar diagnosticos em massa sobre controllers convencionais.
-- Rotas nao literais sao analisadas apenas para a decisao de autorizacao; excecoes por rota dependem de strings literais.
+- Minimal APIs são consideradas conformes quando `.RequireAuthorization()` ou `.AllowAnonymous()` aparecem no mesmo encadeamento estático da chamada `Map*`, ou em um grupo criado em variável local/propriedade com `MapGroup(...).RequireAuthorization()` ou `MapGroup(...).AllowAnonymous()`.
+- A regra não infere autorização aplicada por filtros, conventions, reatribuicoes de variáveis intermediarias ou extensões customizadas.
+- Actions sem atributo HTTP explícito são ignoradas nesta versão para evitar diagnósticos em massa sobre controllers convencionais.
+- Rotas não literais são analisadas apenas para a decisão de autorização; exceções por rota dependem de strings literais.
 
 ## Impacto esperado
 
-- Endpoints protegidos e publicos ficam mais faceis de auditar.
-- Novos endpoints sem decisao de seguranca explicita aparecem no build.
-- Excecoes tecnicas podem ser mantidas em `.editorconfig` sem reduzir a exigencia para endpoints de negocio.
+- Endpoints protegidos e públicos ficam mais faceis de auditar.
+- Novos endpoints sem decisão de segurança explícita aparecem no build.
+- Excecoes técnicas podem ser mantidas em `.editorconfig` sem reduzir a exigencia para endpoints de negócio.

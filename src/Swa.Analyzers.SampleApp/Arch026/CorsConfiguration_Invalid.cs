@@ -6,12 +6,12 @@ public static class CorsConfigurationInvalid
 {
     public static void Configure(CorsPolicyBuilder policy)
     {
-        // ARCH026: wildcard origins must not be combined with credentials.
+        // ARCH026: origens wildcard não devem ser combinadas com credenciais.
         policy.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowCredentials();
 
-        // ARCH026: the same unsafe combination is reported in the opposite order.
+        // ARCH026: a mesma combinação insegura é reportada na ordem oposta.
         policy.AllowCredentials()
             .AllowAnyOrigin();
     }

@@ -90,12 +90,12 @@ dotnet_diagnostic.ARCH015.route_language = pt-BR
 dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar", "recalcular"]
 ```
 
-Verbos adicionais são aparados, entradas vazias são ignoradas e a comparação não diferencia maiúsculas de minúsculas. As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Se o array JSON estiver malformado, a regra ignora `additional_verbs` e usa apenas os verbos nativos do idioma configurado.
+Verbos adicionais são aparados, entradas vazias são ignoradas e a comparação não diferencia maiúsculas de minúsculas. As opções em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Se o array JSON estiver malformado, a regra ignora `additional_verbs` e usa apenas os verbos nativos do idioma configurado.
 
-### Fallback das opcoes
+### Fallback das opções
 
-- `route_language`: texto (`en-US` ou `pt-BR`); default `en-US`. Valor ausente, vazio ou invalido usa `en-US`. O valor e comparado sem diferenciar maiusculas de minusculas.
-- `additional_verbs`: array JSON de strings; default vazio. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, mantendo apenas a lista nativa. Esse fallback e restritivo, pois nao adiciona novos verbos por configuracao invalida.
+- `route_language`: texto (`en-US` ou `pt-BR`); default `en-US`. Valor ausente, vazio ou inválido usa `en-US`. O valor é comparado sem diferenciar maiúsculas de minúsculas.
+- `additional_verbs`: array JSON de strings; default vazio. Entradas vazias são ignoradas. JSON vazio, inválido ou malformado e ignorado, mantendo apenas a lista nativa. Esse fallback é restritivo, pois não adiciona novos verbos por configuração inválida.
 
 ## Listas nativas de verbos
 

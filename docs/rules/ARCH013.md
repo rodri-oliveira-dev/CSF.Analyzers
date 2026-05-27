@@ -8,7 +8,7 @@ Permitir vários frameworks de mock na mesma base de código tende a:
 
 - aumentar a carga cognitiva para desenvolvedores e revisores
 - dificultar o reuso de utilitários de teste
-- fragmentar convenções (nomenclatura, match de argumentos, estilos de verificacao)
+- fragmentar convenções (nomenclatura, match de argumentos, estilos de verificação)
 - aumentar o custo de manutenção ao atualizar dependências de teste
 
 Padronizar em um único framework (NSubstitute) mantém os testes mais consistentes.
@@ -64,13 +64,13 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH013.severity = info
 ```
 
-Versóes futuras podem introduzir uma configuração de allow-list / deny-list (por exemplo, adicionar outros frameworks de mock para detectar).
+Versões futuras podem introduzir uma configuração de allow-list / deny-list (por exemplo, adicionar outros frameworks de mock para detectar).
 
 ## Limitações conhecidas
 - **O escopo inicial de detecção é intencionalmente restrito**. A versão 1 detecta apenas estes frameworks:
   - Moq (namespace raiz: `Moq`)
   - FakeItEasy (namespace raiz: `FakeItEasy`)
-- O analyzer depende de símbolos semânticos e do **namespace raiz** do símbolo referenciado para evitar falsos positivos de APIs parecidas.
+- O analyzer depende de símbolos semânticos e do **namespace raiz** do símbolo referênciado para evitar falsos positivos de APIs parecidas.
 - Nenhum code fix é fornecido porque trocar um framework de mock não é determinístico e muitas vezes exige reescrever a lógica do teste.
 
 ## Quando não usar
@@ -87,4 +87,4 @@ Nesses casos, considere suprimir o diagnóstico ou desabilita-lo via `.editorcon
 ## Observações sobre falsos positivos / heurísticas
 - O analyzer foi desenhado para evitar falsos positivos verificando **namespaces semânticos** (não apenas matching de texto).
 - Ele reporta em locais comuns de uso (using directives, invocações, criação de objetos e declarações de tipo), incluindo tipos compostos como genéricos, arrays, tuplas, delegates e tipos anuláveis.
-- Ele intencionalmente não reporta dentro do namespace do próprio framework de mock (util para testes de analyzer que criam stubs de APIs de framework em código-fonte).
+- Ele intencionalmente não reporta dentro do namespace do próprio framework de mock (útil para testes de analyzer que criam stubs de APIs de framework em código-fonte).

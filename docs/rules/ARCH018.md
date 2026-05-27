@@ -2,11 +2,11 @@
 
 ## Objetivo
 
-Detectar criacao direta de `System.Net.Http.HttpClient` em codigo de aplicacao.
+Detectar criação direta de `System.Net.Http.HttpClient` em código de aplicação.
 
-Criar `HttpClient` diretamente em cada fluxo pode dificultar o controle de lifetime, renovacao de DNS e reutilizacao de conexoes. Prefira `IHttpClientFactory`, typed clients ou uma abstracao equivalente registrada no container de DI.
+Criar `HttpClient` diretamente em cada fluxo pode dificultar o controle de lifetime, renovação de DNS e reutilização de conexões. Prefira `IHttpClientFactory`, typed clients ou uma abstração equivalente registrada no container de DI.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 using System.Net.Http;
@@ -30,7 +30,7 @@ public sealed class OrdersGateway
 }
 ```
 
-## Codigo conforme
+## Código conforme
 
 ```csharp
 using System.Net.Http;
@@ -61,15 +61,15 @@ public sealed class OrdersClient
 }
 ```
 
-## Heuristica
+## Heurística
 
-O analyzer reporta expressoes `new` cujo construtor pertence ao simbolo `System.Net.Http.HttpClient`.
+O analyzer reporta expressoes `new` cujo construtor pertence ao símbolo `System.Net.Http.HttpClient`.
 
 Isso inclui:
 
 - `new HttpClient()`;
 - `new HttpClient(handler)`;
-- declaracoes `using var client = new HttpClient()`;
+- declarações `using var client = new HttpClient()`;
 - `return new HttpClient()`;
 - inicializadores de campos ou propriedades.
 
@@ -78,11 +78,11 @@ Para reduzir falsos positivos, a regra ignora:
 - uso de `IHttpClientFactory`;
 - typed clients que recebem `HttpClient` por construtor;
 - tipos chamados `HttpClient` em outro namespace;
-- metodos e classes de teste reconhecidos por atributos comuns de xUnit, NUnit ou MSTest.
+- métodos e classes de teste reconhecidos por atributos comuns de xUnit, NUnit ou MSTest.
 
-## Configuracao
+## Configuração
 
-Esta regra nao expoe opcoes customizadas de `.editorconfig` na primeira versao.
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
 A severidade pode ser configurada normalmente:
 
@@ -91,14 +91,14 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH018.severity = warning
 ```
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A regra nao tenta inferir se uma classe de infraestrutura especifica esta autorizada a criar `HttpClient`; use configuracao de severidade por arquivo quando precisar de uma excecao local.
-- A regra nao valida se `IHttpClientFactory` ou typed clients foram registrados corretamente no container.
-- A regra reporta somente criacao direta de `System.Net.Http.HttpClient`; factories customizadas e wrappers nao sao analisados.
+- A regra não tenta inferir se uma classe de infraestrutura específica está autorizada a criar `HttpClient`; use configuração de severidade por arquivo quando precisar de uma exceção local.
+- A regra não valida se `IHttpClientFactory` ou typed clients foram registrados corretamente no container.
+- A regra reporta somente criação direta de `System.Net.Http.HttpClient`; factories customizadas e wrappers não são analisados.
 
 ## Impacto esperado
 
 - Menos risco de esgotamento de sockets e problemas de DNS em chamadas HTTP.
 - Ciclo de vida de clientes HTTP mais claro e centralizado.
-- Incentivo ao uso de `IHttpClientFactory`, typed clients ou abstracoes registradas no DI.
+- Incentivo ao uso de `IHttpClientFactory`, typed clients ou abstrações registradas no DI.

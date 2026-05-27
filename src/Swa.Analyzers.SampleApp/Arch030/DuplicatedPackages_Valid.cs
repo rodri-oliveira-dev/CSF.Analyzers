@@ -10,5 +10,5 @@ internal static class DuplicatedPackagesValid
     // MyApp.Application.csproj
     // <ProjectReference Include="..\MyApp.Abstractions\MyApp.Abstractions.csproj" />
     //
-    // A dependencia fica no projeto que realmente a consome.
+    // A dependência fica no projeto que realmente a consome.
 }

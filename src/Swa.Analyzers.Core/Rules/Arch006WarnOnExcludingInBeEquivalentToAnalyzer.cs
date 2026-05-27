@@ -35,7 +35,7 @@ public sealed class Arch006WarnOnExcludingInBeEquivalentToAnalyzer : DiagnosticA
             var testMethodAttributes = TestContextHelper.GetKnownTestMethodAttributes(compilationContext.Compilation);
             if (testMethodAttributes.IsDefaultOrEmpty)
             {
-                // Avoid noise outside test projects.
+                // Evita ruído fora de projetos de teste.
                 return;
             }
 
@@ -62,7 +62,7 @@ public sealed class Arch006WarnOnExcludingInBeEquivalentToAnalyzer : DiagnosticA
 
         if (!IsFluentAssertionsMethod(targetMethod))
         {
-            // Avoid false positives on lookalike APIs.
+            // Evita falsos positivos em APIs parecidas.
             return;
         }
 
@@ -84,8 +84,8 @@ public sealed class Arch006WarnOnExcludingInBeEquivalentToAnalyzer : DiagnosticA
 
     private static void ReportExcludingCallsInAnonymousFunctionBody(OperationAnalysisContext context, IAnonymousFunctionOperation anonymousFunction)
     {
-        // Intentionally scan only the BeEquivalentTo options delegate body.
-        // This keeps the check targeted and avoids scanning the whole syntax tree.
+        // Varre intencionalmente apenas o corpo do delegate de opções de BeEquivalentTo.
+        // Isso mantém a verificação focada e evita varrer toda a syntax tree.
         var body = anonymousFunction.Body;
         if (body is null)
         {
@@ -179,14 +179,14 @@ public sealed class Arch006WarnOnExcludingInBeEquivalentToAnalyzer : DiagnosticA
             return false;
         }
 
-        // Avoid false positives on unrelated FluentAssertions APIs that might coincidentally use the same name.
-        // Excluding* methods used to tweak BeEquivalentTo live under FluentAssertions.Equivalency.
+        // Evita falsos positivos em APIs não relacionadas do FluentAssertions que usem o mesmo nome por coincidência.
+        // Métodos Excluding* usados para ajustar BeEquivalentTo ficam em FluentAssertions.Equivalency.
         return IsInFluentAssertionsEquivalencyNamespace(containingType.ContainingNamespace);
     }
 
     private static bool IsInFluentAssertionsEquivalencyNamespace(INamespaceSymbol? @namespace)
     {
-        // Match FluentAssertions.Equivalency and its sub-namespaces.
+        // Corresponde a FluentAssertions.Equivalency e seus subnamespaces.
         for (var current = @namespace; current is not null && !current.IsGlobalNamespace; current = current.ContainingNamespace)
         {
             if (string.Equals(current.Name, "Equivalency", StringComparison.Ordinal)
@@ -203,7 +203,7 @@ public sealed class Arch006WarnOnExcludingInBeEquivalentToAnalyzer : DiagnosticA
 
     private static bool IsInFluentAssertionsNamespace(INamespaceSymbol? @namespace)
     {
-        // Match FluentAssertions and its sub-namespaces.
+        // Corresponde a FluentAssertions e seus subnamespaces.
         for (var current = @namespace; current is not null && !current.IsGlobalNamespace; current = current.ContainingNamespace)
         {
             if (string.Equals(current.Name, "FluentAssertions", StringComparison.Ordinal)

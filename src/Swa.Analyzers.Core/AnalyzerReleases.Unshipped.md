@@ -2,4 +2,4 @@
 
 Rule ID | Category    | Severity | Notes
 --------|-------------|----------|------
-ARCH033 | Reliability | Warning  | Avoid BuildServiceProvider during service registration.
+ARCH033 | Reliability | Warning  | Evita `BuildServiceProvider` durante o registro de serviços.

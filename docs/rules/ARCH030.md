@@ -4,11 +4,11 @@
 
 Detectar quando o mesmo `PackageReference` aparece em mais de um `.csproj` recebido como `AdditionalFiles`.
 
-Em solucoes com camadas bem definidas, uma dependencia repetida em varios projetos pode indicar acoplamento excessivo, falta de centralizacao ou uma dependencia que deveria existir apenas em um adaptador mais externo.
+Em soluções com camadas bem definidas, uma dependência repetida em vários projetos pode indicar acoplamento excessivo, falta de centralização ou uma dependência que deveria existir apenas em um adaptador mais externo.
 
-## Quando a duplicidade e problema
+## Quando a duplicidade é problema
 
-A duplicidade merece revisao quando o mesmo pacote aparece em projetos de camadas diferentes, por exemplo dominio, aplicacao e infraestrutura. Isso pode espalhar detalhes de framework para projetos que deveriam depender de abstracoes ou de project references.
+A duplicidade merece revisão quando o mesmo pacote aparece em projetos de camadas diferentes, por exemplo domínio, aplicação e infraestrutura. Isso pode espalhar detalhes de framework para projetos que deveriam depender de abstrações ou de project references.
 
 ```xml
 <!-- MyApp.Domain.csproj -->
@@ -28,9 +28,9 @@ A duplicidade merece revisao quando o mesmo pacote aparece em projetos de camada
 </Project>
 ```
 
-## Quando nao e problema
+## Quando não é problema
 
-Alguns pacotes sao naturalmente repetidos em muitos projetos, especialmente pacotes de teste. A regra ja permite por padrao:
+Alguns pacotes são naturalmente repetidos em muitos projetos, especialmente pacotes de teste. A regra já permite por padrão:
 
 - `Microsoft.NET.Test.Sdk`
 - `xunit`
@@ -40,11 +40,11 @@ Alguns pacotes sao naturalmente repetidos em muitos projetos, especialmente paco
 - `NSubstitute`
 - `Microsoft.CodeAnalysis.CSharp.Analyzer.Testing`
 
-Tambem pode ser aceitavel repetir pacotes em projetos de benchmark, testes de contrato, exemplos ou projetos auxiliares. Use `allowed_project_patterns` nesses casos.
+Também pode ser aceitavel repetir pacotes em projetos de benchmark, testes de contrato, exemplos ou projetos auxiliares. Use `allowed_project_patterns` nesses casos.
 
-## Codigo conforme
+## Código conforme
 
-Centralize a dependencia no projeto que realmente a utiliza ou exponha a funcionalidade por uma abstracao:
+Centralize a dependência no projeto que realmente a utiliza ou exponha a funcionalidade por uma abstração:
 
 ```xml
 <!-- MyApp.Infrastructure.csproj -->
@@ -64,11 +64,11 @@ Centralize a dependencia no projeto que realmente a utiliza ou exponha a funcion
 </Project>
 ```
 
-## Configuracao
+## Configuração
 
-A severidade padrao da regra e `Info`, conforme o descriptor do analyzer e a tabela publica do README.
+A severidade padrão da regra é `Info`, conforme o descriptor do analyzer e a tabela pública do README.
 
-A regra aceita arrays JSON em `.editorconfig`. As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado:
+A regra aceita arrays JSON em `.editorconfig`. As opções em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado:
 
 ```ini
 [*.csproj]
@@ -76,18 +76,18 @@ dotnet_diagnostic.ARCH030.allowed_packages = ["Microsoft.NET.Test.Sdk", "xunit",
 dotnet_diagnostic.ARCH030.allowed_project_patterns = ["*.Tests.csproj", "*.Benchmarks.csproj"]
 ```
 
-`allowed_packages` define a lista de pacotes que podem aparecer em varios projetos. Quando a opcao e omitida ou contem JSON invalido, a regra usa a allowlist padrao.
+`allowed_packages` define a lista de pacotes que podem aparecer em vários projetos. Quando a opção é omitida ou contém JSON inválido, a regra usa a allowlist padrão.
 
-`allowed_project_patterns` remove projetos inteiros da analise. Os padroes aceitam `*` e sao comparados com o nome do arquivo e com o caminho normalizado. O padrao e vazio.
+`allowed_project_patterns` remove projetos inteiros da análise. Os padrões aceitam `*` e são comparados com o nome do arquivo e com o caminho normalizado. O padrão é vazio.
 
-Listas configuraveis sao normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite sao ignoradas.
+Listas configuráveis são normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite são ignoradas.
 
-### Fallback das opcoes
+### Fallback das opções
 
-- `allowed_packages`: array JSON de strings; default e a allowlist padrao quando ausente ou malformado. Pacotes sao aparados e comparados sem diferenciar maiusculas de minusculas. Entradas vazias sao ignoradas. Um array JSON vazio substitui a allowlist por vazio.
-- `allowed_project_patterns`: array JSON de strings; default vazio. Padroes sao aparados, aceitam `*` e sao comparados sem diferenciar maiusculas de minusculas. Entradas vazias, duplicadas ou acima do limite sao ignoradas. JSON vazio, invalido ou malformado e ignorado.
+- `allowed_packages`: array JSON de strings; default é a allowlist padrão quando ausente ou malformado. Pacotes são aparados e comparados sem diferenciar maiúsculas de minúsculas. Entradas vazias são ignoradas. Um array JSON vazio substitui a allowlist por vazio.
+- `allowed_project_patterns`: array JSON de strings; default vazio. Padrões são aparados, aceitam `*` e são comparados sem diferenciar maiúsculas de minúsculas. Entradas vazias, duplicadas ou acima do limite são ignoradas. JSON vazio, inválido ou malformado e ignorado.
 
-O fallback de `allowed_packages` preserva a allowlist padrao; o de `allowed_project_patterns` e restritivo, pois nao ignora projetos quando a configuracao e invalida.
+O fallback de `allowed_packages` preserva a allowlist padrão; o de `allowed_project_patterns` é restritivo, pois não ignora projetos quando a configuração é inválida.
 
 A severidade pode ser elevada normalmente via override de `.editorconfig` quando o projeto quiser tratar duplicidades como aviso:
 
@@ -98,9 +98,9 @@ dotnet_diagnostic.ARCH030.severity = warning
 
 ## AdditionalFiles
 
-Roslyn nao analisa `.csproj` como syntax trees C#. Por isso, a regra depende de os arquivos de projeto estarem disponiveis como `AdditionalFiles`.
+Roslyn não analisa `.csproj` como syntax trees C#. Por isso, a regra depende de os arquivos de projeto estarem disponíveis como `AdditionalFiles`.
 
-Em consumidores que usam o analyzer via MSBuild, inclua os projetos como arquivos adicionais quando necessario:
+Em consumidores que usam o analyzer via MSBuild, inclua os projetos como arquivos adicionais quando necessário:
 
 ```xml
 <ItemGroup>
@@ -108,13 +108,13 @@ Em consumidores que usam o analyzer via MSBuild, inclua os projetos como arquivo
 </ItemGroup>
 ```
 
-Se nenhum `.csproj` for recebido como `AdditionalFiles`, a regra nao reporta diagnosticos.
+Se nenhum `.csproj` for recebido como `AdditionalFiles`, a regra não reporta diagnósticos.
 
 ## Segurança e limites
 
-Arquivos MSBuild informados como `AdditionalFiles` sao processados com limites defensivos. Arquivos vazios, invalidos ou acima do limite configurado sao ignorados para evitar degradacao de build/IDE.
+Arquivos MSBuild informados como `AdditionalFiles` são processados com limites defensivos. Arquivos vazios, inválidos ou acima do limite configurado são ignorados para evitar degradação de build/IDE.
 
-## Heuristica
+## Heurística
 
 A regra:
 
@@ -123,20 +123,20 @@ A regra:
 - localiza elementos `PackageReference`;
 - usa `Include` ou `Update` como nome do pacote;
 - compara nomes com `StringComparer.OrdinalIgnoreCase`;
-- ignora pacotes e projetos permitidos por configuracao;
-- reporta apenas um diagnostico por pacote duplicado.
+- ignora pacotes e projetos permitidos por configuração;
+- reporta apenas um diagnóstico por pacote duplicado.
 
-XML invalido, arquivo sem texto e `PackageReference` sem `Include` ou `Update` sao ignorados silenciosamente.
+XML inválido, arquivo sem texto e `PackageReference` sem `Include` ou `Update` são ignorados silenciosamente.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A regra nao tenta decidir se a duplicidade e sempre incorreta; ela apenas recomenda revisao.
-- A regra nao analisa `Directory.Packages.props`, `PackageVersion` ou dependencias transitivas.
-- A localizacao do diagnostico fica no inicio do `.csproj`, nao necessariamente no atributo do pacote.
+- A regra não tenta decidir se a duplicidade é sempre incorreta; ela apenas recomenda revisão.
+- A regra não analisa `Directory.Packages.props`, `PackageVersion` ou dependências transitivas.
+- A localização do diagnóstico fica no inicio do `.csproj`, não necessáriamente no atributo do pacote.
 - A regra so enxerga projetos enviados como `AdditionalFiles`.
 
 ## Impacto esperado
 
-- Ajuda a revisar dependencias repetidas entre camadas.
-- Reduz ruido ao permitir pacotes comuns de teste por padrao.
-- Incentiva centralizacao de dependencias e uso de project references quando fizer sentido.
+- Ajuda a revisar dependências repetidas entre camadas.
+- Reduz ruído ao permitir pacotes comuns de teste por padrão.
+- Incentiva centralização de dependências e uso de project references quando fizer sentido.

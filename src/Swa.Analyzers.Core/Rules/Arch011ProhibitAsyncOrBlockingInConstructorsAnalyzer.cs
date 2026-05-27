@@ -95,7 +95,7 @@ public sealed class Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer : Diagn
         var invocation = (IInvocationOperation)context.Operation;
         var targetMethod = invocation.TargetMethod;
 
-        // Check for .Wait()
+        // Verifica .Wait()
         if (string.Equals(targetMethod.Name, "Wait", StringComparison.Ordinal))
         {
             if (IsKnownAwaitableType(invocation.Instance, taskType, taskOfTType))
@@ -107,7 +107,7 @@ public sealed class Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer : Diagn
             return;
         }
 
-        // Check for .GetAwaiter().GetResult()
+        // Verifica .GetAwaiter().GetResult()
         if (string.Equals(targetMethod.Name, "GetResult", StringComparison.Ordinal)
             && targetMethod.Parameters.IsEmpty)
         {
@@ -123,7 +123,7 @@ public sealed class Arch011ProhibitAsyncOrBlockingInConstructorsAnalyzer : Diagn
             return;
         }
 
-        // Check for unawaited async calls
+        // Verifica chamadas async não aguardadas
         if (IsKnownAwaitableType(invocation.Type, taskType, taskOfTType, valueTaskType, valueTaskOfTType))
         {
             if (ShouldReportUnawaitedAsync(invocation))

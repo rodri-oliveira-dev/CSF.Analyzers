@@ -1,7 +1,7 @@
-// Minimal stubs so ARCH006 can detect equivalency exclusions (Excluding*)
-// without referencing the real FluentAssertions package.
+// Stubs mínimos para que ARCH006 detecte exclusões de equivalência (Excluding*)
+// sem referenciar o pacote real FluentAssertions.
 //
-// IMPORTANT: These are NOT production implementations.
+// IMPORTANTE: estes NÃO são implementações de produção.
 
 namespace FluentAssertions.Equivalency;
 

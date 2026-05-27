@@ -2,13 +2,13 @@
 
 ## Objetivo
 
-Sugerir `AsNoTracking()` em consultas EF Core materializadas para leitura quando ha evidencia segura de que a entidade nao sera alterada e persistida no mesmo metodo.
+Sugerir `AsNoTracking()` em consultas EF Core materializadas para leitura quando há evidencia segura de que a entidade não será alterada e persistida no mesmo método.
 
 ## Motivacao
 
-Por padrao, o EF Core rastreia entidades retornadas por consultas. Esse rastreamento e necessario para comandos de escrita, mas adiciona custo de memoria e CPU em fluxos somente leitura. Em consultas de leitura, `AsNoTracking()` reduz esse custo e deixa a intencao mais clara.
+Por padrão, o EF Core rastreia entidades retornadas por consultas. Esse rastreamento e necessário para comandos de escrita, mas adiciona custo de memória e CPU em fluxos somente leitura. Em consultas de leitura, `AsNoTracking()` reduz esse custo e deixa a intenção mais clara.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +31,7 @@ public sealed class OrdersQuery
 }
 ```
 
-## Codigo conforme
+## Código conforme
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +55,7 @@ public sealed class OrdersQuery
 }
 ```
 
-Consultas que optam explicitamente por tracking tambem sao consideradas conformes:
+Consultas que optam explicitamente por tracking também são consideradas conformes:
 
 ```csharp
 var order = await _db.Orders
@@ -63,7 +63,7 @@ var order = await _db.Orders
     .FirstOrDefaultAsync();
 ```
 
-Metodos de escrita tambem sao ignorados quando a regra encontra alteracao de membro e persistencia no mesmo metodo:
+Metodos de escrita também são ignorados quando a regra encontra alteração de membro e persistencia no mesmo método:
 
 ```csharp
 var order = await _db.Orders.FirstOrDefaultAsync();
@@ -71,7 +71,7 @@ order!.Status = "Processed";
 await _db.SaveChangesAsync();
 ```
 
-Projecoes simples que nao materializam a entidade rastreada tambem sao consideradas conformes:
+Projecoes simples que não materializam a entidade rastreada também são consideradas conformes:
 
 ```csharp
 var orderIds = await _db.Orders
@@ -79,9 +79,9 @@ var orderIds = await _db.Orders
     .ToListAsync();
 ```
 
-## Configuracao
+## Configuração
 
-Esta regra nao expoe opcoes customizadas de `.editorconfig` na primeira versao.
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão.
 
 A severidade pode ser configurada normalmente:
 
@@ -90,36 +90,36 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH021.severity = warning
 ```
 
-Suprima pontualmente quando uma consulta precisa manter tracking por uma razao que a heuristica nao consegue inferir. Quando a intencao for tracking, prefira `AsTracking()` para documentar isso no proprio codigo.
+Suprima pontualmente quando uma consulta precisa manter tracking por uma razao que a heurística não consegue inferir. Quando a intenção for tracking, prefira `AsTracking()` para documentar isso no proprio código.
 
-## Heuristica
+## Heurística
 
-O analyzer usa analise semantica e reporta apenas quando todos os pontos abaixo sao verdadeiros:
+O analyzer usa análise semântica e reporta apenas quando todos os pontos abaixo são verdadeiros:
 
-- a materializacao e uma chamada EF Core conhecida em `Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions`;
-- o metodo chamado e `ToListAsync`, `FirstOrDefaultAsync` ou `SingleOrDefaultAsync`;
+- a materialização é uma chamada EF Core conhecida em `Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions`;
+- o método chamado e `ToListAsync`, `FirstOrDefaultAsync` ou `SingleOrDefaultAsync`;
 - a cadeia da consulta parte de um `Microsoft.EntityFrameworkCore.DbSet<T>`;
-- a materializacao retorna o mesmo tipo de entidade do `DbSet<T>`, sem projecao para escalar ou DTO;
-- a cadeia nao contem `AsNoTracking()` nem `AsTracking()`;
-- o codigo nao esta dentro de contexto de teste reconhecido pelo projeto.
+- a materialização retorna o mesmo tipo de entidade do `DbSet<T>`, sem projecao para escalar ou DTO;
+- a cadeia não contém `AsNoTracking()` nem `AsTracking()`;
+- o código não está dentro de contexto de teste reconhecido pelo projeto.
 
-Para reduzir falsos positivos, a regra nao reporta quando:
+Para reduzir falsos positivos, a regra não reporta quando:
 
-- o metodo contem chamada a `SaveChanges()` ou `SaveChangesAsync()` e tambem atribuicao a membro/propriedade;
-- o metodo contem chamada a `SaveChanges()` ou `SaveChangesAsync()` e tambem `Attach`, `Update` ou `Remove` do EF Core;
-- a regra encontra configuracao global `UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)` no mesmo tipo;
-- a consulta nao pode ser confirmada semanticamente como EF Core.
+- o método contém chamada a `SaveChanges()` ou `SaveChangesAsync()` e também atribuição a membro/propriedade;
+- o método contém chamada a `SaveChanges()` ou `SaveChangesAsync()` e também `Attach`, `Update` ou `Remove` do EF Core;
+- a regra encontra configuração global `UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)` no mesmo tipo;
+- a consulta não pode ser confirmada semanticamente como EF Core.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A deteccao de configuracao global `NoTracking` e propositalmente estreita: ela considera apenas configuracoes visiveis no mesmo tipo analisado.
-- A regra nao acompanha fluxo entre metodos, repositorios, variaveis intermediarias complexas ou configuracoes registradas em outro arquivo.
-- A regra nao infere que uma entidade sera modificada em outro metodo chamado posteriormente.
-- A regra cobre apenas materializadores assincronos listados na heuristica inicial.
-- Pode haver falso negativo quando a consulta vem de uma abstracao que retorna `IQueryable<T>` em vez de expor diretamente `DbSet<T>`.
+- A detecção de configuração global `NoTracking` e propositalmente estreita: ela considera apenas configurações visíveis no mesmo tipo analisado.
+- A regra não acompanha fluxo entre métodos, repositórios, variáveis intermediarias complexas ou configurações registradas em outro arquivo.
+- A regra não infere que uma entidade será modificada em outro método chamado posteriormente.
+- A regra cobre apenas materializadores assíncronos listados na heurística inicial.
+- Pode haver falso negativo quando a consulta vem de uma abstração que retorna `IQueryable<T>` em vez de expor diretamente `DbSet<T>`.
 
 ## Impacto esperado
 
 - Reduz custo de tracking em consultas de leitura.
-- Torna a intencao de leitura explicita.
-- Evita ruido em comandos de escrita e em consultas que ja declaram uma decisao de tracking.
+- Torna a intenção de leitura explícita.
+- Evita ruído em comandos de escrita e em consultas que já declaram uma decisão de tracking.

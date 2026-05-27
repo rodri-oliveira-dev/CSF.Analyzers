@@ -445,7 +445,7 @@ public sealed class SampleTests
 }
 """;
 
-        // Reports because the usage is inside a test type (a type that contains test methods)
+        // Reporta porque o uso está dentro de um tipo de teste, ou seja, um tipo com métodos de teste.
         var expected = Verifier<Arch014PreferIsEquivalentOverArgIsAnalyzer>.Diagnostic("ARCH014")
             .WithSpan(37, 50, 37, 57)
             .WithMessage("Prefer Is.Equivalent from the team's standard library instead of NSubstitute Arg.Is for value matching");

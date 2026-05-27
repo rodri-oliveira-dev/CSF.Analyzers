@@ -2,19 +2,19 @@
 
 ## [Unreleased]
 
-### Added
+### Adicionado
 
-- Added ARCH033 to detect `BuildServiceProvider()` calls on `IServiceCollection` during service registration, with `.editorconfig` support for `dotnet_diagnostic.ARCH033.ignore_tests`.
+- Adicionada a ARCH033 para detectar chamadas a `BuildServiceProvider()` em `IServiceCollection` durante o registro de serviços, com suporte à opção `.editorconfig` `dotnet_diagnostic.ARCH033.ignore_tests`.
 
-### Changed
+### Alterado
 
 - Migrated release versioning from project `VersionPrefix` to GitVersion, using semantic commits to calculate the NuGet package version and GitHub Release tag.
-- Formalized shipped and unshipped analyzer release metadata validation.
+- Formalizada a validação de metadados de release shipped e unshipped dos analyzers.
 
-### Fixed
+### Corrigido
 
 - Fixed the release workflow order so the .NET SDK is installed before GitVersion runs `dotnet tool install`.
-- Fixed ARCH010 to ignore synchronous methods that expose `CancellationToken` parameters or overloads, keeping the rule scoped to async calls.
+- Corrigida a ARCH010 para ignorar métodos síncronos que expõem parâmetros ou overloads com `CancellationToken`, mantendo a regra restrita a chamadas async.
 
 ### Breaking Changes
 
@@ -22,27 +22,27 @@
 
 ## [1.0.0] - 2026-05-01
 
-Primeira versao estavel do pacote `Swa.Analyzers`.
+Primeira versão estável do pacote `Swa.Analyzers`.
 
-### Added
+### Adicionado
 
 - Published the stable baseline of analyzer rules ARCH001 through ARCH032, covering architecture, reliability, performance, security, observability, design, testability and test-quality conventions.
-- Included rule documentation in `docs/rules` and manual examples in `src/Swa.Analyzers.SampleApp`.
-- Added local and CI release validation for ARCH rules, documentation, tests, SampleApp, changelog updates and package version changes.
-- Added release workflow support for generating `.nupkg` and `.snupkg` packages from the project `VersionPrefix`.
+- Incluída documentação de regras em `docs/rules` e exemplos manuais em `src/Swa.Analyzers.SampleApp`.
+- Adicionada validação local e de CI para regras ARCH, documentação, testes, SampleApp, atualizações de changelog e mudanças de versão do pacote.
+- Adicionado suporte no workflow de release para gerar pacotes `.nupkg` e `.snupkg` a partir do `VersionPrefix` do projeto.
 
-### Changed
+### Alterado
 
-- Centralized analyzer option parsing helpers for boolean and string-array `.editorconfig` values and shared wildcard matching without changing rule behavior.
+- Centralizados helpers de parsing de opções dos analyzers para valores booleanos e arrays de strings em `.editorconfig`, além de matching wildcard compartilhado sem alterar comportamento das regras.
 - Documented `.editorconfig` fallback behavior consistently for public analyzer options.
 - Shared JSON string-array parsing across configurable analyzers and added support for escaped unicode values in `.editorconfig` options.
 - Documented the release process and package version source of truth.
-- Hardened GitHub release creation to use `VersionPrefix`, create tag `v1.0.0`, refuse existing tags/releases and keep NuGet publication inactive until explicit governance setup.
+- Endurecida a criação de GitHub Release para usar `VersionPrefix`, criar a tag `v1.0.0`, recusar tags/releases existentes e manter a publicação NuGet inativa até configuração explícita de governança.
 
-### Fixed
+### Corrigido
 
-- Hardened malformed and excessive analyzer configuration handling for ARCH020, ARCH027 and ARCH030.
-- Hardened MSBuild `AdditionalFiles` XML parsing in ARCH030 and ARCH032 with defensive size limits and DTD-prohibiting XML reader settings.
+- Endurecido o tratamento de configurações malformadas ou excessivas dos analyzers ARCH020, ARCH027 e ARCH030.
+- Endurecido o parsing XML de `AdditionalFiles` MSBuild em ARCH030 e ARCH032 com limites defensivos de tamanho e configurações de leitor XML que proíbem DTD.
 
 ### Breaking Changes
 
@@ -50,4 +50,4 @@ Primeira versao estavel do pacote `Swa.Analyzers`.
 
 ## [0.2.0] - 2026-04-30
 
-- Added release consistency validation for ARCH rules, documentation, tests, SampleApp, changelog updates and package version changes.
+- Adicionada validação de consistência de release para regras ARCH, documentação, testes, SampleApp, atualizações de changelog e mudanças de versão do pacote.

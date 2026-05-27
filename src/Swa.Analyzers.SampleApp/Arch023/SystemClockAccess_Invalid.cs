@@ -10,7 +10,7 @@ public sealed class SystemClockAccess_Invalid
 
     public DateTimeOffset CreateLocalTimestamp()
     {
-        // ARCH023: acesso direto ao relogio do sistema dificulta testes deterministicos.
+        // ARCH023: acesso direto ao relógio do sistema dificulta testes determinísticos.
         var now = DateTime.Now;
         return new DateTimeOffset(now);
     }

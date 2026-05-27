@@ -138,7 +138,7 @@ public sealed class Arch012PreferDateTimeOffsetOverDateTimeAnalyzer : Diagnostic
             return;
         }
 
-        // Analyze return type
+        // Analisa tipo de retorno
         if (IsDateTimeType(method.ReturnType, dateTimeType))
         {
             var location = GetReturnTypeLocation(method);
@@ -148,7 +148,7 @@ public sealed class Arch012PreferDateTimeOffsetOverDateTimeAnalyzer : Diagnostic
             }
         }
 
-        // Analyze parameters
+        // Analisa parâmetros
         foreach (var parameter in method.Parameters)
         {
             if (!IsDateTimeType(parameter.Type, dateTimeType))
@@ -178,13 +178,13 @@ public sealed class Arch012PreferDateTimeOffsetOverDateTimeAnalyzer : Diagnostic
     {
         var declaration = (VariableDeclarationSyntax)context.Node;
 
-        // Only local variable declarations (fields are handled by symbol analysis)
+        // Apenas declarações de variáveis locais; campos são tratados pela análise de símbolos
         if (declaration.Parent is not (LocalDeclarationStatementSyntax or ForStatementSyntax))
         {
             return;
         }
 
-        // Skip 'var' declarations to avoid noise where the type is inferred
+        // Ignora declarações `var` para evitar ruído quando o tipo é inferido
         if (declaration.Type is IdentifierNameSyntax identifierName && identifierName.Identifier.Text == "var")
         {
             return;

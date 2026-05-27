@@ -1,7 +1,7 @@
-// Minimal stubs so ARCH005 can detect NSubstitute-like APIs
-// without referencing the real NSubstitute package.
+// Stubs mínimos para que ARCH005 detecte APIs parecidas com NSubstitute
+// sem referenciar o pacote real NSubstitute.
 //
-// IMPORTANT: These are NOT production implementations.
+// IMPORTANTE: estes NÃO são implementações de produção.
 
 namespace NSubstitute;
 
@@ -15,20 +15,20 @@ public static class Substitute
 
 public static class Arg
 {
-    // ARCH005 targets this method name in the NSubstitute.Arg type.
+    // ARCH005 mira este nome de método no tipo NSubstitute.Arg.
     public static T Any<T>()
     {
         return default!;
     }
 
-    // ARCH014 targets this method name in the NSubstitute.Arg type.
+    // ARCH014 mira este nome de método no tipo NSubstitute.Arg.
     public static T Is<T>(T value) => default!;
     public static T Is<T>(Func<T, bool> predicate) => default!;
 }
 
 public static class SubstituteExtensions
 {
-    // ARCH005 allows Arg.Any() only when the receiving call is preceded by one of these methods.
+    // ARCH005 permite Arg.Any() apenas quando a chamada receptora é precedida por um destes métodos.
     public static T DidNotReceive<T>(this T substitute) where T : class
     {
         return substitute;

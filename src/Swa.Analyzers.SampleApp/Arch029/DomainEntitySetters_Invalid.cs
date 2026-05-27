@@ -6,7 +6,7 @@ public abstract class Entity
 
 public sealed class Customer : Entity
 {
-    // ARCH029: domain entities should protect invariants instead of exposing public setters.
+    // ARCH029: entidades de domínio devem proteger invariantes em vez de expor setters públicos.
     public string Name { get; set; } = "";
 }
 

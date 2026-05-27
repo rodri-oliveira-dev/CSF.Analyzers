@@ -1,12 +1,12 @@
-# ARCH027: Evite dependencias de infraestrutura em camadas core
+# ARCH027: Evite dependências de infraestrutura em camadas core
 
 ## Objetivo
 
-Detectar dependencias diretas de frameworks ou adaptadores de infraestrutura em namespaces configurados como camadas core, normalmente dominio e aplicacao.
+Detectar dependências diretas de frameworks ou adaptadores de infraestrutura em namespaces configurados como camadas core, normalmente domínio e aplicação.
 
-Em uma arquitetura hexagonal/clean architecture, codigo de dominio e aplicacao deve depender de abstracoes proprias. Detalhes como EF Core, ASP.NET Core, Redis, PostgreSQL ou clientes HTTP concretos devem ficar em adapters, Infrastructure, Api ou composition root, conforme a politica do projeto.
+Em uma arquitetura hexagonal/clean architecture, código de domínio e aplicação deve depender de abstrações próprias. Detalhes como EF Core, ASP.NET Core, Redis, PostgreSQL ou clientes HTTP concretos devem ficar em adapters, Infrastructure, Api ou composition root, conforme a política do projeto.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ public sealed class Invoice
 }
 ```
 
-Tambem ha diagnostico quando o tipo e referenciado diretamente, mesmo sem `using`:
+Também há diagnóstico quando o tipo é referênciado diretamente, mesmo sem `using`:
 
 ```csharp
 namespace Billing.Application;
@@ -30,7 +30,7 @@ public sealed class CustomerQuery
 }
 ```
 
-## Codigo conforme
+## Código conforme
 
 ```csharp
 namespace Billing.Application;
@@ -51,9 +51,9 @@ public sealed class InvoiceDbContext : DbContext
 }
 ```
 
-## Configuracao
+## Configuração
 
-A regra e configuravel por `.editorconfig`. Os valores sao listas separadas por `;` e aceitam `*` como wildcard. Quando houver mais de um item, coloque o valor entre aspas para preservar os `;` no `.editorconfig`.
+A regra é configurável por `.editorconfig`. Os valores são listas separadas por `;` e aceitam `*` como wildcard. Quando houver mais de um item, coloque o valor entre aspas para preservar os `;` no `.editorconfig`.
 
 ```ini
 [*.cs]
@@ -71,30 +71,30 @@ dotnet_diagnostic.ARCH027.core_namespace_patterns = Company.Product.Application
 dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "System.Net.Http;Microsoft.EntityFrameworkCore;Npgsql"
 ```
 
-Para permitir uma abstracao especifica de framework em core:
+Para permitir uma abstração específica de framework em core:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH027.allowed_namespace_patterns = Microsoft.AspNetCore.Http
 ```
 
-Valores ausentes usam uma configuracao conservadora:
+Valores ausentes usam uma configuração conservadora:
 
 - core: `*.Domain;*.Application`
 - proibidos: `Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql`
 - permitidos: vazio
 - testes ignorados: `true`
 
-Listas configuraveis sao normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite sao ignoradas.
+Listas configuráveis são normalizadas e possuem limites defensivos de quantidade e tamanho para evitar custo excessivo durante build/IDE. Entradas vazias, duplicadas ou acima do limite são ignoradas.
 
-### Fallback das opcoes
+### Fallback das opções
 
-- `core_namespace_patterns`: lista de padroes separada por `;`; default `*.Domain;*.Application` quando ausente. Valor configurado vazio resulta em lista vazia. Entradas vazias, duplicadas ou acima do limite sao ignoradas. Padroes sao comparados com casing exato. JSON nao se aplica.
-- `forbidden_namespace_patterns`: lista de padroes separada por `;`; default `Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql` quando ausente. Valor configurado vazio resulta em lista vazia. Entradas vazias, duplicadas ou acima do limite sao ignoradas. Padroes sao comparados com casing exato. JSON nao se aplica.
-- `allowed_namespace_patterns`: lista de padroes separada por `;`; default vazio. Entradas vazias, duplicadas ou acima do limite sao ignoradas. Padroes sao comparados com casing exato. JSON nao se aplica.
-- `ignore_tests`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `true`.
+- `core_namespace_patterns`: lista de padrões separada por `;`; default `*.Domain;*.Application` quando ausente. Valor configurado vazio resulta em lista vazia. Entradas vazias, duplicadas ou acima do limite são ignoradas. Padrões são comparados com casing exato. JSON não se aplica.
+- `forbidden_namespace_patterns`: lista de padrões separada por `;`; default `Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql` quando ausente. Valor configurado vazio resulta em lista vazia. Entradas vazias, duplicadas ou acima do limite são ignoradas. Padrões são comparados com casing exato. JSON não se aplica.
+- `allowed_namespace_patterns`: lista de padrões separada por `;`; default vazio. Entradas vazias, duplicadas ou acima do limite são ignoradas. Padrões são comparados com casing exato. JSON não se aplica.
+- `ignore_tests`: booleano; default `true`. Valores booleanos aceitam casing variado; valor ausente, vazio ou inválido usa `true`.
 
-O fallback das listas padrao e restritivo quando a opcao esta ausente. Um valor explicitamente vazio troca a lista por vazio e pode reduzir a analise daquela dimensao.
+O fallback das listas padrão é restritivo quando a opção está ausente. Um valor explicitamente vazio troca a lista por vazio e pode reduzir a análise daquela dimensao.
 
 A severidade pode ser configurada normalmente:
 
@@ -103,28 +103,28 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH027.severity = warning
 ```
 
-## Heuristica
+## Heurística
 
-O analyzer reporta quando um arquivo em namespace core configurado contem:
+O analyzer reporta quando um arquivo em namespace core configurado contém:
 
 - `using` para namespace proibido;
-- referencia semantica a tipo cujo namespace corresponde a um padrao proibido, inclusive nomes totalmente qualificados.
+- referência semântica a tipo cujo namespace corresponde a um padrão proibido, inclusive nomes totalmente qualificados.
 
-Um padrao sem `*` tambem cobre subnamespaces. Por exemplo, `Microsoft.AspNetCore` cobre `Microsoft.AspNetCore.Mvc`.
+Um padrão sem `*` também cobre subnamespaces. Por exemplo, `Microsoft.AspNetCore` cobre `Microsoft.AspNetCore.Mvc`.
 
-`allowed_namespace_patterns` tem precedencia sobre `forbidden_namespace_patterns`, permitindo excecoes pequenas sem liberar todo o framework.
+`allowed_namespace_patterns` tem precedencia sobre `forbidden_namespace_patterns`, permitindo exceções pequenas sem liberar todo o framework.
 
-Com `ignore_tests = true`, a regra ignora namespaces e paths de teste comuns, alem de contextos de teste reconhecidos por atributos xUnit, NUnit ou MSTest nas referencias disponiveis.
+Com `ignore_tests = true`, a regra ignora namespaces e paths de teste comuns, alem de contextos de teste reconhecidos por atributos xUnit, NUnit ou MSTest nas referências disponíveis.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A regra nao infere dependencias transitivas vindas de outros assemblies; ela analisa apenas imports e tipos usados no codigo fonte.
-- Aliases de `using` nao sao reportados nesta versao.
+- A regra não infere dependências transitivas vindas de outros assemblies; ela analisa apenas imports e tipos usados no código fonte.
+- Aliases de `using` não são reportados nesta versão.
 - A classificacao de camadas depende dos namespaces configurados. Projetos com nomes diferentes devem ajustar `core_namespace_patterns`.
-- `System.Net.Http` nao e proibido por padrao, porque alguns projetos permitem interfaces ou adapters finos na aplicacao. Adicione-o a `forbidden_namespace_patterns` quando essa for a politica do time.
+- `System.Net.Http` não é proibido por padrão, porque alguns projetos permitem interfaces ou adapters finos na aplicação. Adicione-o a `forbidden_namespace_patterns` quando essa for a política do time.
 
 ## Impacto esperado
 
-- Mantem dominio e aplicacao isolados de detalhes de infraestrutura.
-- Ajuda a preservar inversao de dependencia em arquiteturas hexagonais/clean architecture.
-- Torna excecoes arquiteturais explicitas e revisaveis via `.editorconfig`.
+- Mantém domínio e aplicação isolados de detalhes de infraestrutura.
+- Ajuda a preservar inversão de dependência em arquiteturas hexagonais/clean architecture.
+- Torna exceções arquiteturais explicitas e revisáveis via `.editorconfig`.

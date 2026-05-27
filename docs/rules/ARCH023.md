@@ -2,15 +2,15 @@
 
 ## Objetivo
 
-Evitar acesso direto ao relogio do sistema em codigo de dominio, aplicacao e servicos, preferindo `TimeProvider` ou uma abstracao equivalente quando a hora atual participa de regra de negocio.
+Evitar acesso direto ao relógio do sistema em código de domínio, aplicação e serviços, preferindo `TimeProvider` ou uma abstração equivalente quando a hora atual participa de regra de negócio.
 
 ## Motivacao
 
-Chamadas diretas a `DateTime.Now`, `DateTime.UtcNow`, `DateTimeOffset.Now` e `DateTimeOffset.UtcNow` acoplam o codigo ao tempo real. Isso torna testes menos deterministicos, dificulta simular vencimentos, janelas de tempo e mudancas de fuso, e pode espalhar decisoes de relogio por classes que deveriam receber essa dependencia.
+Chamadas diretas a `DateTime.Now`, `DateTime.UtcNow`, `DateTimeOffset.Now` e `DateTimeOffset.UtcNow` acoplam o código ao tempo real. Isso torna testes menos determinísticos, dificulta simular vencimentos, janelas de tempo e mudanças de fuso, e pode espalhar decisões de relógio por classes que deveriam receber essa dependência.
 
-`TimeProvider` permite injetar uma fonte de tempo controlavel em testes e usar `TimeProvider.System` na composicao da aplicacao.
+`TimeProvider` permite injetar uma fonte de tempo controlável em testes e usar `TimeProvider.System` na composição da aplicação.
 
-## Codigo nao conforme
+## Código não conforme
 
 ```csharp
 public sealed class InvoiceService
@@ -22,7 +22,7 @@ public sealed class InvoiceService
 }
 ```
 
-Tambem sao considerados nao conformes:
+Também são considerados não conformes:
 
 ```csharp
 var localNow = DateTime.Now;
@@ -31,7 +31,7 @@ var localOffset = DateTimeOffset.Now;
 var utcOffset = DateTimeOffset.UtcNow;
 ```
 
-## Codigo conforme
+## Código conforme
 
 ```csharp
 public sealed class InvoiceService
@@ -50,7 +50,7 @@ public sealed class InvoiceService
 }
 ```
 
-Implementacoes centralizadas de relogio tambem sao aceitas:
+Implementações centralizadas de relógio também são aceitas:
 
 ```csharp
 public sealed class SystemClock
@@ -64,14 +64,14 @@ public sealed class SystemClock
 
 ## Relacao com ARCH012
 
-ARCH023 nao substitui ARCH012.
+ARCH023 não substitui ARCH012.
 
-- ARCH012 trata contratos e declaracoes de tipo, sugerindo `DateTimeOffset` em vez de `DateTime` para reduzir ambiguidade de fuso horario.
-- ARCH023 trata obtencao da hora atual, sugerindo uma fonte de tempo injetavel em vez de acesso direto ao relogio do sistema.
+- ARCH012 trata contratos e declarações de tipo, sugerindo `DateTimeOffset` em vez de `DateTime` para reduzir ambiguidade de fuso horário.
+- ARCH023 trata obtencao da hora atual, sugerindo uma fonte de tempo injetavel em vez de acesso direto ao relógio do sistema.
 
-Um codigo pode estar correto para ARCH012 por usar `DateTimeOffset` e ainda assim disparar ARCH023 se chamar `DateTimeOffset.UtcNow` diretamente em regra de negocio.
+Um código pode estar correto para ARCH012 por usar `DateTimeOffset` e ainda assim disparar ARCH023 se chamar `DateTimeOffset.UtcNow` diretamente em regra de negócio.
 
-## Configuracao
+## Configuração
 
 A severidade pode ser configurada normalmente:
 
@@ -80,58 +80,58 @@ A severidade pode ser configurada normalmente:
 dotnet_diagnostic.ARCH023.severity = warning
 ```
 
-Namespaces permitidos podem ser configurados quando uma camada de infraestrutura centraliza o relogio:
+Namespaces permitidos podem ser configurados quando uma camada de infraestrutura centraliza o relógio:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH023.allowed_namespaces = ["MyApp.Infrastructure.Time"]
 ```
 
-Tipos permitidos tambem podem ser configurados:
+Tipos permitidos também podem ser configurados:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH023.allowed_types = ["MachineTimeSource"]
 ```
 
-Usos simples dentro de argumentos de logging podem ser ignorados quando o time aceitar essa excecao:
+Usos simples dentro de argumentos de logging podem ser ignorados quando o time aceitar essa exceção:
 
 ```ini
 [*.cs]
 dotnet_diagnostic.ARCH023.ignore_simple_logging = true
 ```
 
-As opcoes em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Valores invalidos de configuracao sao ignorados de forma conservadora, sem suprimir diagnosticos.
+As opções em formato JSON aceitam arrays de strings e escapes JSON comuns, incluindo unicode escapado. Valores inválidos de configuração são ignorados de forma conservadora, sem suprimir diagnósticos.
 
-### Fallback das opcoes
+### Fallback das opções
 
-- `allowed_namespaces`: array JSON de strings; default vazio. Namespaces sao aparados e comparados com casing exato. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
-- `allowed_types`: array JSON de strings; default vazio. Nomes de tipo sao aparados e comparados com casing exato. Entradas vazias sao ignoradas. JSON vazio, invalido ou malformado e ignorado, sem criar excecoes.
-- `ignore_simple_logging`: booleano; default `false`. Somente `true` habilita a excecao. Valores booleanos aceitam casing variado; valor ausente, vazio ou invalido usa `false`.
+- `allowed_namespaces`: array JSON de strings; default vazio. Namespaces são aparados e comparados com casing exato. Entradas vazias são ignoradas. JSON vazio, inválido ou malformado e ignorado, sem criar exceções.
+- `allowed_types`: array JSON de strings; default vazio. Nomes de tipo são aparados e comparados com casing exato. Entradas vazias são ignoradas. JSON vazio, inválido ou malformado e ignorado, sem criar exceções.
+- `ignore_simple_logging`: booleano; default `false`. Somente `true` habilita a exceção. Valores booleanos aceitam casing variado; valor ausente, vazio ou inválido usa `false`.
 
-O fallback e restritivo: configuracao invalida nao suprime diagnosticos.
+O fallback é restritivo: configuração inválida não suprime diagnósticos.
 
-## Heuristica
+## Heurística
 
-O analyzer usa analise semantica e reporta acessos a propriedades estaticas quando todos os pontos abaixo sao verdadeiros:
+O analyzer usa análise semântica e reporta acessos a propriedades estáticas quando todos os pontos abaixo são verdadeiros:
 
 - o membro acessado e `Now` ou `UtcNow`;
 - o tipo do membro e `System.DateTime` ou `System.DateTimeOffset`;
-- o codigo nao esta em contexto de teste reconhecido;
-- o arquivo nao e `Program.cs`;
-- o contexto nao esta em namespace ou tipo permitido por `.editorconfig`;
-- o tipo atual nao parece uma implementacao centralizada de relogio, como tipos terminados em `Clock` ou `TimeProvider`, nem deriva de `System.TimeProvider`;
-- o uso nao esta em logging simples quando `ignore_simple_logging = true`.
+- o código não está em contexto de teste reconhecido;
+- o arquivo não é `Program.cs`;
+- o contexto não está em namespace ou tipo permitido por `.editorconfig`;
+- o tipo atual não parece uma implementação centralizada de relógio, como tipos terminados em `Clock` ou `TimeProvider`, nem deriva de `System.TimeProvider`;
+- o uso não está em logging simples quando `ignore_simple_logging = true`.
 
-## Limitacoes conhecidas
+## Limitações conhecidas
 
-- A regra nao acompanha fluxo para descobrir se o valor foi recebido de outro metodo ou campo.
-- A deteccao de implementacoes de relogio por nome e propositalmente estreita para reduzir falsos positivos.
-- A excecao de logging e sintatica/semantica simples: considera chamadas cujo metodo comeca com `Log` e cujo acesso aparece como argumento da chamada.
-- `Program.cs` e ignorado para permitir composicao e bootstrap, mas regras de negocio devem continuar recebendo `TimeProvider`.
+- A regra não acompanha fluxo para descobrir se o valor foi recebido de outro método ou campo.
+- A detecção de implementações de relógio por nome e propositalmente estreita para reduzir falsos positivos.
+- A exceção de logging e sintática/semântica simples: considera chamadas cujo método começa com `Log` e cujo acesso aparece como argumento da chamada.
+- `Program.cs` é ignorado para permitir composição e bootstrap, mas regras de negócio devem continuar recebendo `TimeProvider`.
 
 ## Impacto esperado
 
 - Aumenta testabilidade de regras dependentes de data e hora.
-- Reduz testes instaveis por dependerem do relogio real.
-- Centraliza decisoes sobre tempo local, UTC e simulacao de relogio.
+- Reduz testes instaveis por dependerem do relógio real.
+- Centraliza decisões sobre tempo local, UTC e simulação de relógio.

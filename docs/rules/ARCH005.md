@@ -8,7 +8,7 @@ Restringir o uso de `NSubstitute.Arg.Any<T>()` em código de teste, permitindo-o
 
 - menos expressivos (o teste não comúnica quais valores de argumento importam)
 - menos rigorosós (testes passam mesmo quando o sistema sob teste usa valores inesperados)
-- mais difíceis de refatorar com seguranca (expectativas fracas podem esconder regressões)
+- mais difíceis de refatorar com segurança (expectativas fracas podem esconder regressões)
 
 A convenção do projeto aceita `Arg.Any<T>()` apenas em um cenário restrito: asserções negativas usando a cadeia de chamadas `DidNotReceive()` / `DidNotReceiveWithAnyArgs()` do NSubstitute.
 
@@ -49,7 +49,7 @@ dotnet_diagnostic.ARCH005.severity = info
 ```
 
 ## Limitações conhecidas
-- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referenciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
+- O analyzer é intencionalmente limitado a **projetos de teste** (heurística: a compilação deve referênciar atributos conhecidos de frameworks de teste, como `Xunit.FactAttribute`, `NUnit.Framework.TestAttribute` ou `Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute`).
 - O analyzer é intencionalmente limitado a **contextos de teste** (métodos de teste e métodos auxiliares dentro de *tipos de teste*), seguindo a mesma abordagem das outras regras de qualidade de teste deste pacote.
 
 ## Quando não usar

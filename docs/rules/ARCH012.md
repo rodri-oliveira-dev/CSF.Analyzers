@@ -4,7 +4,7 @@
 Incentivar o uso de `DateTimeOffset` em vez de `DateTime` em declarações de tipo controladas pelo projeto, reduzindo ambiguidade sobre a intenção de fuso horário.
 
 ## Motivação
-`System.DateTime` é ambíguo: pode representar horário local, UTC ou não especificado, e sua propriedade `Kind` muitas vezes é ignorada ou interpretada incorretamente. Isso causa bugs reais em serialização, persistência e sistemas distribuídos.
+`System.DateTime` é ambíguo: pode representar horário local, UTC ou não específicado, e sua propriedade `Kind` muitas vezes é ignorada ou interpretada incorretamente. Isso causa bugs reais em serialização, persistência e sistemas distribuídos.
 
 `DateTimeOffset` sempre carrega um offset relativo ao UTC, tornando a intenção explícita e eliminando uma classe comum de defeitos relacionados a fuso horário.
 
@@ -53,7 +53,7 @@ public sealed class Processor
 ```
 
 ## Configuração
-Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão. Versóes futuras podem suportar uma allow-list para nomes de tipos ou namespaces específicos em que `DateTime` é usado intencionalmente.
+Esta regra não expõe opções customizadas de `.editorconfig` na primeira versão. Versões futuras podem suportar uma allow-list para nomes de tipos ou namespaces específicos em que `DateTime` é usado intencionalmente.
 
 A severidade pode ser configurada normalmente:
 

@@ -1,18 +1,18 @@
 # Adocao gradual do Swa.Analyzers
 
-Este guia descreve uma estrategia segura para introduzir o `Swa.Analyzers` em projetos reais, inclusive bases legadas com muitos diagnosticos iniciais. A ideia principal e separar aprendizado, priorizacao e bloqueio: primeiro tornar os problemas visiveis, depois escolher regras criticas e so entao exigir conformidade no CI.
+Este guia descreve uma estratégia segura para introduzir o `Swa.Analyzers` em projetos reais, inclusive bases legadas com muitos diagnósticos iniciais. A ideia principal é separar aprendizado, priorização e bloqueio: primeiro tornar os problemas visíveis, depois escolher regras críticas e so entao exigir conformidade no CI.
 
 ## Principios
 
 - Comece com severidades baixas para medir impacto sem interromper entregas.
 - Promova poucas regras por vez, preferindo as mais objetivas e maduras.
-- Trate legado como backlog tecnico explicito, nao como excecao permanente.
+- Trate legado como backlog tecnico explícito, não como exceção permanente.
 - Use suppressions para casos justificados e locais; evite desabilitar regras amplamente.
-- Documente a decisao quando uma violacao for aceita por compatibilidade, contrato externo ou risco de mudanca.
+- Documente a decisão quando uma violacao for aceita por compatibilidade, contrato externo ou risco de mudança.
 
 ## Configurando severidades
 
-As severidades podem ser controladas por `.editorconfig` usando o ID do diagnostico:
+As severidades podem ser controladas por `.editorconfig` usando o ID do diagnóstico:
 
 ```ini
 # .editorconfig
@@ -26,22 +26,22 @@ dotnet_diagnostic.ARCH020.severity = error
 
 Valores comuns:
 
-- `none`: desabilita o diagnostico.
-- `silent`: mantem o diagnostico para tooling, sem aparecer como aviso.
-- `suggestion`: sugere no IDE com baixo ruido.
+- `none`: desabilita o diagnóstico.
+- `silent`: mantém o diagnóstico para tooling, sem aparecer como aviso.
+- `suggestion`: sugere no IDE com baixo ruído.
 - `info`: mostra informacao sem bloquear build.
-- `warning`: aparece como aviso e pode bloquear quando warnings sao tratados como erro.
-- `error`: bloqueia compilacao.
+- `warning`: aparece como aviso e pode bloquear quando warnings são tratados como erro.
+- `error`: bloqueia compilação.
 
-Para adocao gradual, prefira `suggestion` ou `info` no primeiro ciclo. Regras arquiteturais costumam refletir convencoes de time e podem comecar como `info` antes de virarem `warning` ou `error`.
+Para adoção gradual, prefira `suggestion` ou `info` no primeiro ciclo. Regras arquiteturais costumam refletir convenções de time e podem começar como `info` antes de virarem `warning` ou `error`.
 
-Se o time quiser partir de uma politica pronta, veja os [perfis de adocao via `.editorconfig`](editorconfig-profiles.md). Eles cobrem os perfis `recommended`, `strict`, `security`, `architecture`, `testing` e `legacy-safe`, com exemplos copiaveis e um mapa de risco de ruido por regra.
+Se o time quiser partir de uma política pronta, veja os [perfis de adoção via `.editorconfig`](editorconfig-profiles.md). Eles cobrem os perfis `recommended`, `strict`, `security`, `architecture`, `testing` e `legacy-safe`, com exemplos copiáveis e um mapa de risco de ruído por regra.
 
 ## Estrategia por fases
 
 ### 1. Modo informativo
 
-Use esta fase para descobrir o tamanho do trabalho, entender falsos positivos e alinhar convencoes do time.
+Use esta fase para descobrir o tamanho do trabalho, entender falsos positivos e alinhar convenções do time.
 
 ```ini
 [*.cs]
@@ -52,9 +52,9 @@ dotnet_diagnostic.ARCH020.severity = info
 dotnet_diagnostic.ARCH027.severity = info
 ```
 
-Nesta fase, nao bloqueie o CI por causa dos novos diagnosticos. Gere uma lista das regras mais frequentes, separe problemas reais de casos aceitos e ajuste configuracoes publicas das regras quando houver suporte documentado.
+Nesta fase, não bloqueie o CI por causa dos novos diagnósticos. Gere uma lista das regras mais frequentes, separe problemas reais de casos aceitos e ajuste configurações públicas das regras quando houver suporte documentado.
 
-### 2. Warnings em regras criticas
+### 2. Warnings em regras críticas
 
 Depois que o time conhece o impacto, promova regras de baixo falso positivo e alto risco operacional para `warning`.
 
@@ -67,11 +67,11 @@ dotnet_diagnostic.ARCH017.severity = warning
 dotnet_diagnostic.ARCH020.severity = warning
 ```
 
-Boas candidatas costumam ser regras ligadas a confiabilidade, seguranca, async, autorizacao e observabilidade. Regras mais opinativas ou dependentes da arquitetura local podem continuar como `info` ate amadurecerem no contexto do projeto.
+Boas candidatas costumam ser regras ligadas a confiabilidade, segurança, async, autorização e observabilidade. Regras mais opinativas ou dependentes da arquitetura local podem continuar como `info` até amadurecerem no contexto do projeto.
 
 ### 3. Bloqueio em CI apenas para regras maduras
 
-Promova para `error` somente regras que o time ja validou como maduras para aquela base: baixo ruido, entendimento comum e plano claro para novas violacoes.
+Promova para `error` somente regras que o time já validou como maduras para aquela base: baixo ruído, entendimento comum e plano claro para novas violações.
 
 ```ini
 [*.cs]
@@ -79,16 +79,16 @@ dotnet_diagnostic.ARCH001.severity = error
 dotnet_diagnostic.ARCH009.severity = error
 dotnet_diagnostic.ARCH020.severity = error
 
-# Regras ainda em amadurecimento continuam visiveis sem bloquear.
+# Regras ainda em amadurecimento continuam visíveis sem bloquear.
 dotnet_diagnostic.ARCH027.severity = info
 dotnet_diagnostic.ARCH030.severity = info
 ```
 
-Evite transformar todas as regras em erro de uma vez. Isso tende a criar suppressions amplas e reduz a confianca no analyzer. O melhor bloqueio e incremental: poucas regras, alto valor, comportamento bem compreendido.
+Evite transformar todas as regras em erro de uma vez. Isso tende a criar suppressions amplas e reduz a confiança no analyzer. O melhor bloqueio é incremental: poucas regras, alto valor, comportamento bem compreendido.
 
 ### 4. Tratamento de legado
 
-Em projetos legados, separe codigo novo de codigo historico. Um padrao comum e manter regras fortes para areas novas e reduzir severidade em pastas legadas ate que sejam corrigidas.
+Em projetos legados, separe código novo de código histórico. Um padrão comum é manter regras fortes para áreas novas e reduzir severidade em pastas legadas até que sejam corrigidas.
 
 ```ini
 [*.cs]
@@ -102,23 +102,23 @@ dotnet_diagnostic.ARCH009.severity = info
 dotnet_diagnostic.ARCH020.severity = none
 ```
 
-Use `none` com cuidado. Ele e aceitavel quando uma area nao sera migrada no curto prazo ou quando ha incompatibilidade conhecida, mas prefira `info` quando o diagnostico ainda deve aparecer em revisoes e relatorios.
+Use `none` com cuidado. Ele é aceitável quando uma área não será migrada no curto prazo ou quando há incompatibilidade conhecida, mas prefira `info` quando o diagnóstico ainda deve aparecer em revisões e relatórios.
 
 ## Suppressions locais
 
-Suppressions devem explicar excecoes reais, nao esconder trabalho comum. Bons motivos incluem:
+Suppressions devem explicar exceções reais, não esconder trabalho comum. Bons motivos incluem:
 
-- compatibilidade com API publica existente;
+- compatibilidade com API pública existente;
 - assinatura exigida por framework ou biblioteca externa;
-- codigo gerado ou adaptador temporario;
-- falso positivo conhecido enquanto a regra nao cobre o caso;
-- migracao planejada em uma area legada.
+- código gerado ou adaptador temporario;
+- falso positivo conhecido enquanto a regra não cobre o caso;
+- migração planejada em uma área legada.
 
-Evite suppression quando o codigo pode ser ajustado de forma simples, quando a regra aponta risco de producao ou quando a justificativa e apenas "para o build passar".
+Evite suppression quando o código pode ser ajustado de forma simples, quando a regra aponta risco de produção ou quando a justificativa é apenas "para o build passar".
 
 ### `#pragma warning disable/restore`
 
-Use `#pragma` para excecoes pequenas e proximas do codigo. Sempre limite o escopo e inclua um comentario curto quando a justificativa nao for obvia.
+Use `#pragma` para exceções pequenas e próximas do código. Sempre limite o escopo e inclua um comentário curto quando a justificativa não for óbvia.
 
 ```csharp
 #pragma warning disable ARCH001 // Assinatura exigida por componente legado.
@@ -129,11 +129,11 @@ public async void PublishAsync()
 #pragma warning restore ARCH001
 ```
 
-Evite deixar `#pragma warning disable` aberto por muitas linhas ou por um arquivo inteiro. Quanto menor o escopo, mais facil revisar a excecao depois.
+Evite deixar `#pragma warning disable` aberto por muitas linhas ou por um arquivo inteiro. Quanto menor o escopo, mais facil revisar a exceção depois.
 
 ### `GlobalSuppressions.cs`
 
-Use `GlobalSuppressions.cs` quando a excecao precisa ficar centralizada ou quando o alvo e um membro especifico que nao deve carregar pragmas no corpo do arquivo.
+Use `GlobalSuppressions.cs` quando a exceção precisa ficar centralizada ou quando o alvo é um membro específico que não deve carregar pragmas no corpo do arquivo.
 
 ```csharp
 using System.Diagnostics.CodeAnalysis;
@@ -141,16 +141,16 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage(
     "Reliability",
     "ARCH001:Avoid async void outside event handlers",
-    Justification = "Contrato publico legado; migracao planejada no proximo ciclo.",
+    Justification = "Contrato público legado; migração planejada no próximo ciclo.",
     Scope = "member",
     Target = "~M:Legacy.Notifier.PublishAsync")]
 ```
 
-Prefira suppressions com `Scope` e `Target` quando possivel. Suppressions globais sem alvo tornam mais dificil saber qual excecao ainda e valida.
+Prefira suppressions com `Scope` e `Target` quando possível. Suppressions globais sem alvo tornam mais difícil saber qual exceção ainda é válida.
 
 ### `NoWarn` no csproj
 
-Use `NoWarn` apenas quando a decisao precisa ser aplicada ao projeto inteiro, por exemplo em projeto de testes, amostra, codigo gerado ou pacote legado que ainda nao participa da politica.
+Use `NoWarn` apenas quando a decisão precisa ser aplicada ao projeto inteiro, por exemplo em projeto de testes, amostra, código gerado ou pacote legado que ainda não participa da política.
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -160,43 +160,43 @@ Use `NoWarn` apenas quando a decisao precisa ser aplicada ao projeto inteiro, po
 </Project>
 ```
 
-Evite `NoWarn` para regras criticas em projetos de producao. Se a excecao vale para poucas linhas, prefira `#pragma`; se vale para poucos membros, prefira `GlobalSuppressions.cs`; se vale para uma pasta, prefira escopo por `.editorconfig`.
+Evite `NoWarn` para regras críticas em projetos de produção. Se a exceção vale para poucas linhas, prefira `#pragma`; se vale para poucos membros, prefira `GlobalSuppressions.cs`; se vale para uma pasta, prefira escopo por `.editorconfig`.
 
-## Exemplo de politica inicial
+## Exemplo de política inicial
 
-Este exemplo combina adocao gradual, regras criticas e tratamento de legado:
+Este exemplo combina adoção gradual, regras críticas e tratamento de legado:
 
 ```ini
 root = true
 
 [*.cs]
-# Primeiro ciclo: regras visiveis para todo o time.
+# Primeiro ciclo: regras visíveis para todo o time.
 dotnet_diagnostic.ARCH003.severity = info
 dotnet_diagnostic.ARCH004.severity = info
 dotnet_diagnostic.ARCH027.severity = info
 
-# Regras de confiabilidade e seguranca ja priorizadas.
+# Regras de confiabilidade e segurança já priorizadas.
 dotnet_diagnostic.ARCH001.severity = warning
 dotnet_diagnostic.ARCH009.severity = warning
 dotnet_diagnostic.ARCH010.severity = warning
 dotnet_diagnostic.ARCH020.severity = warning
 
 [src/NewModules/**/*.cs]
-# Codigo novo segue politica mais forte.
+# Código novo segue política mais forte.
 dotnet_diagnostic.ARCH001.severity = error
 dotnet_diagnostic.ARCH009.severity = error
 dotnet_diagnostic.ARCH020.severity = error
 
 [src/Legacy/**/*.cs]
-# Legado permanece visivel, mas nao bloqueia enquanto e migrado.
+# Legado permanece visível, mas não bloqueia enquanto é migrado.
 dotnet_diagnostic.ARCH001.severity = info
 dotnet_diagnostic.ARCH009.severity = info
 dotnet_diagnostic.ARCH020.severity = info
 ```
 
-## Evoluindo a politica
+## Evoluindo a política
 
-Revise a configuracao periodicamente. Quando uma regra passar algumas iteracoes sem falsos positivos relevantes e com correcoes bem compreendidas, promova a severidade:
+Revise a configuração periodicamente. Quando uma regra passar algumas iterações sem falsos positivos relevantes e com correções bem compreendidas, promova a severidade:
 
 ```ini
 [*.cs]
@@ -209,9 +209,9 @@ dotnet_diagnostic.ARCH027.severity = warning
 
 Antes de promover uma regra para `error`, confirme que:
 
-- a regra esta documentada e entendida pelo time;
+- a regra está documentada e entendida pelo time;
 - os falsos positivos conhecidos foram corrigidos ou suprimidos com justificativa;
-- o legado tem plano explicito;
-- o CI falha apenas para violacoes que o time realmente quer bloquear.
+- o legado tem plano explícito;
+- o CI falha apenas para violações que o time realmente quer bloquear.
 
-Essa progressao mantem o analyzer util desde o primeiro dia e evita que a adocao vire uma mudanca grande demais para ser sustentada.
+Essa progressão mantém o analyzer útil desde o primeiro dia e evita que a adoção vire uma mudança grande demais para ser sustentada.

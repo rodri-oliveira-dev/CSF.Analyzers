@@ -1,7 +1,7 @@
-// Minimal stubs so ARCH003/ARCH006 can detect FluentAssertions-like APIs
-// without referencing the real FluentAssertions package.
+// Stubs mínimos para que ARCH003/ARCH006 detectem APIs parecidas com FluentAssertions
+// sem referenciar o pacote real FluentAssertions.
 //
-// IMPORTANT: These are NOT production implementations.
+// IMPORTANTE: estes NÃO são implementações de produção.
 
 namespace FluentAssertions;
 
@@ -19,7 +19,7 @@ public sealed class ObjectAssertions
         _subject = subject;
     }
 
-    // ARCH003 targets this method name in the FluentAssertions namespace.
+    // ARCH003 mira este nome de método no namespace FluentAssertions.
     public void NotBeNull()
     {
     }
@@ -32,7 +32,7 @@ public sealed class ObjectAssertions
     {
     }
 
-    // ARCH006 targets BeEquivalentTo + Excluding* calls inside the options delegate.
+    // ARCH006 mira chamadas BeEquivalentTo + Excluding* dentro do delegate de opções.
     public void BeEquivalentTo(
         object? expected,
         Func<global::FluentAssertions.Equivalency.EquivalencyAssertionOptions, global::FluentAssertions.Equivalency.EquivalencyAssertionOptions>? options = null)

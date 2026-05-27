@@ -50,12 +50,12 @@ jobs:
           version="${{ steps.gitversion.outputs.semVer }}"
 
           if [ -z "$version" ]; then
-            echo "GitVersion nao calculou a versao SemVer."
+            echo "GitVersion não calculou a versão SemVer."
             exit 1
           fi
 
           if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
-            echo "GitVersion calculou uma versao invalida para PackageVersion: $version"
+            echo "GitVersion calculou uma versão inválida para PackageVersion: $version"
             exit 1
           fi
 
@@ -76,9 +76,9 @@ jobs:
       - name: Build
         run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
 
-      # dotnet test against the .slnx currently fails before test discovery when
-      # MSBuild runs with multiple nodes. Keep orchestration single-node while
-      # preserving full solution test coverage.
+      # dotnet test contra a .slnx atualmente falha antes da descoberta de testes quando
+      # o MSBuild usa múltiplos nós. Mantemos a orquestração em nó único enquanto
+      # preservamos a cobertura completa de testes da solução.
       - name: Test
         run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
 
@@ -226,12 +226,12 @@ jobs:
 
           gh release upload "${{ steps.release_tag.outputs.tag }}" "${files[@]}"
 
-      # Futuro: publicar no NuGet.org somente apos revisao de governanca.
+      # Futuro: publicar no NuGet.org somente após revisão de governança.
       # Para habilitar:
-      # 1. Criar o secret NUGET_API_KEY com escopo minimo no repositorio.
-      # 2. Usar environment protegido com revisores para publicacao.
+      # 1. Criar o secret NUGET_API_KEY com escopo mínimo no repositório.
+      # 2. Usar environment protegido com revisores para publicação.
       # 3. Manter --skip-duplicate.
-      # 4. Descomentar este step apenas apos aprovacao do fluxo.
+      # 4. Descomentar este step apenas após aprovação do fluxo.
       #
       # - name: Publish to NuGet
       #   env:
