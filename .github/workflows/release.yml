@@ -24,23 +24,23 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           fetch-depth: 0
 
       - name: Setup .NET SDK 10
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
         with:
           dotnet-version: 10.0.x
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@bc6623af8fc07d5a8903052dd46da33403eec8e8
+        uses: gittools/actions/gitversion/setup@7417b1089e2c7de93510f1901d656ddf60bb024f
         with:
           versionSpec: 6.x
 
       - name: Determine version
         id: gitversion
-        uses: gittools/actions/gitversion/execute@bc6623af8fc07d5a8903052dd46da33403eec8e8
+        uses: gittools/actions/gitversion/execute@7417b1089e2c7de93510f1901d656ddf60bb024f
         with:
           configFilePath: GitVersion.yml
 
@@ -62,7 +62,7 @@ jobs:
           echo "GitVersion package version: $version"
 
       - name: Cache NuGet packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json') }}
@@ -86,7 +86,7 @@ jobs:
         run: dotnet pack ./src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
 
       - name: Attest NuGet packages
-        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6
         with:
           subject-path: |
             artifacts/packages/*.nupkg
