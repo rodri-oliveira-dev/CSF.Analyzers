@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsSwaAnalyzerPackage>true</IsSwaAnalyzerPackage>
+    <PackageId>Swa.Analyzers.Testing</PackageId>
+    <Description>Roslyn analyzers for .NET test quality and mocking convention checks.</Description>
+    <PackageTags>roslyn;analyzers;testing;tests;mocking;fluentassertions</PackageTags>
+  </PropertyGroup>
+
+</Project>

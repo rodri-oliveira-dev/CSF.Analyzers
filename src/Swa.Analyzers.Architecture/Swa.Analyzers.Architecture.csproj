@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsSwaAnalyzerPackage>true</IsSwaAnalyzerPackage>
+    <PackageId>Swa.Analyzers.Architecture</PackageId>
+    <Description>Roslyn analyzers for .NET architecture, authorization, routing and layer dependency conventions.</Description>
+    <PackageTags>roslyn;analyzers;architecture;authorization;routing;layers</PackageTags>
+  </PropertyGroup>
+
+</Project>

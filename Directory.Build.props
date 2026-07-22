@@ -1,0 +1,49 @@
+<Project>
+
+  <PropertyGroup>
+    <IsSwaAnalyzerPackage Condition="
+      '$(MSBuildProjectName)' == 'Swa.Analyzers.Core'
+      Or '$(MSBuildProjectName)' == 'Swa.Analyzers.Reliability'
+      Or '$(MSBuildProjectName)' == 'Swa.Analyzers.Architecture'
+      Or '$(MSBuildProjectName)' == 'Swa.Analyzers.Testing'">true</IsSwaAnalyzerPackage>
+    <RepositoryUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</PackageProjectUrl>
+    <Authors>Rodrigo Oliveira</Authors>
+    <Company>Rodrigo Oliveira</Company>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsSwaAnalyzerPackage)' == 'true'">
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>13.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsSwaAnalyzerPackage)' == 'true'">
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
+    <Compile Include="$(MSBuildThisFileDirectory)src\Swa.Analyzers.Common\**\*.cs"
+             LinkBase="Common" />
+    <None Include="$(MSBuildThisFileDirectory)README.md"
+          Pack="true"
+          PackagePath="\" />
+    <None Include="$(OutputPath)$(AssemblyName).dll"
+          Pack="true"
+          PackagePath="analyzers/dotnet/cs" />
+    <None Include="$(OutputPath)$(AssemblyName).pdb"
+          Pack="true"
+          PackagePath="analyzers/dotnet/cs" />
+  </ItemGroup>
+
+</Project>
