@@ -37,5 +37,5 @@ public sealed class OrdersController : ControllerBase
 
     private static readonly IEnumerable<string> AspNetCoreReferenceAssemblyPaths =
         RealFrameworkVerifier<Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>
-            .GetPackageReferenceAssemblyPaths("Microsoft.AspNetCore.App.Ref", "9.0.16", "net9.0");
+            .GetPackageReferenceAssemblyPaths("Microsoft.AspNetCore.App.Ref", "9.0.18", "net9.0");
 }
