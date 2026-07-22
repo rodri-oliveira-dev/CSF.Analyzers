@@ -18,8 +18,8 @@ Antes de alterar qualquer coisa, consulte nesta ordem quando relevante:
 6. `.editorconfig`
 7. `global.json`
 8. `Swa.Analyzers.slnx`
-9. `src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md`
-10. `src/Swa.Analyzers.SampleApp/README.md`
+9. `src/Swa.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Unshipped.md`
+10. `samples/Swa.Analyzers.*.Sample/`
 
 ## Escopo do repositório
 
@@ -29,17 +29,20 @@ A solução principal do repositório e:
 
 Os principais componentes estão organizados em:
 
-- `src/Swa.Analyzers.Core`: implementação dos analyzers, diagnostic descriptors, identificadores e metadados de release.
-- `tests/Swa.Analyzers.Tests`: testes automatizados dos analyzers.
-- `src/Swa.Analyzers.SampleApp`: exemplos manuais válidos e inválidos para cada regra.
-- `docs/rules`: documentação de cada regra `ARCH###`.
+- `src/Swa.Analyzers.Reliability`: implementação, identificadores e metadados de release das regras `REL###`.
+- `src/Swa.Analyzers.Architecture`: implementação, identificadores e metadados de release das regras `ARC###`.
+- `src/Swa.Analyzers.Testing`: implementação, identificadores e metadados de release das regras `TST###`.
+- `src/Swa.Analyzers.Common`: código-fonte compartilhado incluído nos pacotes de analyzer.
+- `tests/Swa.Analyzers.Reliability.Tests`, `tests/Swa.Analyzers.Architecture.Tests` e `tests/Swa.Analyzers.Testing.Tests`: testes automatizados por pacote.
+- `samples/Swa.Analyzers.Reliability.Sample`, `samples/Swa.Analyzers.Architecture.Sample` e `samples/Swa.Analyzers.Testing.Sample`: exemplos manuais válidos e inválidos por pacote.
+- `docs/rules`: documentação de cada regra `REL###`, `ARC###` ou `TST###`.
 - `.agents/skills`: instrucoes especializadas para o Codex trabalhar neste repositório.
 
 ## Skills recomendadas
 
 Use a skill mais específica para a tarefa:
 
-- `roslyn-analyzer-rule-change`: criar ou alterar uma regra `ARCH###`.
+- `roslyn-analyzer-rule-change`: criar ou alterar uma regra `REL###`, `ARC###` ou `TST###`.
 - `roslyn-analyzer-test-change`: criar ou ajustar testes de analyzer.
 - `roslyn-analyzer-doc-rule-change`: criar ou atualizar documentação de regra.
 - `roslyn-analyzer-sample-app-change`: criar ou ajustar exemplos manuais no SampleApp.
@@ -77,11 +80,11 @@ Não use skills genéricas de serviço .NET para este repositório. Este projeto
 - Evite refactors amplos não solicitados.
 - Evite renomeacoes desnecessárias.
 - Evite alterar formatação de arquivos sem necessidade funcional.
-- Preserve compatibilidade do projeto `Swa.Analyzers.Core` com `netstandard2.0`.
+- Preserve compatibilidade dos projetos de pacote com `netstandard2.0`.
 
 ### Analyzers
 
-- Novas regras devem usar IDs `ARCH###` coerentes com `RuleIdentifiers`.
+- Novas regras devem usar IDs `REL###`, `ARC###` ou `TST###` coerentes com `RuleIdentifiers`.
 - Mensagens, títulos, categorias, severidades e help links devem seguir o padrão existente.
 - Cada regra deve declarar `DiagnosticDescriptor` com `RuleHelpLinks.ForRule(...)`.
 - Use `EnableConcurrentExecution()`.
@@ -95,7 +98,7 @@ Não use skills genéricas de serviço .NET para este repositório. Este projeto
 
 ### Testes
 
-- Use `tests/Swa.Analyzers.Tests/Verifier.cs` como padrão.
+- Use `tests/Swa.Analyzers.TestSupport/Verifier.cs` como padrão.
 - Testes devem cobrir diagnósticos esperados e casos negativos relevantes.
 - Para regras com dependências externas, use stubs mínimos em string ou no SampleApp quando isso evitar dependência desnecessária.
 - Cubra falsos positivos antes de ampliar heurísticas.
@@ -105,15 +108,15 @@ Não use skills genéricas de serviço .NET para este repositório. Este projeto
 ### SampleApp
 
 - Use o SampleApp para exemplos manuais e demonstração.
-- Exemplos devem ficar em pasta `Arch###/`.
+- Exemplos devem ficar em pastas `Rel###/`, `Arc###/` ou `Tst###/` no sample do pacote correspondente.
 - Use `*_Invalid.cs` para código intencionalmente não conforme.
 - Use `*_Valid.cs` para código conforme.
-- Ajuste `src/Swa.Analyzers.SampleApp/.editorconfig` para que exemplos inválidos não quebrem a compilação sem necessidade.
+- Ajuste o `.editorconfig` do sample correspondente quando necessário para que exemplos inválidos não quebrem a compilação sem necessidade.
 - Use stubs apenas para habilitar reconhecimento simbólico necessário ao analyzer.
 
 ### Documentacao
 
-- Cada regra deve ter documentação própria em `docs/rules/ARCH###.md`.
+- Cada regra deve ter documentação própria em `docs/rules/<ID>.md`.
 - A documentação deve explicar objetivo, código não conforme, código conforme, configuração quando houver, heurística, limitações conhecidas e impacto esperado.
 - Não documente comportamento que não foi implementado.
 - Ao alterar configuração pública de regra, atualize o README.
@@ -126,7 +129,7 @@ Não use skills genéricas de serviço .NET para este repositório. Este projeto
    - diagnostic descriptor
    - `RuleIdentifiers`
    - testes
-   - SampleApp
+   - samples
    - documentação de regras
    - `AnalyzerReleases.Unshipped.md`
    - empacotamento
@@ -185,7 +188,7 @@ O `-m:1` deve ser mantido nos testes enquanto `dotnet test` contra a `.slnx` fal
 Antes de concluir uma tarefa:
 
 1. Revise o diff.
-2. Confirme se analyzer, testes, docs, SampleApp e release metadata estão coerentes.
+2. Confirme se analyzer, testes, docs, samples e release metadata estão coerentes.
 3. Execute restore, build e testes proporcionais ao impacto.
 4. Informe quais validações foram executadas.
 5. Se algum comando não foi executado, registre claramente o motivo.

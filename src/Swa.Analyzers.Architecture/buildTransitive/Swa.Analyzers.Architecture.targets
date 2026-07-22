@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <SwaAnalyzersArchitectureDirectoryBuildProps>$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildProjectDirectory)'))</SwaAnalyzersArchitectureDirectoryBuildProps>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildProjectFullPath)"
+                     Visible="false" />
+    <AdditionalFiles Include="$(SwaAnalyzersArchitectureDirectoryBuildProps)"
+                     Condition="'$(SwaAnalyzersArchitectureDirectoryBuildProps)' != ''"
+                     Visible="false" />
+  </ItemGroup>
+</Project>
+

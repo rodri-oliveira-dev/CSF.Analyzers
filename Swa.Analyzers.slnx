@@ -1,6 +1,12 @@
 <Solution>
-  <Project Path="src/Swa.Analyzers.CodeFixes/Swa.Analyzers.CodeFixes.csproj" />
-  <Project Path="src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj" />
-  <Project Path="src/Swa.Analyzers.SampleApp/Swa.Analyzers.SampleApp.csproj" />
-  <Project Path="tests/Swa.Analyzers.Tests/Swa.Analyzers.Tests.csproj" />
+  <Project Path="src/Swa.Analyzers.Reliability/Swa.Analyzers.Reliability.csproj" />
+  <Project Path="src/Swa.Analyzers.Architecture/Swa.Analyzers.Architecture.csproj" />
+  <Project Path="src/Swa.Analyzers.Testing/Swa.Analyzers.Testing.csproj" />
+  <Project Path="samples/Swa.Analyzers.Reliability.Sample/Swa.Analyzers.Reliability.Sample.csproj" />
+  <Project Path="samples/Swa.Analyzers.Architecture.Sample/Swa.Analyzers.Architecture.Sample.csproj" />
+  <Project Path="samples/Swa.Analyzers.Testing.Sample/Swa.Analyzers.Testing.Sample.csproj" />
+  <Project Path="tests/Swa.Analyzers.Reliability.Tests/Swa.Analyzers.Reliability.Tests.csproj" />
+  <Project Path="tests/Swa.Analyzers.Architecture.Tests/Swa.Analyzers.Architecture.Tests.csproj" />
+  <Project Path="tests/Swa.Analyzers.Testing.Tests/Swa.Analyzers.Testing.Tests.csproj" />
+  <Project Path="tests/Swa.Analyzers.PackageValidation.Tests/Swa.Analyzers.PackageValidation.Tests.csproj" />
 </Solution>

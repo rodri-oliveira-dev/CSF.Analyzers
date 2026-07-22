@@ -4,45 +4,47 @@
 
 ### Adicionado
 
-- Adicionada a ARCH033 para detectar chamadas a `BuildServiceProvider()` em `IServiceCollection` durante o registro de serviços, com suporte à opção `.editorconfig` `dotnet_diagnostic.ARCH033.ignore_tests`.
+- Adicionado target `buildTransitive` ao pacote `Swa.Analyzers.Architecture` para fornecer `.csproj` e `Directory.Build.props` como `AdditionalFiles` para `ARC005` em consumo via NuGet.
+- Adicionados guardrails de performance para o pacote `Swa.Analyzers.Testing`.
 
 ### Alterado
 
+- BREAKING: Renumerados os diagnosticos ativos para `REL###`, `ARC###` e `TST###`, com metadados v2 ainda em `AnalyzerReleases.Unshipped.md`.
+- BREAKING: Atualizadas as chaves publicas de `.editorconfig` para os novos IDs dos diagnosticos.
 - Migrated release versioning from project `VersionPrefix` to GitVersion, using semantic commits to calculate the NuGet package version and GitHub Release tag.
-- Formalizada a validação de metadados de release shipped e unshipped dos analyzers.
+- Atualizada a infraestrutura de CI e release para validar, empacotar, inspecionar e anexar os seis artefatos dos tres pacotes v2 sem gerar o pacote legado.
+- Formalizada a validaÃ§Ã£o de metadados de release shipped e unshipped dos analyzers.
 
 ### Corrigido
 
 - Fixed the release workflow order so the .NET SDK is installed before GitVersion runs `dotnet tool install`.
-- Corrigida a ARCH010 para ignorar métodos síncronos que expõem parâmetros ou overloads com `CancellationToken`, mantendo a regra restrita a chamadas async.
+- Atualizadas instrucoes internas, cobertura e documentacao publica para remover residuos da estrutura v1 baseada em Core/SampleApp e refletir os tres pacotes v2.
 
 ### Breaking Changes
 
-- None.
+- Os IDs `ARCH###` deixam de ser emitidos pelos pacotes ativos da v2. Consulte `docs/migration-v2.md`.
+- As regras `REL003`, `ARC003`, `ARC004`, `ARC005`, `TST001` e `TST002` passam a ser opt-in com severidade base `Info`.
 
 ## [1.0.0] - 2026-05-01
 
-Primeira versão estável do pacote `Swa.Analyzers`.
+Primeira versÃ£o estÃ¡vel do pacote `Swa.Analyzers`.
 
 ### Adicionado
 
-- Published the stable baseline of analyzer rules ARCH001 through ARCH032, covering architecture, reliability, performance, security, observability, design, testability and test-quality conventions.
-- Incluída documentação de regras em `docs/rules` e exemplos manuais em `src/Swa.Analyzers.SampleApp`.
-- Adicionada validação local e de CI para regras ARCH, documentação, testes, SampleApp, atualizações de changelog e mudanças de versão do pacote.
+- IncluÃ­da documentaÃ§Ã£o de regras em `docs/rules` e exemplos manuais em `src/Swa.Analyzers.SampleApp`.
+- Adicionada validaÃ§Ã£o local e de CI para regras ARCH, documentaÃ§Ã£o, testes, SampleApp, atualizaÃ§Ãµes de changelog e mudanÃ§as de versÃ£o do pacote.
 - Adicionado suporte no workflow de release para gerar pacotes `.nupkg` e `.snupkg` a partir do `VersionPrefix` do projeto.
 
 ### Alterado
 
-- Centralizados helpers de parsing de opções dos analyzers para valores booleanos e arrays de strings em `.editorconfig`, além de matching wildcard compartilhado sem alterar comportamento das regras.
+- Centralizados helpers de parsing de opÃ§Ãµes dos analyzers para valores booleanos e arrays de strings em `.editorconfig`, alÃ©m de matching wildcard compartilhado sem alterar comportamento das regras.
 - Documented `.editorconfig` fallback behavior consistently for public analyzer options.
 - Shared JSON string-array parsing across configurable analyzers and added support for escaped unicode values in `.editorconfig` options.
 - Documented the release process and package version source of truth.
-- Endurecida a criação de GitHub Release para usar `VersionPrefix`, criar a tag `v1.0.0`, recusar tags/releases existentes e manter a publicação NuGet inativa até configuração explícita de governança.
+- Endurecida a criaÃ§Ã£o de GitHub Release para usar `VersionPrefix`, criar a tag `v1.0.0`, recusar tags/releases existentes e manter a publicaÃ§Ã£o NuGet inativa atÃ© configuraÃ§Ã£o explÃ­cita de governanÃ§a.
 
 ### Corrigido
 
-- Endurecido o tratamento de configurações malformadas ou excessivas dos analyzers ARCH020, ARCH027 e ARCH030.
-- Endurecido o parsing XML de `AdditionalFiles` MSBuild em ARCH030 e ARCH032 com limites defensivos de tamanho e configurações de leitor XML que proíbem DTD.
 
 ### Breaking Changes
 
@@ -50,4 +52,4 @@ Primeira versão estável do pacote `Swa.Analyzers`.
 
 ## [0.2.0] - 2026-04-30
 
-- Adicionada validação de consistência de release para regras ARCH, documentação, testes, SampleApp, atualizações de changelog e mudanças de versão do pacote.
+- Adicionada validaÃ§Ã£o de consistÃªncia de release para regras ARCH, documentaÃ§Ã£o, testes, SampleApp, atualizaÃ§Ãµes de changelog e mudanÃ§as de versÃ£o do pacote.

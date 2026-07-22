@@ -1,53 +1,40 @@
 ---
 name: roslyn-analyzer-doc-rule-change
-description: Use esta skill ao criar ou atualizar documentação de regras ARCH### em docs/rules e referências públicas no README.
+description: Use esta skill ao criar ou atualizar documentacao de regras REL###, ARC### ou TST### em docs/rules e referencias publicas no README.
 ---
 
 # Objetivo
 
-Manter a documentação das regras consistente com o comportamento real dos analyzers, sem prometer heurísticas, configurações ou garantias que não existem no código.
+Manter a documentacao das regras consistente com o comportamento real dos analyzers, sem prometer heuristicas, configuracoes ou garantias que nao existem no codigo.
 
 # Quando usar
 
 Use esta skill quando a tarefa envolver:
 
-- novo arquivo `docs/rules/ARCH###.md`
-- ajuste de comportamento documentado
-- exemplos conformes e não conformes
-- documentação de configurações por `.editorconfig`
-- atualização da tabela de regras no `README.md`
-- descrição de heurística ou limitações conhecidas
+- novo arquivo `docs/rules/<grupo>/<ID>.md`;
+- ajuste de comportamento documentado;
+- exemplos conformes e nao conformes;
+- documentacao de configuracoes por `.editorconfig`;
+- atualizacao da tabela de regras no `README.md`.
 
-# Estrutura recomendada para docs/rules
+# Estrutura recomendada
 
-Cada regra deve conter, quando aplicável:
+Cada regra deve conter, quando aplicavel:
 
-1. Título com ID e resumo.
+1. Titulo com ID e resumo.
 2. Objetivo.
-3. Código não conforme.
-4. Código conforme.
-5. Configuração.
-6. Heurística.
-7. Limitações conhecidas.
+3. Codigo nao conforme.
+4. Codigo conforme.
+5. Configuracao.
+6. Heuristica.
+7. Limitacoes conhecidas.
 8. Impacto esperado.
 
 # Regras de escrita
 
 - Documente apenas comportamento implementado.
-- Seja claro sobre o que a regra não valida.
-- Explique falsos positivos ou limitações esperadas.
-- Mantenha exemplos pequenos e compiláveis quando possível.
-- Use o mesmo ID, titulo e semântica do `DiagnosticDescriptor`.
+- Seja claro sobre o que a regra nao valida.
+- Use o mesmo ID, titulo e semantica do `DiagnosticDescriptor`.
 - Quando a regra aceitar `.editorconfig`, mostre chaves e valores aceitos.
-- Quando a regra tiver fallback de configuração, documente o fallback.
-- Atualize o README se mudar lista de regras, severidade, categoria, nome público ou configuração pública.
-
-# Checklist
-
-Antes de concluir:
-
-- O arquivo `docs/rules/ARCH###.md` bate com o analyzer?
-- Os exemplos batem com os testes?
-- O README precisa ser atualizado?
-- A severidade e categoria documentadas estão corretas?
-- As limitações conhecidas estão claras?
+- Quando houver fallback de configuracao, documente o fallback.
+- Atualize o README se mudar lista de regras, severidade, categoria, nome publico ou configuracao publica.
