@@ -1,4 +1,4 @@
-// Stubs mínimos para que ARCH006 detecte exclusões de equivalência (Excluding*)
+// Stubs mínimos para que TST002 detecte exclusões de equivalência (Excluding*)
 // sem referenciar o pacote real FluentAssertions.
 //
 // IMPORTANTE: estes NÃO são implementações de produção.

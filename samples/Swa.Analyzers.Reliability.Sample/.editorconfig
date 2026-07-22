@@ -1,11 +1,11 @@
 # Ajustes especificos para o sample de Reliability.
 
 [**/*.cs]
-dotnet_diagnostic.ARCH016.severity = warning
-dotnet_diagnostic.ARCH017.severity = warning
-dotnet_diagnostic.ARCH021.severity = warning
-dotnet_diagnostic.ARCH022.severity = warning
-dotnet_diagnostic.ARCH020.severity = none
+dotnet_diagnostic.REL001.severity = warning
+dotnet_diagnostic.REL002.severity = warning
+dotnet_diagnostic.REL003.severity = warning
+dotnet_diagnostic.REL004.severity = warning
+dotnet_diagnostic.ARC001.severity = none
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0059.severity = none
 dotnet_diagnostic.IDE0060.severity = none

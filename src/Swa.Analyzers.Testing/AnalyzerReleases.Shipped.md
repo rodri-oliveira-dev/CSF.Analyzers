@@ -1,8 +1,4 @@
-## Release 1.0.0
+; Shipped analyzer releases
 
-### New Rules
-
-Rule ID | Category    | Severity | Notes
---------|-------------|----------|------
-ARCH005 | TestQuality | Info     | Restringe o uso de `NSubstitute.Arg.Any()`.
-ARCH006 | TestQuality | Info     | Avisa sobre exclusoes do FluentAssertions em `BeEquivalentTo`.
+; No TST### IDs have been shipped yet. The v1 release history is preserved
+; in docs/history/v1-analyzer-releases.md and docs/migration-v2.md.

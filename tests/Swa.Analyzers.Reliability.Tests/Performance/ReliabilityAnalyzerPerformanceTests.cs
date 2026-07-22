@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis;
+
 using Swa.Analyzers.Reliability.Rules;
 
 namespace Swa.Analyzers.Tests.Performance;
@@ -8,7 +10,7 @@ public sealed class ReliabilityAnalyzerPerformanceTests
     private static readonly TimeSpan ConservativeLimit = TimeSpan.FromSeconds(20);
 
     [Fact]
-    public async Task ARCH021_handles_many_ef_core_query_symbols_within_guardrail()
+    public async Task REL003_handles_many_ef_core_query_symbols_within_guardrail()
     {
         var sources = new[]
             {
@@ -20,14 +22,18 @@ public sealed class ReliabilityAnalyzerPerformanceTests
                 CreateEfQuerySource));
 
         var result = await AnalyzerPerformanceRunner.MeasureAsync(
-            new Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
-            sources);
+            new Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
+            sources,
+            new Dictionary<string, ReportDiagnostic>
+            {
+                ["REL003"] = ReportDiagnostic.Warn,
+            });
 
         Assert.Equal(72, result.Diagnostics.Length);
-        Assert.All(result.Diagnostics, diagnostic => Assert.Equal("ARCH021", diagnostic.Id));
+        Assert.All(result.Diagnostics, diagnostic => Assert.Equal("REL003", diagnostic.Id));
         Assert.True(
             result.Elapsed < ConservativeLimit,
-            $"ARCH021 took {result.Elapsed.TotalSeconds:n2}s, above the {ConservativeLimit.TotalSeconds:n0}s guardrail.");
+            $"REL003 took {result.Elapsed.TotalSeconds:n2}s, above the {ConservativeLimit.TotalSeconds:n0}s guardrail.");
     }
 
     private static string CreateEfQuerySource(int index)

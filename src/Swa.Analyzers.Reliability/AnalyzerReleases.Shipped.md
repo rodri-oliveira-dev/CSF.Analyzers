@@ -1,10 +1,4 @@
-## Release 1.0.0
+; Shipped analyzer releases
 
-### New Rules
-
-Rule ID | Category    | Severity | Notes
---------|-------------|----------|------
-ARCH016 | Performance | Warning  | Evita `Task.Run` em fluxos de request ASP.NET.
-ARCH017 | Reliability | Warning  | Proibe fire-and-forget em fluxos de request ASP.NET.
-ARCH021 | Performance | Warning  | Prefere `AsNoTracking` em consultas EF Core somente leitura.
-ARCH022 | Performance | Warning  | Evita materializacao prematura antes de filtro ou projecao.
+; No REL### IDs have been shipped yet. The v1 release history is preserved
+; in docs/history/v1-analyzer-releases.md and docs/migration-v2.md.

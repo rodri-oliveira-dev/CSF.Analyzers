@@ -32,14 +32,14 @@ Os principais componentes estão organizados em:
 - `src/Swa.Analyzers.Core`: implementação dos analyzers, diagnostic descriptors, identificadores e metadados de release.
 - `tests/Swa.Analyzers.Tests`: testes automatizados dos analyzers.
 - `src/Swa.Analyzers.SampleApp`: exemplos manuais válidos e inválidos para cada regra.
-- `docs/rules`: documentação de cada regra `ARCH###`.
+- `docs/rules`: documentação de cada regra `REL###`, `ARC###` ou `TST###`.
 - `.agents/skills`: instrucoes especializadas para o Codex trabalhar neste repositório.
 
 ## Skills recomendadas
 
 Use a skill mais específica para a tarefa:
 
-- `roslyn-analyzer-rule-change`: criar ou alterar uma regra `ARCH###`.
+- `roslyn-analyzer-rule-change`: criar ou alterar uma regra `REL###`, `ARC###` ou `TST###`.
 - `roslyn-analyzer-test-change`: criar ou ajustar testes de analyzer.
 - `roslyn-analyzer-doc-rule-change`: criar ou atualizar documentação de regra.
 - `roslyn-analyzer-sample-app-change`: criar ou ajustar exemplos manuais no SampleApp.
@@ -81,7 +81,7 @@ Não use skills genéricas de serviço .NET para este repositório. Este projeto
 
 ### Analyzers
 
-- Novas regras devem usar IDs `ARCH###` coerentes com `RuleIdentifiers`.
+- Novas regras devem usar IDs `REL###`, `ARC###` ou `TST###` coerentes com `RuleIdentifiers`.
 - Mensagens, títulos, categorias, severidades e help links devem seguir o padrão existente.
 - Cada regra deve declarar `DiagnosticDescriptor` com `RuleHelpLinks.ForRule(...)`.
 - Use `EnableConcurrentExecution()`.
@@ -113,7 +113,7 @@ Não use skills genéricas de serviço .NET para este repositório. Este projeto
 
 ### Documentacao
 
-- Cada regra deve ter documentação própria em `docs/rules/ARCH###.md`.
+- Cada regra deve ter documentação própria em `docs/rules/<ID>.md`.
 - A documentação deve explicar objetivo, código não conforme, código conforme, configuração quando houver, heurística, limitações conhecidas e impacto esperado.
 - Não documente comportamento que não foi implementado.
 - Ao alterar configuração pública de regra, atualize o README.

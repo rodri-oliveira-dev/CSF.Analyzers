@@ -8,7 +8,7 @@ public sealed class ArchitectureAnalyzerPerformanceTests
     private static readonly TimeSpan ConservativeLimit = TimeSpan.FromSeconds(20);
 
     [Fact]
-    public async Task ARCH020_handles_many_asp_net_core_endpoints_within_guardrail()
+    public async Task ARC001_handles_many_asp_net_core_endpoints_within_guardrail()
     {
         var sources = new[]
             {
@@ -24,14 +24,14 @@ public sealed class ArchitectureAnalyzerPerformanceTests
                 CreateMinimalApiSource));
 
         var result = await AnalyzerPerformanceRunner.MeasureAsync(
-            new Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer(),
+            new Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer(),
             sources);
 
         Assert.Equal(168, result.Diagnostics.Length);
-        Assert.All(result.Diagnostics, diagnostic => Assert.Equal("ARCH020", diagnostic.Id));
+        Assert.All(result.Diagnostics, diagnostic => Assert.Equal("ARC001", diagnostic.Id));
         Assert.True(
             result.Elapsed < ConservativeLimit,
-            $"ARCH020 took {result.Elapsed.TotalSeconds:n2}s, above the {ConservativeLimit.TotalSeconds:n0}s guardrail.");
+            $"ARC001 took {result.Elapsed.TotalSeconds:n2}s, above the {ConservativeLimit.TotalSeconds:n0}s guardrail.");
     }
 
     private static string CreateControllerSource(int index)

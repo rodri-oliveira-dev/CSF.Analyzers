@@ -1,4 +1,4 @@
-// Stubs mínimos para que analyzers escopados a contextos de teste (ARCH005-ARCH006)
+// Stubs mínimos para que analyzers escopados a contextos de teste (TST001-TST002)
 // possam rodar neste SampleApp sem adicionar dependências externas.
 //
 // IMPORTANTE: estes NÃO são implementações de produção.

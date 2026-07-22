@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-Implementação da regra `ARCH015 - Proíba verbos em rotas HTTP` no projeto de analyzers Roslyn.
+Implementação da regra `ARC003 - Proíba verbos em rotas HTTP` no projeto de analyzers Roslyn.
 
 ## Notas
 

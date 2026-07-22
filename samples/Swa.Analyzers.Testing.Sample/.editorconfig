@@ -1,8 +1,8 @@
 # Ajustes especificos para o sample de Testing.
 
 [**/*.cs]
-dotnet_diagnostic.ARCH005.severity = warning
-dotnet_diagnostic.ARCH006.severity = warning
+dotnet_diagnostic.TST001.severity = warning
+dotnet_diagnostic.TST002.severity = warning
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0052.severity = none
 dotnet_diagnostic.IDE0290.severity = none

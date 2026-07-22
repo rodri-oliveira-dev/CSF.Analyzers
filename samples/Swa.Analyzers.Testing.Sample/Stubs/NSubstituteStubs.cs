@@ -1,4 +1,4 @@
-// Stubs mínimos para que ARCH005 detecte APIs parecidas com NSubstitute
+// Stubs mínimos para que TST001 detecte APIs parecidas com NSubstitute
 // sem referenciar o pacote real NSubstitute.
 //
 // IMPORTANTE: estes NÃO são implementações de produção.
@@ -15,7 +15,7 @@ public static class Substitute
 
 public static class Arg
 {
-    // ARCH005 mira este nome de método no tipo NSubstitute.Arg.
+    // TST001 mira este nome de método no tipo NSubstitute.Arg.
     public static T Any<T>()
     {
         return default!;
@@ -25,7 +25,7 @@ public static class Arg
 
 public static class SubstituteExtensions
 {
-    // ARCH005 permite Arg.Any() apenas quando a chamada receptora é precedida por um destes métodos.
+    // TST001 permite Arg.Any() apenas quando a chamada receptora é precedida por um destes métodos.
     public static T DidNotReceive<T>(this T substitute) where T : class
     {
         return substitute;

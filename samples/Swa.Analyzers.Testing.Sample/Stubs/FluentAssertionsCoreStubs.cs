@@ -1,4 +1,4 @@
-// Stubs mínimos para que ARCH006 detecte APIs parecidas com FluentAssertions
+// Stubs mínimos para que TST002 detecte APIs parecidas com FluentAssertions
 // sem referenciar o pacote real FluentAssertions.
 //
 // IMPORTANTE: estes NÃO são implementações de produção.
@@ -27,7 +27,7 @@ public sealed class ObjectAssertions
     {
     }
 
-    // ARCH006 mira chamadas BeEquivalentTo + Excluding* dentro do delegate de opções.
+    // TST002 mira chamadas BeEquivalentTo + Excluding* dentro do delegate de opções.
     public void BeEquivalentTo(
         object? expected,
         Func<global::FluentAssertions.Equivalency.EquivalencyAssertionOptions, global::FluentAssertions.Equivalency.EquivalencyAssertionOptions>? options = null)

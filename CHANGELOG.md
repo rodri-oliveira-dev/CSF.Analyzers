@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 ## [Unreleased]
 
@@ -7,6 +7,8 @@
 
 ### Alterado
 
+- BREAKING: Renumerados os diagnosticos ativos para `REL###`, `ARC###` e `TST###`, com metadados v2 ainda em `AnalyzerReleases.Unshipped.md`.
+- BREAKING: Atualizadas as chaves publicas de `.editorconfig` para os novos IDs dos diagnosticos.
 - Migrated release versioning from project `VersionPrefix` to GitVersion, using semantic commits to calculate the NuGet package version and GitHub Release tag.
 - Formalizada a validaÃ§Ã£o de metadados de release shipped e unshipped dos analyzers.
 
@@ -16,7 +18,8 @@
 
 ### Breaking Changes
 
-- None.
+- Os IDs `ARCH###` deixam de ser emitidos pelos pacotes ativos da v2. Consulte `docs/migration-v2.md`.
+- As regras `REL003`, `ARC003`, `ARC004`, `ARC005`, `TST001` e `TST002` passam a ser opt-in com severidade base `Info`.
 
 ## [1.0.0] - 2026-05-01
 

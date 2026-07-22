@@ -10,7 +10,7 @@ namespace Swa.Analyzers.Tests.FrameworkReferences;
 public sealed class RealFrameworkReferenceAnalyzerTests
 {
     [Fact]
-    public async Task Arch021_reports_real_EF_Core_materializer_without_AsNoTracking()
+    public async Task Rel003_reports_real_EF_Core_materializer_without_AsNoTracking()
     {
         const string source = """
 using System.Linq;
@@ -43,7 +43,7 @@ public sealed class OrdersQuery
 }
 """;
 
-        await RealFrameworkVerifier<Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer>.VerifyAnalyzerAsync(
+        await RealFrameworkVerifier<Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer>.VerifyAnalyzerAsync(
             source,
             EfCoreAssemblies,
             Expected(0, "ToListAsync"));
@@ -51,7 +51,7 @@ public sealed class OrdersQuery
 
     private static DiagnosticResult Expected(int location, string methodName)
     {
-        return RealFrameworkVerifier<Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer>.Diagnostic("ARCH021")
+        return RealFrameworkVerifier<Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer>.Diagnostic("REL003")
             .WithLocation(location)
             .WithArguments(methodName);
     }

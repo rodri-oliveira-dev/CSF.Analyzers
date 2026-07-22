@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using Swa.Analyzers.Architecture.Rules;
@@ -11,36 +12,36 @@ namespace Swa.Analyzers.PackageValidation.Tests;
 public sealed class AnalyzerPackageIsolationTests
 {
     [Fact]
-    public void Analyzer_packages_expose_only_their_expected_arch_ids_without_duplicates()
+    public void Analyzer_packages_expose_only_their_expected_ids_without_duplicates()
     {
         var packages = new[]
         {
             new AnalyzerPackage(
                 "Swa.Analyzers.Reliability",
                 [
-                    new Arch016AvoidTaskRunInAspNetRequestFlowAnalyzer(),
-                    new Arch017ProhibitFireAndForgetInRequestFlowAnalyzer(),
-                    new Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
-                    new Arch022AvoidPrematureQueryMaterializationAnalyzer(),
+                    new Rel001AvoidTaskRunInAspNetRequestFlowAnalyzer(),
+                    new Rel002ProhibitFireAndForgetInRequestFlowAnalyzer(),
+                    new Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
+                    new Rel004AvoidPrematureQueryMaterializationAnalyzer(),
                 ],
-                ["ARCH016", "ARCH017", "ARCH021", "ARCH022"]),
+                ["REL001", "REL002", "REL003", "REL004"]),
             new AnalyzerPackage(
                 "Swa.Analyzers.Architecture",
                 [
-                    new Arch015ProhibitVerbsInHttpRoutesAnalyzer(),
-                    new Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer(),
-                    new Arch027PreventInfrastructureDependenciesInCoreLayersAnalyzer(),
-                    new Arch029ProhibitPublicSettersInDomainEntitiesAnalyzer(),
-                    new Arch032AvoidDuplicatedMsBuildPropertiesAnalyzer(),
+                    new Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer(),
+                    new Arc002PreventInfrastructureDependenciesInCoreLayersAnalyzer(),
+                    new Arc003ProhibitVerbsInHttpRoutesAnalyzer(),
+                    new Arc004ProhibitPublicSettersInDomainEntitiesAnalyzer(),
+                    new Arc005AvoidDuplicatedMsBuildPropertiesAnalyzer(),
                 ],
-                ["ARCH015", "ARCH020", "ARCH027", "ARCH029", "ARCH032"]),
+                ["ARC001", "ARC002", "ARC003", "ARC004", "ARC005"]),
             new AnalyzerPackage(
                 "Swa.Analyzers.Testing",
                 [
-                    new Arch005RestrictArgAnyUsageAnalyzer(),
-                    new Arch006WarnOnExcludingInBeEquivalentToAnalyzer(),
+                    new Tst001RestrictArgAnyUsageAnalyzer(),
+                    new Tst002WarnOnExcludingInBeEquivalentToAnalyzer(),
                 ],
-                ["ARCH005", "ARCH006"]),
+                ["TST001", "TST002"]),
         };
 
         var idsByPackage = packages.ToDictionary(
@@ -64,6 +65,28 @@ public sealed class AnalyzerPackageIsolationTests
             .ToArray();
 
         Assert.Empty(duplicates);
+    }
+
+    [Fact]
+    public void Opt_in_rules_are_info_and_disabled_by_default()
+    {
+        var descriptors = new DiagnosticAnalyzer[]
+            {
+                new Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
+                new Arc003ProhibitVerbsInHttpRoutesAnalyzer(),
+                new Arc004ProhibitPublicSettersInDomainEntitiesAnalyzer(),
+                new Arc005AvoidDuplicatedMsBuildPropertiesAnalyzer(),
+                new Tst001RestrictArgAnyUsageAnalyzer(),
+                new Tst002WarnOnExcludingInBeEquivalentToAnalyzer(),
+            }
+            .SelectMany(static analyzer => analyzer.SupportedDiagnostics)
+            .ToDictionary(static descriptor => descriptor.Id, StringComparer.Ordinal);
+
+        foreach (var diagnosticId in new[] { "REL003", "ARC003", "ARC004", "ARC005", "TST001", "TST002" })
+        {
+            Assert.False(descriptors[diagnosticId].IsEnabledByDefault);
+            Assert.Equal(DiagnosticSeverity.Info, descriptors[diagnosticId].DefaultSeverity);
+        }
     }
 
     private sealed record AnalyzerPackage(

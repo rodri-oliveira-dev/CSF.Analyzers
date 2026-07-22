@@ -24,9 +24,10 @@ internal static class AnalyzerPerformanceRunner
     public static async Task<AnalyzerPerformanceResult> MeasureAsync(
         DiagnosticAnalyzer analyzer,
         IEnumerable<(string FileName, string Source)> sources,
+        IReadOnlyDictionary<string, ReportDiagnostic>? specificDiagnosticOptions = null,
         CancellationToken cancellationToken = default)
     {
-        var compilation = CreateCompilation(sources);
+        var compilation = CreateCompilation(sources, specificDiagnosticOptions);
 
         // Estes testes são guardrails contra regressões grandes, não benchmarks científicos.
         var stopwatch = Stopwatch.StartNew();
@@ -50,7 +51,9 @@ internal static class AnalyzerPerformanceRunner
         }
     }
 
-    private static CSharpCompilation CreateCompilation(IEnumerable<(string FileName, string Source)> sources)
+    private static CSharpCompilation CreateCompilation(
+        IEnumerable<(string FileName, string Source)> sources,
+        IReadOnlyDictionary<string, ReportDiagnostic>? specificDiagnosticOptions)
     {
         var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp12);
 
@@ -60,10 +63,16 @@ internal static class AnalyzerPerformanceRunner
                 parseOptions,
                 source.FileName));
 
+        var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+        if (specificDiagnosticOptions is not null)
+        {
+            compilationOptions = compilationOptions.WithSpecificDiagnosticOptions(specificDiagnosticOptions);
+        }
+
         return CSharpCompilation.Create(
             "AnalyzerPerformanceTests",
             syntaxTrees,
             References,
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            compilationOptions);
     }
 }

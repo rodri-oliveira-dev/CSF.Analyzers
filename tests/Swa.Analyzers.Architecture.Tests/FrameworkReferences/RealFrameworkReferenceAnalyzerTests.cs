@@ -7,7 +7,7 @@ namespace Swa.Analyzers.Tests.FrameworkReferences;
 public sealed class RealFrameworkReferenceAnalyzerTests
 {
     [Fact]
-    public async Task Arch020_reports_real_MVC_action_without_authorization_decision()
+    public async Task Arc001_reports_real_MVC_action_without_authorization_decision()
     {
         const string source = """
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ public sealed class OrdersController : ControllerBase
 }
 """;
 
-        await RealFrameworkVerifier<Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>.VerifyAnalyzerAsync(
+        await RealFrameworkVerifier<Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>.VerifyAnalyzerAsync(
             source,
             [],
             AspNetCoreReferenceAssemblyPaths,
@@ -30,12 +30,12 @@ public sealed class OrdersController : ControllerBase
 
     private static DiagnosticResult Expected(int location, string endpoint)
     {
-        return RealFrameworkVerifier<Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>.Diagnostic("ARCH020")
+        return RealFrameworkVerifier<Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>.Diagnostic("ARC001")
             .WithLocation(location)
             .WithArguments(endpoint);
     }
 
     private static readonly IEnumerable<string> AspNetCoreReferenceAssemblyPaths =
-        RealFrameworkVerifier<Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>
+        RealFrameworkVerifier<Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>
             .GetPackageReferenceAssemblyPaths("Microsoft.AspNetCore.App.Ref", "9.0.16", "net9.0");
 }
