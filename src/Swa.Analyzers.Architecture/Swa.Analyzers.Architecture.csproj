@@ -7,4 +7,10 @@
     <PackageTags>roslyn;analyzers;architecture;authorization;routing;layers</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="buildTransitive\Swa.Analyzers.Architecture.targets"
+          Pack="true"
+          PackagePath="buildTransitive" />
+  </ItemGroup>
+
 </Project>

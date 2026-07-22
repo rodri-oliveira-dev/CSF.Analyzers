@@ -4,6 +4,8 @@
 
 ### Adicionado
 
+- Adicionado target `buildTransitive` ao pacote `Swa.Analyzers.Architecture` para fornecer `.csproj` e `Directory.Build.props` como `AdditionalFiles` para `ARC005` em consumo via NuGet.
+- Adicionados guardrails de performance para o pacote `Swa.Analyzers.Testing`.
 
 ### Alterado
 
@@ -16,6 +18,7 @@
 ### Corrigido
 
 - Fixed the release workflow order so the .NET SDK is installed before GitVersion runs `dotnet tool install`.
+- Atualizadas instrucoes internas, cobertura e documentacao publica para remover residuos da estrutura v1 baseada em Core/SampleApp e refletir os tres pacotes v2.
 
 ### Breaking Changes
 

@@ -1,44 +1,36 @@
 ---
 name: roslyn-analyzer-sample-app-change
-description: Use esta skill ao criar ou ajustar exemplos manuais no Swa.Analyzers.SampleApp.
+description: Use esta skill ao criar ou ajustar exemplos manuais nos samples por pacote.
 ---
 
 # Objetivo
 
-Manter o SampleApp útil para validação manual e demonstração dos analyzers, sem transformar exemplos didáticos em dependências pesadas ou quebrar o build de forma desnecessária.
+Manter os samples uteis para validacao manual e demonstracao dos analyzers, sem transformar exemplos didaticos em dependencias pesadas.
 
 # Quando usar
 
 Use esta skill quando a tarefa envolver:
 
-- `src/Swa.Analyzers.SampleApp`
-- exemplos válidos ou inválidos de regras `ARCH###`
-- stubs para frameworks externos
-- ajustes em `src/Swa.Analyzers.SampleApp/.editorconfig`
-- validação manual por build do SampleApp
+- `samples/Swa.Analyzers.*.Sample`;
+- exemplos validos ou invalidos de regras `REL###`, `ARC###` ou `TST###`;
+- stubs para frameworks externos;
+- ajustes de `.editorconfig` dos samples.
 
 # Organizacao
 
-- Exemplos devem ficar em `src/Swa.Analyzers.SampleApp/Arch###/`.
-- Use `*_Invalid.cs` para código intencionalmente não conforme.
-- Use `*_Valid.cs` para código conforme.
-- Use `Stubs/` apenas quando necessário para habilitar reconhecimento simbolico.
-- Mantenha exemplos pequenos e diretamente ligados a regra.
+- Exemplos devem ficar em `samples/Swa.Analyzers.<Pacote>.Sample/<Prefixo><Numero>/`.
+- Use `*_Invalid.cs` para codigo intencionalmente nao conforme.
+- Use `*_Valid.cs` para codigo conforme.
+- Use `Stubs/` apenas quando necessario para habilitar reconhecimento simbolico.
 
 # Regras
 
-- Não adicione pacotes reais quando stubs mínimos forem suficientes.
-- Não deixe exemplos inválidos quebrarem a compilação como erro, salvo quando isso for o objetivo explícito.
-- Ajuste `.editorconfig` do SampleApp para reduzir ruído de warnings que não fazem parte da regra demonstrada.
-- Não use o SampleApp como suíte principal de testes. A fonte de verdade para verificação automatizada deve continuar em `tests/Swa.Analyzers.Tests`.
-- Se criar exemplos para nova regra, atualize o README do SampleApp apenas quando a organização ou instrução de uso mudar.
+- Nao adicione pacotes reais quando stubs minimos forem suficientes.
+- Nao deixe exemplos invalidos quebrarem a compilacao como erro, salvo quando isso for explicito.
+- Nao use samples como suite principal de testes; a fonte de verdade fica em `tests/Swa.Analyzers.*.Tests`.
 
 # Validacao manual
 
-Comando recomendado:
-
 ```bash
-dotnet build src/Swa.Analyzers.SampleApp/Swa.Analyzers.SampleApp.csproj
+dotnet build samples/Swa.Analyzers.<Pacote>.Sample/Swa.Analyzers.<Pacote>.Sample.csproj
 ```
-
-Também valide a solução completa quando a alteração afetar o analyzer ou configuração compartilhada.

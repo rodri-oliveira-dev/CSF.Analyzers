@@ -60,13 +60,20 @@ app.MapGet("/health", () => Results.Ok())
 
 Regras habilitadas por padrão: `REL001`, `REL002`, `REL004`, `ARC001`, `ARC002`.
 
-Regras opt-in: `REL003`, `ARC003`, `ARC004`, `ARC005`, `TST001`, `TST002`. Elas só emitem diagnóstico quando a severidade é ativada via `.editorconfig`.
+Regras opt-in: `REL003`, `ARC003`, `ARC004`, `ARC005`, `TST001`, `TST002`. Elas só emitem diagnóstico quando a severidade é ativada via configuração de analyzer. Para regras de código-fonte, use `.editorconfig`; para `ARC005`, prefira `.globalconfig`, pois o diagnóstico é reportado em arquivos MSBuild passados como `AdditionalFiles`.
 
 ```ini
 [*.cs]
 dotnet_diagnostic.REL003.severity = info
 dotnet_diagnostic.ARC003.severity = info
 dotnet_diagnostic.TST001.severity = warning
+```
+
+Exemplo de `.globalconfig` para `ARC005`:
+
+```ini
+is_global = true
+dotnet_diagnostic.ARC005.severity = warning
 ```
 
 Opções específicas ficam documentadas nas páginas das regras e dos pacotes.

@@ -129,10 +129,10 @@ dotnet_diagnostic.ARC003.route_language = pt-BR
 dotnet_diagnostic.ARC003.additional_verbs = ["ativar", "inativar", "recalcular"]
 ```
 
-Para centralização de MSBuild, ative `ARC005` em arquivos de projeto quando eles forem passados como `AdditionalFiles`:
+Para centralização de MSBuild, ative `ARC005` quando os arquivos de projeto forem passados como `AdditionalFiles`. No pacote NuGet, isso é feito automaticamente por um target `buildTransitive`. Para builds que não aplicam severidade de `.editorconfig` a diagnósticos em `AdditionalFiles`, use `.globalconfig`:
 
 ```ini
-[*.csproj]
+is_global = true
 dotnet_diagnostic.ARC005.severity = info
 dotnet_diagnostic.ARC005.compare_values = true
 ```

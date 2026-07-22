@@ -109,6 +109,13 @@ dotnet_diagnostic.TST002.severity = info
 dotnet_diagnostic.ARC005.severity = info
 ```
 
+Para `ARC005` em consumo via NuGet, prefira ativar a severidade em `.globalconfig`, pois a regra reporta diagnósticos em arquivos MSBuild recebidos como `AdditionalFiles`:
+
+```ini
+is_global = true
+dotnet_diagnostic.ARC005.severity = info
+```
+
 ## Suppressions e `NoWarn`
 
 Suppressions em código, `GlobalSuppressions.cs`, `NoWarn`, baselines de CI e SARIF antigos com `ARCH###` não suprimem diagnósticos `REL###`, `ARC###` ou `TST###`.

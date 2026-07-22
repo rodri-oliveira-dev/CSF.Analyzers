@@ -42,6 +42,13 @@ dotnet_diagnostic.ARC004.severity = info
 dotnet_diagnostic.ARC005.severity = info
 ```
 
+No consumo via NuGet, o pacote adiciona o `.csproj` e o `Directory.Build.props` do projeto como `AdditionalFiles` para `ARC005`. Como o diagnóstico é reportado em arquivo MSBuild no fim da compilação, ative a severidade de `ARC005` em `.globalconfig` quando o build não aplicar a severidade de `.editorconfig` a `AdditionalFiles`:
+
+```ini
+is_global = true
+dotnet_diagnostic.ARC005.severity = info
+```
+
 ## Limitações
 
 As regras dependem de sinais de ASP.NET, namespaces, tipos base, interfaces, rotas literais e arquivos MSBuild recebidos como `AdditionalFiles`. Elas não substituem revisão de arquitetura nem validam todos os formatos dinâmicos.
