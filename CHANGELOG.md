@@ -10,6 +10,7 @@
 - BREAKING: Renumerados os diagnosticos ativos para `REL###`, `ARC###` e `TST###`, com metadados v2 ainda em `AnalyzerReleases.Unshipped.md`.
 - BREAKING: Atualizadas as chaves publicas de `.editorconfig` para os novos IDs dos diagnosticos.
 - Migrated release versioning from project `VersionPrefix` to GitVersion, using semantic commits to calculate the NuGet package version and GitHub Release tag.
+- Atualizada a infraestrutura de CI e release para validar, empacotar, inspecionar e anexar os seis artefatos dos tres pacotes v2 sem gerar o pacote legado.
 - Formalizada a validaÃ§Ã£o de metadados de release shipped e unshipped dos analyzers.
 
 ### Corrigido

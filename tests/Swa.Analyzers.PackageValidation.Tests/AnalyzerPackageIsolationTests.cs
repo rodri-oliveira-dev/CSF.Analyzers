@@ -89,6 +89,34 @@ public sealed class AnalyzerPackageIsolationTests
         }
     }
 
+    [Fact]
+    public void Analyzer_descriptors_link_to_their_rule_documentation()
+    {
+        var descriptors = new DiagnosticAnalyzer[]
+            {
+                new Rel001AvoidTaskRunInAspNetRequestFlowAnalyzer(),
+                new Rel002ProhibitFireAndForgetInRequestFlowAnalyzer(),
+                new Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
+                new Rel004AvoidPrematureQueryMaterializationAnalyzer(),
+                new Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer(),
+                new Arc002PreventInfrastructureDependenciesInCoreLayersAnalyzer(),
+                new Arc003ProhibitVerbsInHttpRoutesAnalyzer(),
+                new Arc004ProhibitPublicSettersInDomainEntitiesAnalyzer(),
+                new Arc005AvoidDuplicatedMsBuildPropertiesAnalyzer(),
+                new Tst001RestrictArgAnyUsageAnalyzer(),
+                new Tst002WarnOnExcludingInBeEquivalentToAnalyzer(),
+            }
+            .SelectMany(static analyzer => analyzer.SupportedDiagnostics)
+            .ToArray();
+
+        foreach (var descriptor in descriptors)
+        {
+            Assert.Equal(
+                $"https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/{descriptor.Id}.md",
+                descriptor.HelpLinkUri);
+        }
+    }
+
     private sealed record AnalyzerPackage(
         string Name,
         ImmutableArray<DiagnosticAnalyzer> Analyzers,

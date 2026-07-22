@@ -54,12 +54,43 @@ jobs:
             exit 1
           fi
 
-          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "GitVersion calculou uma versão inválida para PackageVersion: $version"
             exit 1
           fi
 
           echo "GitVersion package version: $version"
+
+      - name: Check release version is unused
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        with:
+          script: |
+            const tag = 'v${{ steps.gitversion.outputs.semVer }}';
+            const { owner, repo } = context.repo;
+
+            try {
+              await github.rest.repos.getReleaseByTag({ owner, repo, tag });
+              core.setFailed(`Release ${tag} already exists. GitVersion calculated a version that was already released.`);
+              return;
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
+
+            try {
+              await github.rest.git.getRef({
+                owner,
+                repo,
+                ref: `tags/${tag}`,
+              });
+
+              core.setFailed(`Tag ${tag} already exists. Release tags are immutable for this workflow.`);
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
 
       - name: Cache NuGet packages
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
@@ -82,12 +113,21 @@ jobs:
       - name: Test
         run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
 
+      - name: Validate release consistency
+        shell: pwsh
+        run: ./scripts/Validate-Release.ps1
+
       - name: Pack analyzers
         shell: bash
         run: |
+          rm -rf ./artifacts/packages
           dotnet pack ./src/Swa.Analyzers.Reliability/Swa.Analyzers.Reliability.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
           dotnet pack ./src/Swa.Analyzers.Architecture/Swa.Analyzers.Architecture.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
           dotnet pack ./src/Swa.Analyzers.Testing/Swa.Analyzers.Testing.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
+
+      - name: Inspect NuGet packages
+        shell: pwsh
+        run: ./scripts/Inspect-NuGetPackages.ps1 -PackageDirectory ./artifacts/packages -Version '${{ steps.gitversion.outputs.semVer }}'
 
       - name: Attest NuGet packages
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26

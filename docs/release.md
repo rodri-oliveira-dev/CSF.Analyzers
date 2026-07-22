@@ -32,6 +32,30 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.p
 - Cada ID declarado em `RuleIdentifiers.cs` precisa aparecer em exatamente um dos metadados de release: `AnalyzerReleases.Shipped.md` ou `AnalyzerReleases.Unshipped.md`.
 - Nenhum ID pode aparecer nos metadados de release sem entrada correspondente em `RuleIdentifiers.cs`.
 - Um ID nao pode aparecer simultaneamente em `Shipped` e `Unshipped`.
+- Cada prefixo precisa pertencer ao pacote correto: `REL###` em `Swa.Analyzers.Reliability`, `ARC###` em `Swa.Analyzers.Architecture` e `TST###` em `Swa.Analyzers.Testing`.
+- Nenhum ID pode aparecer duplicado globalmente entre pacotes.
+- IDs historicos `ARCH###` podem permanecer em documentos historicos e de migracao, mas nao sao exigidos como implementacao ativa.
+- Os help links dos analyzers devem usar `RuleHelpLinks.ForRule(...)` e apontar para `docs/rules/<ID>.md`.
+- Opcoes publicas `dotnet_diagnostic.<ID>.<option>` implementadas precisam estar documentadas, e opcoes documentadas precisam existir na implementacao.
+
+## Inspecao dos pacotes
+
+O script `scripts/Inspect-NuGetPackages.ps1` valida os artefatos gerados para uma versao especifica:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Inspect-NuGetPackages.ps1 -PackageDirectory ./artifacts/packages -Version 2.0.0
+```
+
+O diretório de pacotes deve conter exatamente:
+
+- `Swa.Analyzers.Reliability.<versao>.nupkg`
+- `Swa.Analyzers.Reliability.<versao>.snupkg`
+- `Swa.Analyzers.Architecture.<versao>.nupkg`
+- `Swa.Analyzers.Architecture.<versao>.snupkg`
+- `Swa.Analyzers.Testing.<versao>.nupkg`
+- `Swa.Analyzers.Testing.<versao>.snupkg`
+
+A inspeção abre cada arquivo e confirma package ID, versao, repository URL, metadata de README, assembly correto em `analyzers/dotnet/cs`, ausencia de DLLs compartilhadas ou legadas e simbolos no `.snupkg`.
 
 O workflow `.github/workflows/release-check.yml` executa essas validacoes em `pull_request`, em `push` para `main` e manualmente via `workflow_dispatch`.
 
