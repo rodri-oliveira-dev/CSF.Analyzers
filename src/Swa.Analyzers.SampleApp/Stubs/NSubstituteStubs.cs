@@ -21,9 +21,6 @@ public static class Arg
         return default!;
     }
 
-    // ARCH014 mira este nome de método no tipo NSubstitute.Arg.
-    public static T Is<T>(T value) => default!;
-    public static T Is<T>(Func<T, bool> predicate) => default!;
 }
 
 public static class SubstituteExtensions

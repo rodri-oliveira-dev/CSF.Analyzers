@@ -1,4 +1,4 @@
-// Stubs mínimos para que ARCH003/ARCH006 detectem APIs parecidas com FluentAssertions
+// Stubs mínimos para que ARCH006 detecte APIs parecidas com FluentAssertions
 // sem referenciar o pacote real FluentAssertions.
 //
 // IMPORTANTE: estes NÃO são implementações de produção.
@@ -17,11 +17,6 @@ public sealed class ObjectAssertions
     public ObjectAssertions(object? subject)
     {
         _subject = subject;
-    }
-
-    // ARCH003 mira este nome de método no namespace FluentAssertions.
-    public void NotBeNull()
-    {
     }
 
     public void NotBeNullOrEmpty()

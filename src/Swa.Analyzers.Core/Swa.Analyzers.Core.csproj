@@ -31,17 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Swa.Analyzers.CodeFixes\Swa.Analyzers.CodeFixes.csproj"
-                      ReferenceOutputAssembly="false"
-                      PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
     <None Include="$(OutputPath)$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" />
-    <None Include="..\Swa.Analyzers.CodeFixes\bin\$(Configuration)\netstandard2.0\Swa.Analyzers.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
-    <None Include="..\Swa.Analyzers.CodeFixes\bin\$(Configuration)\netstandard2.0\Swa.Analyzers.CodeFixes.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" />
   </ItemGroup>
 
 </Project>

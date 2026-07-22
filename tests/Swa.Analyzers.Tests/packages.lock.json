@@ -54,15 +54,6 @@
           "Microsoft.Extensions.Logging": "9.0.16"
         }
       },
-      "Microsoft.Extensions.Logging.Abstractions": {
-        "type": "Direct",
-        "requested": "[9.0.16, )",
-        "resolved": "9.0.16",
-        "contentHash": "dxeqqtPo1y1HjOKehfGiFWALIVw2dj0pMsPW412ksvKE6k54ZBEQ7/9xAdVpE7Mh5BboJOV58PC7gdATmxKkSA==",
-        "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.16"
-        }
-      },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[18.5.1, )",
@@ -189,6 +180,14 @@
           "Microsoft.Extensions.DependencyInjection": "9.0.16",
           "Microsoft.Extensions.Logging.Abstractions": "9.0.16",
           "Microsoft.Extensions.Options": "9.0.16"
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "9.0.16",
+        "contentHash": "dxeqqtPo1y1HjOKehfGiFWALIVw2dj0pMsPW412ksvKE6k54ZBEQ7/9xAdVpE7Mh5BboJOV58PC7gdATmxKkSA==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.16"
         }
       },
       "Microsoft.Extensions.Options": {
@@ -413,9 +412,6 @@
         }
       },
       "Swa.Analyzers": {
-        "type": "Project"
-      },
-      "swa.analyzers.codefixes": {
         "type": "Project"
       },
       "Microsoft.CodeAnalysis.Analyzers": {

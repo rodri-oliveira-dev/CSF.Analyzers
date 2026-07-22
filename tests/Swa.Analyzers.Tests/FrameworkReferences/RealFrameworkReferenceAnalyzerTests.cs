@@ -2,7 +2,6 @@ using System.Reflection;
 
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 using Swa.Analyzers.Core.Rules;
 
@@ -65,32 +64,6 @@ public sealed class OrdersQuery
         await VerifyArch021Async(source, Arch021Expected(0, "ToListAsync"));
     }
 
-    [Fact]
-    public async Task Arch024_reports_real_ILogger_exception_overload_interpolated_message()
-    {
-        const string source = """
-using System;
-using Microsoft.Extensions.Logging;
-
-public sealed class CustomerService
-{
-    private readonly ILogger<CustomerService> _logger;
-
-    public CustomerService(ILogger<CustomerService> logger)
-    {
-        _logger = logger;
-    }
-
-    public void Execute(Exception exception, int customerId)
-    {
-        _logger.LogError(exception, {|#0:$"Customer {customerId} failed"|});
-    }
-}
-""";
-
-        await VerifyArch024Async(source, Arch024Expected(0, "LogError"));
-    }
-
     private static Task VerifyArch020Async(string source, params DiagnosticResult[] expected)
     {
         return RealFrameworkVerifier<Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>.VerifyAnalyzerAsync(
@@ -108,14 +81,6 @@ public sealed class CustomerService
             expected);
     }
 
-    private static Task VerifyArch024Async(string source, params DiagnosticResult[] expected)
-    {
-        return RealFrameworkVerifier<Arch024AvoidInterpolatedStringsInLoggerAnalyzer>.VerifyAnalyzerAsync(
-            source,
-            LoggingAssemblies,
-            expected);
-    }
-
     private static DiagnosticResult Arch020Expected(int location, string endpoint)
     {
         return RealFrameworkVerifier<Arch020RequireExplicitAuthorizationOnHttpEndpointsAnalyzer>.Diagnostic("ARCH020")
@@ -126,13 +91,6 @@ public sealed class CustomerService
     private static DiagnosticResult Arch021Expected(int location, string methodName)
     {
         return RealFrameworkVerifier<Arch021PreferAsNoTrackingForReadOnlyQueriesAnalyzer>.Diagnostic("ARCH021")
-            .WithLocation(location)
-            .WithArguments(methodName);
-    }
-
-    private static DiagnosticResult Arch024Expected(int location, string methodName)
-    {
-        return RealFrameworkVerifier<Arch024AvoidInterpolatedStringsInLoggerAnalyzer>.Diagnostic("ARCH024")
             .WithLocation(location)
             .WithArguments(methodName);
     }
@@ -148,10 +106,4 @@ public sealed class CustomerService
         typeof(EntityFrameworkQueryableExtensions).Assembly,
     };
 
-    private static readonly Assembly[] LoggingAssemblies =
-    {
-        typeof(ILogger).Assembly,
-        typeof(ILogger<>).Assembly,
-        typeof(LoggerExtensions).Assembly,
-    };
 }

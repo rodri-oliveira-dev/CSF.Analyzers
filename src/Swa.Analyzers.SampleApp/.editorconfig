@@ -1,81 +1,36 @@
-# Ajustes específicos para o SampleApp.
+# Ajustes especificos para o SampleApp.
 #
-# O repositório eleva a categoria "Reliability" para error no build.
-# Aqui, queremos manter exemplos inválidos que disparem diagnósticos sem quebrar a compilação.
+# O repositorio eleva algumas categorias para error no build.
+# Aqui, queremos manter exemplos invalidos que disparem diagnosticos sem quebrar a compilacao.
 
 [**/*.cs]
-dotnet_diagnostic.ARCH008.severity = warning
-dotnet_diagnostic.ARCH009.severity = warning
-dotnet_diagnostic.ARCH010.severity = warning
-dotnet_diagnostic.ARCH011.severity = warning
-dotnet_diagnostic.ARCH012.severity = warning
+dotnet_diagnostic.ARCH005.severity = warning
+dotnet_diagnostic.ARCH006.severity = warning
 dotnet_diagnostic.ARCH015.severity = warning
 dotnet_diagnostic.ARCH016.severity = warning
 dotnet_diagnostic.ARCH017.severity = warning
-dotnet_diagnostic.ARCH018.severity = warning
-dotnet_diagnostic.ARCH019.severity = warning
 dotnet_diagnostic.ARCH020.severity = warning
 dotnet_diagnostic.ARCH021.severity = warning
 dotnet_diagnostic.ARCH022.severity = warning
-dotnet_diagnostic.ARCH023.severity = warning
-dotnet_diagnostic.ARCH024.severity = warning
-dotnet_diagnostic.ARCH025.severity = warning
-dotnet_diagnostic.ARCH026.severity = warning
 dotnet_diagnostic.ARCH027.severity = warning
-dotnet_diagnostic.ARCH028.severity = warning
 dotnet_diagnostic.ARCH029.severity = warning
-dotnet_diagnostic.ARCH030.severity = warning
-dotnet_diagnostic.ARCH031.severity = warning
-dotnet_diagnostic.ARCH033.severity = warning
 dotnet_diagnostic.ARCH015.route_language = pt-BR
 dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar"]
 dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Application"
 dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql"
 dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
 dotnet_diagnostic.ARCH027.ignore_tests = true
-dotnet_diagnostic.ARCH033.ignore_tests = true
-
-# O repositório eleva a categoria "Reliability" para error.
-# Aqui mantemos exemplos intencionalmente inválidos para demonstração.
-dotnet_diagnostic.ARCH001.severity = warning
-dotnet_diagnostic.ARCH002.severity = warning
-
-# Regras de qualidade de teste (default Info) — elevar para warning aqui melhora a demonstração manual.
-dotnet_diagnostic.ARCH003.severity = warning
-dotnet_diagnostic.ARCH004.severity = warning
-dotnet_diagnostic.ARCH005.severity = warning
-dotnet_diagnostic.ARCH006.severity = warning
-dotnet_diagnostic.ARCH013.severity = warning
-
-# ARCH007 já cai em categoria Performance (warning), mas deixamos explícito por consistência.
-dotnet_diagnostic.ARCH007.severity = warning
 
 [**/*.csproj]
 dotnet_diagnostic.ARCH032.severity = warning
 
-# Stubs existem apenas para habilitar o “contexto de teste” das regras ARCH003-ARCH006/005.
-# Suprimimos warnings de estilo/qualidade nelas para manter o output de build focado nos ARCH*.
+# Stubs existem apenas para habilitar contexto das regras mantidas.
 [Stubs/*.cs]
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0052.severity = none
 dotnet_diagnostic.IDE0290.severity = none
 
-# Pequenas exceções para manter exemplos didáticos sem poluir o build.
-[Arch004/Calculator.cs]
-dotnet_diagnostic.CA1822.severity = none
-
-[Arch010/*.cs]
-dotnet_diagnostic.CA1822.severity = none
-dotnet_diagnostic.CA2016.severity = none
-
-[Arch011/*.cs]
-dotnet_diagnostic.IDE0052.severity = none
-dotnet_diagnostic.IDE0059.severity = none
-dotnet_diagnostic.IDE0290.severity = none
-
-[Arch012/*.cs]
-dotnet_diagnostic.ARCH023.severity = none
-
+# Pequenas excecoes para manter exemplos didaticos sem poluir o build.
 [Arch015/*.cs]
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.ARCH020.severity = none
@@ -88,14 +43,6 @@ dotnet_diagnostic.ARCH020.severity = none
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0060.severity = none
 dotnet_diagnostic.ARCH020.severity = none
-
-[Arch018/*.cs]
-dotnet_diagnostic.CA1822.severity = none
-dotnet_diagnostic.IDE0052.severity = none
-dotnet_diagnostic.IDE0290.severity = none
-
-[Arch019/*.cs]
-dotnet_diagnostic.CA1822.severity = none
 
 [Arch020/*.cs]
 dotnet_diagnostic.CA1822.severity = none
@@ -111,22 +58,6 @@ dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0059.severity = none
 dotnet_diagnostic.IDE0290.severity = none
 
-[Arch023/*.cs]
-dotnet_diagnostic.CA1822.severity = none
-dotnet_diagnostic.IDE0290.severity = none
-
-[Arch024/*.cs]
-dotnet_diagnostic.CA1848.severity = none
-dotnet_diagnostic.CA2254.severity = none
-dotnet_diagnostic.IDE0290.severity = none
-
-[Arch025/*.cs]
-dotnet_diagnostic.IDE0290.severity = none
-
-[Arch026/*.cs]
-dotnet_diagnostic.CA1822.severity = none
-dotnet_diagnostic.CA1062.severity = none
-
 [Arch027/*.cs]
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.IDE0052.severity = none
@@ -136,11 +67,3 @@ dotnet_diagnostic.IDE0290.severity = none
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0052.severity = none
 dotnet_diagnostic.IDE0290.severity = none
-
-[Arch031/*.cs]
-dotnet_diagnostic.CA1822.severity = none
-dotnet_diagnostic.IDE0330.severity = none
-
-[Arch033/*.cs]
-dotnet_diagnostic.CA1822.severity = none
-dotnet_diagnostic.CA1062.severity = none

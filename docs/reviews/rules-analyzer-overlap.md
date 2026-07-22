@@ -1,10 +1,10 @@
-# Sobreposicao entre regras Swa.Analyzers e analyzers externos
+﻿# Sobreposicao entre regras Swa.Analyzers e analyzers externos
 
 ## 1. Objetivo
 
 Este documento compara as regras customizadas `ARCH###` documentadas em `docs/rules/` com analyzers externos conhecidos. O objetivo e apoiar decisoes de manutencao, remocao, substituicao, desabilitacao ou coexistencia das regras do `Swa.Analyzers`.
 
-A analise considera equivalencias confirmadas por documentacao local das regras `ARCH###` e por documentacao oficial ou fonte primaria dos analyzers externos. Quando um identificador externo nao foi confirmado, o documento registra explicitamente: Regra externa não confirmada.
+A analise considera equivalencias confirmadas por documentacao local das regras `ARCH###` e por documentacao oficial ou fonte primaria dos analyzers externos. Quando um identificador externo nao foi confirmado, o documento registra explicitamente: Regra externa nÃ£o confirmada.
 
 ## 2. Escopo
 
@@ -42,43 +42,20 @@ Fontes principais consultadas:
 
 | Regra | Objetivo resumido | Pacote externo relacionado | Grau | Pode substituir? | Recomendacao |
 | ----- | ----------------- | -------------------------- | ---- | ---------------- | ------------ |
-| ARCH001 | Evitar `async void` fora de event handlers | Meziantou.Analyzer `MA0155`, `MA0147`; SonarAnalyzer.CSharp `S3168` | Alto | Revisar com testes comparativos | Manter ate comparar excecoes de event handler e code fix |
-| ARCH002 | Evitar `Task.ContinueWith` | Meziantou.Analyzer `MA0152` apenas relacionado; Roslyn/.NET `CA1849` apenas tematico | Baixo | Não | Manter |
-| ARCH003 | Evitar `NotBeNull()` fraco em FluentAssertions | Regra externa não confirmada. | Nenhum | Não | Manter como politica de teste |
-| ARCH004 | Exigir campo `_sut` em testes unitarios | StyleCop.Analyzers apenas nomenclatura generica | Baixo | Não | Manter como convencao local |
-| ARCH005 | Restringir `NSubstitute.Arg.Any<T>()` | Regra externa não confirmada. | Nenhum | Não | Manter |
-| ARCH006 | Alertar `Excluding*` em `BeEquivalentTo` | Regra externa não confirmada. | Nenhum | Não | Manter |
-| ARCH007 | Detectar concatenacao de string em loops | SonarAnalyzer.CSharp `S1643`; Meziantou.Analyzer `MA0028` relacionado | Alto | Revisar com testes comparativos | Revisar comparativamente |
-| ARCH008 | Evitar composicao manual de paths em APIs de filesystem | SonarAnalyzer.CSharp tem regras de path traversal relacionadas; Regra externa não confirmada. | Baixo | Não | Manter |
-| ARCH009 | Evitar bloqueio sincrono sobre async | Meziantou.Analyzer `MA0042`, `MA0045`; SonarAnalyzer.CSharp `S4462`; Roslyn/.NET `CA1849` parcial | Alto | Parcialmente | Manter ou revisar com testes |
-| ARCH010 | Propagar `CancellationToken` | Roslyn/.NET `CA2016`; Meziantou.Analyzer `MA0040`, `MA0032` | Muito alto | Revisar com testes comparativos | Candidata forte a substituicao parcial ou total |
-| ARCH011 | Evitar async ou bloqueio em construtores | Meziantou.Analyzer `MA0045`, `MA0134`; SonarAnalyzer.CSharp `S4462` relacionado | Medio | Parcialmente | Manter como regra especifica de construtor |
-| ARCH012 | Preferir `DateTimeOffset` a `DateTime` | SonarAnalyzer.CSharp, regra "Use DateTimeOffset instead of DateTime"; Meziantou.Analyzer `MA0132`, `MA0133` relacionados | Medio | Parcialmente | Manter ou revisar escopo |
-| ARCH013 | Padronizar framework de mock em NSubstitute | Regra externa não confirmada. | Nenhum | Não | Manter como politica local |
-| ARCH014 | Preferir `Is.Equivalent` a `Arg.Is` | Regra externa não confirmada. | Nenhum | Não | Manter como politica local |
-| ARCH015 | Proibir verbos em rotas HTTP | SonarAnalyzer.CSharp tem regras ASP.NET de roteamento, sem regra equivalente confirmada | Baixo | Não | Manter |
+| ARCH005 | Restringir `NSubstitute.Arg.Any<T>()` | Regra externa nÃ£o confirmada. | Nenhum | NÃ£o | Manter |
+| ARCH006 | Alertar `Excluding*` em `BeEquivalentTo` | Regra externa nÃ£o confirmada. | Nenhum | NÃ£o | Manter |
+| ARCH015 | Proibir verbos em rotas HTTP | SonarAnalyzer.CSharp tem regras ASP.NET de roteamento, sem regra equivalente confirmada | Baixo | NÃ£o | Manter |
 | ARCH016 | Evitar `Task.Run` em request ASP.NET | Meziantou.Analyzer `MA0042`, `MA0045` relacionados; SonarAnalyzer.CSharp `S4462` relacionado | Medio | Parcialmente | Manter por contexto ASP.NET |
 | ARCH017 | Evitar fire-and-forget em request ASP.NET | Meziantou.Analyzer `MA0134` relacionado | Medio | Parcialmente | Manter por contexto ASP.NET |
-| ARCH018 | Evitar `new HttpClient()` em aplicacao | SonarAnalyzer.CSharp, regra "You should pool HTTP connections with HttpClientFactory" | Alto | Revisar com testes comparativos | Revisar comparativamente |
-| ARCH019 | Evitar `Authorize` com `AllowAnonymous` no mesmo endpoint | SonarAnalyzer.CSharp tem regras ASP.NET de seguranca relacionadas, sem equivalencia confirmada | Baixo | Não | Manter |
-| ARCH020 | Exigir autorizacao explicita em endpoints HTTP | Regra externa não confirmada. | Nenhum | Não | Manter |
-| ARCH021 | Preferir `AsNoTracking` em consultas EF de leitura | Regra externa não confirmada. | Nenhum | Não | Manter |
-| ARCH022 | Evitar materializacao prematura em consultas EF | SonarAnalyzer.CSharp e Meziantou.Analyzer tem regras LINQ genericas relacionadas | Baixo | Não | Manter |
-| ARCH023 | Preferir `TimeProvider` para hora atual | SonarAnalyzer.CSharp, regra "Use a testable date/time provider"; Meziantou.Analyzer `MA0166`, `MA0167`, `MA0188` relacionados | Medio | Parcialmente | Manter ou revisar escopo |
-| ARCH024 | Evitar interpolacao ou concatenacao em `ILogger` | Roslyn/.NET `CA2254`; Meziantou.Analyzer `MA0183`; SonarAnalyzer.CSharp regras de template de log | Muito alto | Revisar com testes comparativos | Candidata forte a substituicao parcial |
-| ARCH025 | Exigir categoria `ILogger<T>` compativel | Meziantou.Analyzer `MA0180`; SonarAnalyzer.CSharp `S6672` | Muito alto | Revisar com testes comparativos | Candidata forte a substituicao |
-| ARCH026 | Evitar CORS inseguro | SonarAnalyzer.CSharp `S5122` relacionado a CORS permissivo | Alto | Parcialmente | Manter ate validar exatamente `AllowAnyOrigin` com credenciais |
-| ARCH027 | Evitar infraestrutura no core | Regra externa não confirmada. | Nenhum | Não | Manter como politica arquitetural |
-| ARCH028 | Evitar propriedades mutaveis em records | StyleCop.Analyzers e Roslyn/.NET tem regras de design relacionadas, sem equivalencia confirmada | Baixo | Não | Manter |
-| ARCH029 | Evitar setters publicos em entidades de dominio | Regra externa não confirmada. | Nenhum | Não | Manter como politica de dominio |
-| ARCH030 | Detectar `PackageReference` duplicado entre projetos | Regra externa não confirmada. | Nenhum | Não | Manter |
-| ARCH031 | Preferir `System.Threading.Lock` a `object` | Meziantou.Analyzer `MA0158`; Roslyn/.NET `CA2002` e SonarAnalyzer.CSharp `S2445` relacionados | Alto | Revisar com testes comparativos | Revisar comparativamente |
-| ARCH032 | Evitar propriedades MSBuild duplicadas | Regra externa não confirmada. | Nenhum | Não | Manter |
-| ARCH033 | Evitar `BuildServiceProvider` em registro de servicos | Regra externa não confirmada. | Nenhum | Não | Manter |
+| ARCH020 | Exigir autorizacao explicita em endpoints HTTP | Regra externa nÃ£o confirmada. | Nenhum | NÃ£o | Manter |
+| ARCH021 | Preferir `AsNoTracking` em consultas EF de leitura | Regra externa nÃ£o confirmada. | Nenhum | NÃ£o | Manter |
+| ARCH022 | Evitar materializacao prematura em consultas EF | SonarAnalyzer.CSharp e Meziantou.Analyzer tem regras LINQ genericas relacionadas | Baixo | NÃ£o | Manter |
+| ARCH027 | Evitar infraestrutura no core | Regra externa nÃ£o confirmada. | Nenhum | NÃ£o | Manter como politica arquitetural |
+| ARCH029 | Evitar setters publicos em entidades de dominio | Regra externa nÃ£o confirmada. | Nenhum | NÃ£o | Manter como politica de dominio |
+| ARCH032 | Evitar propriedades MSBuild duplicadas | Regra externa nÃ£o confirmada. | Nenhum | NÃ£o | Manter |
 
 ## 5. Analise detalhada por regra
 
-## ARCH001 - Evite async void fora de event handlers
 
 ### Objetivo da regra
 
@@ -102,13 +79,11 @@ Os analyzers externos tambem desencorajam `async void` por causa de composicao, 
 
 ### O que e diferente
 
-`ARCH001` documenta excecao especifica para event handlers no formato `object sender, EventArgs e` e oferece code fix seguro para metodos e funcoes locais concretas. A equivalencia de todas essas excecoes e do comportamento do code fix nao foi confirmada nos analyzers externos.
 
 ### Recomendacao
 
 Manter por enquanto. Avaliar substituicao apenas se `MA0155`, `MA0147` e `S3168` cobrirem os mesmos positivos e negativos dos testes locais.
 
-## ARCH002 - Evite Task.ContinueWith
 
 ### Objetivo da regra
 
@@ -132,13 +107,11 @@ As regras externas tambem favorecem uso idiomatico de `async` e `await` em algun
 
 ### O que e diferente
 
-`ARCH002` mira semanticamente `System.Threading.Tasks.Task.ContinueWith` e `Task<T>.ContinueWith`, independentemente de o metodo chamador ser `async`. As regras externas confirmadas nao cobrem esse contrato especifico.
 
 ### Recomendacao
 
 Manter.
 
-## ARCH003 - Proiba NotBeNull() em testes
 
 ### Objetivo da regra
 
@@ -146,7 +119,7 @@ Detectar `NotBeNull()` do FluentAssertions em testes e incentivar assercoes mais
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -162,13 +135,11 @@ Nao foi encontrada cobertura externa confirmada.
 
 ### O que e diferente
 
-`ARCH003` e uma politica de qualidade de testes especifica para FluentAssertions e limitada a contextos de teste reconhecidos.
 
 ### Recomendacao
 
 Manter.
 
-## ARCH004 - Exija o nome _sut em testes unitarios
 
 ### Objetivo da regra
 
@@ -192,7 +163,6 @@ Existe relacao tematica com convencoes de nomenclatura.
 
 ### O que e diferente
 
-`ARCH004` infere o tipo sob teste pelo nome da classe de teste e busca um unico campo candidato. Isso e uma politica de teste, nao uma regra geral de nomenclatura.
 
 ### Recomendacao
 
@@ -206,7 +176,7 @@ Restringir `NSubstitute.Arg.Any<T>()` em testes, permitindo apenas convencoes ne
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -236,7 +206,7 @@ Alertar sobre exclusoes `Excluding*` dentro de opcoes de `BeEquivalentTo(...)` d
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -258,7 +228,6 @@ Nao foi encontrada cobertura externa confirmada.
 
 Manter.
 
-## ARCH007 - Detecte concatenacao de strings em loops
 
 ### Objetivo da regra
 
@@ -282,13 +251,11 @@ Revisar com testes comparativos.
 
 ### O que e diferente
 
-`ARCH007` tem heuristica local documentada para `for`, `foreach`, `while` e `do/while`, e deve ser comparada contra casos positivos e negativos locais antes de substituir. `MA0028` parece complementar, mas nao substitui diretamente.
 
 ### Recomendacao
 
 Revisar com testes comparativos contra `S1643`.
 
-## ARCH008 - Proiba composicao manual de caminhos de arquivo
 
 ### Objetivo da regra
 
@@ -312,13 +279,11 @@ A relacao e tematica: seguranca e confiabilidade ao lidar com paths.
 
 ### O que e diferente
 
-`ARCH008` e uma regra de estilo/confiabilidade sobre composicao manual de paths passada a APIs de filesystem. Regras de path traversal normalmente focam entrada nao confiavel, nao padronizacao de API.
 
 ### Recomendacao
 
 Manter.
 
-## ARCH009 - Proiba bloqueio sincrono de operacoes assincronas
 
 ### Objetivo da regra
 
@@ -342,13 +307,11 @@ Todos buscam reduzir bloqueio sincrono em fluxos assincronos.
 
 ### O que e diferente
 
-`ARCH009` e explicita sobre `Task`, `Task<T>`, `ValueTask` e `ValueTask<T>`, e delega casos em construtor para `ARCH011` para evitar duplicidade. `CA1849` nao cobre necessariamente `.Result` e `.Wait()` de forma geral. As regras externas precisam ser testadas contra os mesmos cenarios locais.
 
 ### Recomendacao
 
 Manter ou substituir parcialmente apenas apos testes comparativos.
 
-## ARCH010 - Exija propagacao de CancellationToken
 
 ### Objetivo da regra
 
@@ -372,13 +335,11 @@ Revisar com testes comparativos.
 
 ### O que e diferente
 
-`ARCH010` pode ter heuristicas locais sobre disponibilidade de token e formato de invocacao. `MA0032` e mais amplo em alguns cenarios porque sugere overload mesmo sem token disponivel, o que pode gerar politica diferente.
 
 ### Recomendacao
 
 Candidata forte a substituicao ou desabilitacao se `CA2016` e `MA0040` cobrirem os mesmos testes com ruido aceitavel.
 
-## ARCH011 - Proiba logica assincrona ou bloqueante em construtores
 
 ### Objetivo da regra
 
@@ -402,13 +363,11 @@ As regras externas cobrem parte dos padroes perigosos: bloqueios e async nao obs
 
 ### O que e diferente
 
-`ARCH011` e especifica para construtores, combina bloqueio e fire-and-forget no mesmo contexto e evita diagnostico duplicado com `ARCH009`.
 
 ### Recomendacao
 
 Manter como politica especifica de construtor.
 
-## ARCH012 - Prefira DateTimeOffset em vez de DateTime
 
 ### Objetivo da regra
 
@@ -432,13 +391,11 @@ Ha consenso externo sobre reduzir ambiguidade temporal ao preferir `DateTimeOffs
 
 ### O que e diferente
 
-`ARCH012` aplica uma politica arquitetural de tipo em declaracoes controladas pelo projeto. As regras confirmadas do Meziantou focam conversoes e uso implicito, e a regra Sonar precisa ser comparada para confirmar escopo, excecoes e ruido.
 
 ### Recomendacao
 
 Manter por enquanto. Revisar se a regra Sonar cobrir o mesmo escopo com configuracao adequada.
 
-## ARCH013 - Restrinja frameworks de mock ao NSubstitute
 
 ### Objetivo da regra
 
@@ -446,7 +403,7 @@ Detectar e desencorajar frameworks de mock diferentes de NSubstitute quando a po
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -462,13 +419,11 @@ Nao foi encontrada cobertura externa confirmada.
 
 ### O que e diferente
 
-`ARCH013` e uma politica organizacional, nao uma regra geral de qualidade.
 
 ### Recomendacao
 
 Manter.
 
-## ARCH014 - Prefira Is.Equivalent em vez de NSubstitute Arg.Is
 
 ### Objetivo da regra
 
@@ -476,7 +431,7 @@ Incentivar uma convencao local `Is.Equivalent` no lugar de `Arg.Is` para match d
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -492,7 +447,6 @@ Nao foi encontrada cobertura externa confirmada.
 
 ### O que e diferente
 
-`ARCH014` depende de helper ou API adotada pelo consumidor, que nao faz parte de NSubstitute nem dos analyzers externos avaliados.
 
 ### Recomendacao
 
@@ -588,7 +542,6 @@ Ambas as abordagens reduzem tarefas nao observadas.
 
 Manter como regra contextual. Usar `MA0134` como complemento, nao substituto automatico.
 
-## ARCH018 - Evite instanciacao direta de HttpClient
 
 ### Objetivo da regra
 
@@ -612,13 +565,11 @@ Ambas tratam lifetime e pooling de conexoes HTTP por meio de `HttpClientFactory`
 
 ### O que e diferente
 
-`ARCH018` documenta escopo de codigo de aplicacao e excecoes locais. A regra Sonar precisa ser validada contra os exemplos locais para confirmar se cobre instanciacao direta, contextos permitidos e falsos positivos.
 
 ### Recomendacao
 
 Revisar comparativamente antes de decidir substituicao.
 
-## ARCH019 - Evite Authorize e AllowAnonymous no mesmo endpoint
 
 ### Objetivo da regra
 
@@ -642,7 +593,6 @@ Existe relacao tematica com seguranca de endpoints ASP.NET.
 
 ### O que e diferente
 
-`ARCH019` foca conflito semantico de metadados entre controller/action ou composicao equivalente. Essa politica nao foi confirmada em analyzer externo.
 
 ### Recomendacao
 
@@ -656,7 +606,7 @@ Garantir que cada endpoint HTTP declare explicitamente `Authorize`/`RequireAutho
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -686,7 +636,7 @@ Sugerir `AsNoTracking()` em consultas EF Core materializadas para leitura quando
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -738,7 +688,6 @@ Existe relacao com eficiencia de consultas e composicao LINQ.
 
 Manter.
 
-## ARCH023 - Prefira TimeProvider para obter data e hora
 
 ### Objetivo da regra
 
@@ -762,13 +711,11 @@ Os analyzers externos tambem incentivam testabilidade temporal e uso de provedor
 
 ### O que e diferente
 
-`ARCH023` tem escopo por namespaces, tipos permitidos e opcao para logging simples. `MA0166` e `MA0167` focam overloads e propagacao de `TimeProvider`; `MA0188` prefere `System.TimeProvider` em vez de abstracao customizada. Isso nao substitui automaticamente a politica local.
 
 ### Recomendacao
 
 Manter e revisar se as regras Meziantou podem complementar ou reduzir parte da cobertura.
 
-## ARCH024 - Evite interpolacao ou concatenacao em ILogger
 
 ### Objetivo da regra
 
@@ -792,13 +739,11 @@ As regras externas cobrem a ideia central de template de log estatico e preserva
 
 ### O que e diferente
 
-`ARCH024` mira especificamente interpolacao e concatenacao em `ILogger`, podendo ter heuristicas locais sobre overloads e tipo do logger. `CA2254` e candidato principal, mas deve ser comparado contra todos os casos locais.
 
 ### Recomendacao
 
 Candidata forte a substituicao parcial. Validar `CA2254`, `MA0183` e regras Sonar contra os testes locais.
 
-## ARCH025 - ILogger<T> deve usar o tipo da classe atual
 
 ### Objetivo da regra
 
@@ -822,13 +767,11 @@ As regras externas cobrem o mesmo principio: a categoria generica do logger deve
 
 ### O que e diferente
 
-`ARCH025` pode ter regras locais para campos, construtores e tipos aninhados que precisam ser comparadas. A equivalencia parece forte, mas ainda depende de ruido e cobertura de cenarios.
 
 ### Recomendacao
 
 Candidata forte a substituicao.
 
-## ARCH026 - Evite configuracao CORS insegura
 
 ### Objetivo da regra
 
@@ -852,7 +795,6 @@ Ambas tratam configuracao CORS permissiva como risco de seguranca.
 
 ### O que e diferente
 
-`ARCH026` foca a combinacao ASP.NET Core `AllowAnyOrigin()` com `AllowCredentials()` e possui opcao `disallow_any_origin`. `S5122` e mais ampla como Security Hotspot e pode exigir revisao humana em cenarios que `ARCH026` trata como politica local.
 
 ### Recomendacao
 
@@ -866,7 +808,7 @@ Detectar dependencias diretas de frameworks ou adaptadores de infraestrutura em 
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -888,7 +830,6 @@ Nao foi encontrada cobertura externa confirmada entre os analyzers avaliados.
 
 Manter.
 
-## ARCH028 - Proiba propriedades mutaveis em records
 
 ### Objetivo da regra
 
@@ -912,7 +853,6 @@ Existe relacao tematica com design de tipos e imutabilidade.
 
 ### O que e diferente
 
-`ARCH028` e especifica para `record`, `record class`, `record struct` e `readonly record struct`, com opcao para setters nao publicos.
 
 ### Recomendacao
 
@@ -926,7 +866,7 @@ Detectar setters publicos ou internos nao autorizados em entidades de dominio.
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -948,7 +888,6 @@ Nao foi encontrada cobertura externa confirmada.
 
 Manter.
 
-## ARCH030 - Detecte PackageReference duplicado entre projetos
 
 ### Objetivo da regra
 
@@ -956,7 +895,7 @@ Detectar o mesmo `PackageReference` em mais de um `.csproj` recebido como `Addit
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -972,13 +911,11 @@ Nao foi encontrada cobertura externa confirmada.
 
 ### O que e diferente
 
-`ARCH030` analisa XML de projeto via `AdditionalFiles`, possui allowlist de pacotes e padroes de projeto, e trata uma politica de dependencia entre projetos.
 
 ### Recomendacao
 
 Manter.
 
-## ARCH031 - Prefira System.Threading.Lock em vez de lock object
 
 ### Objetivo da regra
 
@@ -1002,7 +939,6 @@ Revisar com testes comparativos.
 
 ### O que e diferente
 
-`ARCH031` tem configuracao de target framework minimo e opcao para variaveis locais. A equivalencia de `MA0158` nesses detalhes deve ser confirmada com testes.
 
 ### Recomendacao
 
@@ -1016,7 +952,7 @@ Detectar propriedades MSBuild repetidas em `.csproj` quando a mesma propriedade 
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -1038,7 +974,6 @@ Nao foi encontrada cobertura externa confirmada.
 
 Manter.
 
-## ARCH033 - Evite BuildServiceProvider durante registro de servicos
 
 ### Objetivo da regra
 
@@ -1046,7 +981,7 @@ Detectar chamadas a `BuildServiceProvider()` feitas sobre `IServiceCollection` d
 
 ### Sobreposicao encontrada
 
-Regra externa não confirmada.
+Regra externa nÃ£o confirmada.
 
 ### Grau de equivalencia
 
@@ -1062,7 +997,6 @@ Nao foi encontrada cobertura externa confirmada nos pacotes avaliados.
 
 ### O que e diferente
 
-`ARCH033` conhece a API `Microsoft.Extensions.DependencyInjection.IServiceCollection`, ignora contextos de teste quando configurado e evita confundir chamadas com APIs customizadas de mesmo nome.
 
 ### Recomendacao
 
@@ -1072,21 +1006,15 @@ Manter.
 
 Boas candidatas a substituicao:
 
-- `ARCH010`, por causa de `CA2016` e `MA0040`.
-- `ARCH024`, por causa de `CA2254`, `MA0183` e regras Sonar de templates de log.
-- `ARCH025`, por causa de `MA0180` e `S6672`.
 
 Regras com sobreposicao parcial:
 
-- `ARCH001`, `ARCH007`, `ARCH009`, `ARCH011`, `ARCH012`, `ARCH016`, `ARCH017`, `ARCH018`, `ARCH023`, `ARCH026` e `ARCH031`.
 
 Regras que devem permanecer customizadas:
 
-- `ARCH002`, `ARCH003`, `ARCH004`, `ARCH005`, `ARCH006`, `ARCH008`, `ARCH013`, `ARCH014`, `ARCH015`, `ARCH019`, `ARCH020`, `ARCH021`, `ARCH022`, `ARCH027`, `ARCH028`, `ARCH029`, `ARCH030`, `ARCH032` e `ARCH033`.
 
 Regras que exigem teste comparativo antes de decisao:
 
-- `ARCH001`, `ARCH007`, `ARCH009`, `ARCH010`, `ARCH018`, `ARCH024`, `ARCH025`, `ARCH026` e `ARCH031`.
 
 ## 7. Limitacoes da analise
 

@@ -171,11 +171,13 @@ $ruleIdentifiersPath = "src/Swa.Analyzers.Core/RuleIdentifiers.cs"
 $readmePath = "README.md"
 $shippedPath = "src/Swa.Analyzers.Core/AnalyzerReleases.Shipped.md"
 $unshippedPath = "src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md"
+$historyPath = "docs/history/v1-analyzer-releases.md"
 
 $ruleIdentifiersContent = Get-CurrentContent $ruleIdentifiersPath
 $readmeContent = Get-CurrentContent $readmePath
 $shippedContent = Get-CurrentContent $shippedPath
 $unshippedContent = Get-CurrentContent $unshippedPath
+$historyContent = Get-CurrentContent $historyPath
 
 if (-not $ruleIdentifiersContent) {
     Add-Failure "RuleIdentifiers.cs não foi encontrado em '$ruleIdentifiersPath'."
@@ -193,12 +195,18 @@ if (-not $unshippedContent) {
     Add-Failure "AnalyzerReleases.Unshipped.md não foi encontrado em '$unshippedPath'."
 }
 
+if (-not $historyContent) {
+    Add-Failure "Historico de releases v1 nao foi encontrado em '$historyPath'."
+}
+
 $ruleIds = @(Get-ArchIds $ruleIdentifiersContent)
 $ruleIdSet = ConvertTo-Set $ruleIds
 $shippedIds = @(Get-ArchIds $shippedContent)
 $unshippedIds = @(Get-ArchIds $unshippedContent)
+$historyIds = @(Get-ArchIds $historyContent)
 $shippedIdSet = ConvertTo-Set $shippedIds
 $unshippedIdSet = ConvertTo-Set $unshippedIds
+$historyIdSet = ConvertTo-Set $historyIds
 
 $analyzerFiles = @(Get-ChildItem -LiteralPath $rulesDirectory -File -Filter "Arch*.cs" |
     Where-Object { $_.Name -match "^Arch(?<Number>\d{3}).*\.cs$" } |
@@ -276,7 +284,7 @@ if ($resolvedBaseRef -and (Test-GitCommit $resolvedBaseRef)) {
     }
 
     foreach ($ruleId in $baseShippedIds) {
-        if (-not $shippedIdSet.ContainsKey($ruleId)) {
+        if (-not $shippedIdSet.ContainsKey($ruleId) -and -not $historyIdSet.ContainsKey($ruleId)) {
             Add-Failure "Regra publicada '$ruleId' existia em AnalyzerReleases.Shipped.md na base, mas não está no arquivo atual."
         }
     }

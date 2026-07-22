@@ -57,29 +57,6 @@ public sealed class AnalyzerPerformanceTests
             $"ARCH021 took {result.Elapsed.TotalSeconds:n2}s, above the {ConservativeLimit.TotalSeconds:n0}s guardrail.");
     }
 
-    [Fact]
-    public async Task ARCH024_handles_many_logging_calls_within_guardrail()
-    {
-        var sources = new[]
-            {
-                ("LoggingStubs.cs", LoggingStubs),
-            }
-            .Concat(AnalyzerPerformanceRunner.CreateNumberedSources(
-                "Logging",
-                40,
-                CreateLoggingSource));
-
-        var result = await AnalyzerPerformanceRunner.MeasureAsync(
-            new Arch024AvoidInterpolatedStringsInLoggerAnalyzer(),
-            sources);
-
-        Assert.Equal(240, result.Diagnostics.Length);
-        Assert.All(result.Diagnostics, diagnostic => Assert.Equal("ARCH024", diagnostic.Id));
-        Assert.True(
-            result.Elapsed < ConservativeLimit,
-            $"ARCH024 took {result.Elapsed.TotalSeconds:n2}s, above the {ConservativeLimit.TotalSeconds:n0}s guardrail.");
-    }
-
     private static string CreateControllerSource(int index)
     {
         return $$"""
@@ -184,38 +161,6 @@ public sealed class OrdersQuery{{index}}
         var customer = await _db.Customers.FirstOrDefaultAsync();
         var customerIds = await _db.Customers.Select(customer => customer.Id).ToListAsync();
         var projectedOrders = await _db.Orders.Select(order => order).ToListAsync();
-    }
-}
-""";
-    }
-
-    private static string CreateLoggingSource(int index)
-    {
-        return $$"""
-using System;
-using Microsoft.Extensions.Logging;
-
-namespace Performance.Logging{{index}};
-
-public sealed class CustomerService{{index}}
-{
-    private readonly ILogger _logger;
-
-    public CustomerService{{index}}(ILogger logger)
-    {
-        _logger = logger;
-    }
-
-    public void Execute(int customerId, Exception exception)
-    {
-        _logger.LogTrace($"Trace customer {customerId}");
-        _logger.LogDebug("Debug customer " + customerId);
-        _logger.LogInformation("Customer {CustomerId} created", customerId);
-        _logger.LogWarning($"Customer {customerId} was not found");
-        _logger.LogError(exception, $"Customer {customerId} failed");
-        _logger.LogCritical("Critical customer " + customerId);
-        _logger.LogInformation("Static message");
-        _logger.LogError($"Error customer {customerId}");
     }
 }
 """;
@@ -366,25 +311,4 @@ namespace Microsoft.EntityFrameworkCore
 }
 """;
 
-    private const string LoggingStubs = """
-using System;
-
-namespace Microsoft.Extensions.Logging
-{
-    public interface ILogger
-    {
-    }
-
-    public static class LoggerExtensions
-    {
-        public static void LogTrace(this ILogger logger, string? message, params object?[] args) { }
-        public static void LogDebug(this ILogger logger, string? message, params object?[] args) { }
-        public static void LogInformation(this ILogger logger, string? message, params object?[] args) { }
-        public static void LogWarning(this ILogger logger, string? message, params object?[] args) { }
-        public static void LogError(this ILogger logger, string? message, params object?[] args) { }
-        public static void LogError(this ILogger logger, Exception? exception, string? message, params object?[] args) { }
-        public static void LogCritical(this ILogger logger, string? message, params object?[] args) { }
-    }
-}
-""";
 }

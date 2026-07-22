@@ -11,7 +11,7 @@ O projeto separa os metadados de regras em dois arquivos:
 
 O formato segue o padrão de release tracking de analyzers Roslyn: uma seção de release, como `## Release 1.0.0`, e subsecoes como `### New Rules` com tabela de `Rule ID`, `Category`, `Severity` e `Notes`.
 
-Como transicao conservadora, o baseline publicado em `1.0.0` registra `ARCH001` a `ARCH032` em `AnalyzerReleases.Shipped.md`, conforme o `CHANGELOG.md`. A regra `ARCH033` permanece em `AnalyzerReleases.Unshipped.md` enquanto estiver em `[Unreleased]`. Não mova regras para `Shipped` sem base no histórico do repositório, tag, changelog ou pacote publicado.
+Na migração para a versão 2.0, `AnalyzerReleases.Shipped.md` permanece como metadata ativa das regras ainda implementadas. O histórico dos IDs da linha 1.x fica preservado em `docs/history/v1-analyzer-releases.md`. Não mova regras para `Shipped` sem base no histórico do repositório, tag, changelog ou pacote publicado.
 
 Fluxo esperado:
 
@@ -42,7 +42,7 @@ O hook `.githooks/pre-push` executa a mesma validação antes do restore, build,
 - Cada `ARCH###` declarado em `RuleIdentifiers.cs` precisa aparecer em exatamente um dos metadados de release: `AnalyzerReleases.Shipped.md` ou `AnalyzerReleases.Unshipped.md`.
 - Nenhum `ARCH###` pode aparecer nos metadados de release sem entrada correspondente em `RuleIdentifiers.cs`.
 - Um `ARCH###` não pode aparecer simultaneamente em `Shipped` e `Unshipped`.
-- Uma regra já publicada em `AnalyzerReleases.Shipped.md` na base de comparação não pode desaparecer do arquivo atual.
+- Uma regra já publicada em `AnalyzerReleases.Shipped.md` na base de comparação precisa permanecer no release ativo ou estar preservada no histórico v1.
 - Quando um novo `ARCH###` aparece em `RuleIdentifiers.cs`, `src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md` precisa conter esse ID.
 
 O workflow `.github/workflows/release-check.yml` executa essas validações em `pull_request`, em `push` para `main` e manualmente via `workflow_dispatch`.
