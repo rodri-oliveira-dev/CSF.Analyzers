@@ -70,6 +70,20 @@ function Get-RulePackage {
     }
 }
 
+function Get-RuleDocumentationPath {
+    param(
+        [string]$RepoRoot,
+        [string]$RuleId
+    )
+
+    switch -Regex ($RuleId) {
+        "^REL\d{3}$" { return Join-Path $RepoRoot "docs/rules/reliability/$RuleId.md" }
+        "^ARC\d{3}$" { return Join-Path $RepoRoot "docs/rules/architecture/$RuleId.md" }
+        "^TST\d{3}$" { return Join-Path $RepoRoot "docs/rules/testing/$RuleId.md" }
+        default { return Join-Path $RepoRoot "docs/rules/$RuleId.md" }
+    }
+}
+
 function Get-MetadataRuleIds {
     param([string]$Text)
 
@@ -214,10 +228,10 @@ foreach ($package in $packages) {
             Add-Failure "$($package.Name): analyzer ausente para $ruleId."
         }
 
-        $docPath = Join-Path $repoRoot "docs/rules/$ruleId.md"
+        $docPath = Get-RuleDocumentationPath $repoRoot $ruleId
         $docContent = Read-Text $docPath
         if ([string]::IsNullOrWhiteSpace($docContent)) {
-            Add-Failure "${ruleId}: documentacao ausente em docs/rules/$ruleId.md."
+            Add-Failure "${ruleId}: documentacao ausente em $docPath."
         } else {
             if ($docContent -notmatch [regex]::Escape($ruleId)) {
                 Add-Failure "${ruleId}: documentacao nao menciona o proprio ID."

@@ -112,9 +112,29 @@ public sealed class AnalyzerPackageIsolationTests
         foreach (var descriptor in descriptors)
         {
             Assert.Equal(
-                $"https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/{descriptor.Id}.md",
+                $"https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/{GetRuleGroup(descriptor.Id)}/{descriptor.Id}.md",
                 descriptor.HelpLinkUri);
         }
+    }
+
+    private static string GetRuleGroup(string diagnosticId)
+    {
+        if (diagnosticId.StartsWith("REL", StringComparison.Ordinal))
+        {
+            return "reliability";
+        }
+
+        if (diagnosticId.StartsWith("ARC", StringComparison.Ordinal))
+        {
+            return "architecture";
+        }
+
+        if (diagnosticId.StartsWith("TST", StringComparison.Ordinal))
+        {
+            return "testing";
+        }
+
+        throw new InvalidOperationException($"Unknown diagnostic prefix for '{diagnosticId}'.");
     }
 
     private sealed record AnalyzerPackage(

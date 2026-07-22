@@ -27,7 +27,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.p
 ## Validacoes
 
 - Cada analyzer `Rel###*.cs`, `Arc###*.cs` ou `Tst###*.cs` precisa ter entrada no `RuleIdentifiers.cs` do pacote.
-- Cada ID declarado em `RuleIdentifiers.cs` precisa ter analyzer no pacote correspondente, documento em `docs/rules/<ID>.md`, teste em `tests/Swa.Analyzers.*.Tests/Rules/<Prefix><Number>*Tests.cs` e sample em `samples/Swa.Analyzers.*.Sample/<Prefix><Number>`.
+- Cada ID declarado em `RuleIdentifiers.cs` precisa ter analyzer no pacote correspondente, documento em `docs/rules/<pacote>/<ID>.md`, teste em `tests/Swa.Analyzers.*.Tests/Rules/<Prefix><Number>*Tests.cs` e sample em `samples/Swa.Analyzers.*.Sample/<Prefix><Number>`.
 - Cada ID declarado em `RuleIdentifiers.cs` precisa aparecer no `README.md`.
 - Cada ID declarado em `RuleIdentifiers.cs` precisa aparecer em exatamente um dos metadados de release: `AnalyzerReleases.Shipped.md` ou `AnalyzerReleases.Unshipped.md`.
 - Nenhum ID pode aparecer nos metadados de release sem entrada correspondente em `RuleIdentifiers.cs`.
@@ -35,7 +35,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.p
 - Cada prefixo precisa pertencer ao pacote correto: `REL###` em `Swa.Analyzers.Reliability`, `ARC###` em `Swa.Analyzers.Architecture` e `TST###` em `Swa.Analyzers.Testing`.
 - Nenhum ID pode aparecer duplicado globalmente entre pacotes.
 - IDs historicos `ARCH###` podem permanecer em documentos historicos e de migracao, mas nao sao exigidos como implementacao ativa.
-- Os help links dos analyzers devem usar `RuleHelpLinks.ForRule(...)` e apontar para `docs/rules/<ID>.md`.
+- Os help links dos analyzers devem usar `RuleHelpLinks.ForRule(...)` e apontar para a página da regra em `docs/rules/<pacote>/<ID>.md`.
 - Opcoes publicas `dotnet_diagnostic.<ID>.<option>` implementadas precisam estar documentadas, e opcoes documentadas precisam existir na implementacao.
 
 ## Inspecao dos pacotes

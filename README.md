@@ -1,125 +1,100 @@
 # Swa.Analyzers
 
-Analyzers Roslyn reutilizaveis para .NET, focados em convencoes de arquitetura, confiabilidade e qualidade de testes.
+`Swa.Analyzers` distribui analyzers Roslyn para políticas contextuais de projetos .NET. A v2 separa o produto em três pacotes independentes para que cada solução instale somente as regras que fazem sentido para seu risco operacional, arquitetura e padrão de testes.
 
-## Projetos
+Analyzers genéricos do .NET, Roslyn, SonarAnalyzer ou Meziantou.Analyzer verificam práticas amplas de linguagem e plataforma. Estes pacotes cobrem decisões de time que dependem de contexto: endpoints ASP.NET devem declarar autorização explicitamente, camadas core não devem depender de infraestrutura, entidades de domínio podem ter mutabilidade restrita e testes podem rejeitar matchers ou exclusões amplas.
 
-- `src/Swa.Analyzers.Reliability`: pacote `Swa.Analyzers.Reliability`.
-- `src/Swa.Analyzers.Architecture`: pacote `Swa.Analyzers.Architecture`.
-- `src/Swa.Analyzers.Testing`: pacote `Swa.Analyzers.Testing`.
-- `tests/Swa.Analyzers.*.Tests`: testes automatizados por pacote e validacao de isolamento.
-- `samples/Swa.Analyzers.*.Sample`: exemplos manuais validos e invalidos por pacote.
+## Pacotes
 
-Cada regra tem documentacao propria em [docs/rules](docs/rules). Os diagnosticos publicados pelo pacote usam help links absolutos para estes arquivos no repositorio publico, facilitando o acesso quando o analyzer e distribuido via NuGet.
+| Pacote | Escopo | Regras |
+| ------ | ------ | ------ |
+| [`Swa.Analyzers.Reliability`](docs/packages/reliability.md) | Confiabilidade e performance operacional em ASP.NET e EF Core. | `REL001`, `REL002`, `REL003`, `REL004` |
+| [`Swa.Analyzers.Architecture`](docs/packages/architecture.md) | Políticas de autorização, rotas, dependências de camadas, DDD e MSBuild. | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005` |
+| [`Swa.Analyzers.Testing`](docs/packages/testing.md) | Qualidade de testes com NSubstitute e FluentAssertions. | `TST001`, `TST002` |
 
-Para introduzir o pacote em projetos existentes, veja o guia de [adocao gradual](docs/adoption.md), com exemplos de severidades, suppressions e tratamento de legado. Se quiser partir de uma politica pronta, use os [perfis de adocao via `.editorconfig`](docs/editorconfig-profiles.md).
+## Instalação
 
-## Documentacao complementar
+Instale cada pacote no projeto que deve receber aquela política. Não há metapacote `Swa.Analyzers` na v2 inicial.
 
-- [Sobreposicao historica entre regras Swa.Analyzers e analyzers externos](docs/history/rules-analyzer-overlap.md)
-- [Migracao para a v2](docs/migration-v2.md)
-
-## Regras existentes
-
-| ID | Titulo (resumo) | Categoria | Severidade padrao | Doc |
-| -- | --------------- | --------- | ----------------- | --- |
-| ARC001 | Exija autorizacao explicita em endpoints | Security | Warning | [ARC001](docs/rules/ARC001.md) |
-| ARC002 | Evite dependencias de infraestrutura no core | Architecture | Warning | [ARC002](docs/rules/ARC002.md) |
-| ARC003 | Proiba verbos em rotas HTTP | Design | Info (opt-in) | [ARC003](docs/rules/ARC003.md) |
-| ARC004 | Proiba setters publicos em entidades de dominio | Design | Info (opt-in) | [ARC004](docs/rules/ARC004.md) |
-| ARC005 | Evite propriedades MSBuild duplicadas | Maintainability | Info (opt-in) | [ARC005](docs/rules/ARC005.md) |
-| REL001 | Evite `Task.Run` em fluxo de request ASP.NET | Performance | Warning | [REL001](docs/rules/REL001.md) |
-| REL002 | Proiba fire-and-forget em fluxo de request | Reliability | Warning | [REL002](docs/rules/REL002.md) |
-| REL003 | Prefira `AsNoTracking` em consultas EF de leitura | Performance | Info (opt-in) | [REL003](docs/rules/REL003.md) |
-| REL004 | Evite materializacao prematura de consultas | Performance | Warning | [REL004](docs/rules/REL004.md) |
-| TST001 | Restrinja o uso de `NSubstitute.Arg.Any()` | TestQuality | Info (opt-in) | [TST001](docs/rules/TST001.md) |
-| TST002 | Alerte sobre exclusoes em `BeEquivalentTo()` | TestQuality | Info (opt-in) | [TST002](docs/rules/TST002.md) |
-
-Distribuicao por pacote:
-
-- `Swa.Analyzers.Reliability`: `REL001`, `REL002`, `REL003`, `REL004`.
-- `Swa.Analyzers.Architecture`: `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005`.
-- `Swa.Analyzers.Testing`: `TST001`, `TST002`.
-
-## Como configurar
-
-### Requisitos
-
-- .NET SDK 10.x, fixado pelo `global.json` do repositorio.
-
-Configure severidade via `.editorconfig` normalmente:
-
-```ini
-[*.cs]
-dotnet_diagnostic.TST001.severity = info
-dotnet_diagnostic.REL001.severity = warning
+```powershell
+dotnet add package Swa.Analyzers.Reliability
+dotnet add package Swa.Analyzers.Architecture
+dotnet add package Swa.Analyzers.Testing
 ```
 
-Algumas regras aceitam opcoes proprias via `.editorconfig`. Para regras opt-in, defina tambem a severidade.
+Em repositórios com Central Package Management, declare as versões em `Directory.Packages.props` e use `PackageReference` sem `Version`.
 
-Exemplo para `ARC003`:
+## Exemplo mínimo
+
+Com `Swa.Analyzers.Architecture`, um endpoint sem decisão explícita de autorização emite `ARC001`:
+
+```csharp
+app.MapGet("/orders", () => Results.Ok());
+```
+
+Código conforme:
+
+```csharp
+app.MapGet("/orders", () => Results.Ok())
+    .RequireAuthorization();
+
+app.MapGet("/health", () => Results.Ok())
+    .AllowAnonymous();
+```
+
+## Regras
+
+| ID | Pacote | Categoria | Padrão | Documentação |
+| -- | ------ | --------- | ------ | ------------ |
+| `REL001` | Reliability | Performance | `warning`, habilitada | [REL001](docs/rules/reliability/REL001.md) |
+| `REL002` | Reliability | Reliability | `warning`, habilitada | [REL002](docs/rules/reliability/REL002.md) |
+| `REL003` | Reliability | Performance | `info`, opt-in | [REL003](docs/rules/reliability/REL003.md) |
+| `REL004` | Reliability | Performance | `warning`, habilitada | [REL004](docs/rules/reliability/REL004.md) |
+| `ARC001` | Architecture | Security | `warning`, habilitada | [ARC001](docs/rules/architecture/ARC001.md) |
+| `ARC002` | Architecture | Architecture | `warning`, habilitada | [ARC002](docs/rules/architecture/ARC002.md) |
+| `ARC003` | Architecture | Design | `info`, opt-in | [ARC003](docs/rules/architecture/ARC003.md) |
+| `ARC004` | Architecture | Design | `info`, opt-in | [ARC004](docs/rules/architecture/ARC004.md) |
+| `ARC005` | Architecture | Maintainability | `info`, opt-in | [ARC005](docs/rules/architecture/ARC005.md) |
+| `TST001` | Testing | TestQuality | `info`, opt-in | [TST001](docs/rules/testing/TST001.md) |
+| `TST002` | Testing | TestQuality | `info`, opt-in | [TST002](docs/rules/testing/TST002.md) |
+
+Regras habilitadas por padrão: `REL001`, `REL002`, `REL004`, `ARC001`, `ARC002`.
+
+Regras opt-in: `REL003`, `ARC003`, `ARC004`, `ARC005`, `TST001`, `TST002`. Elas só emitem diagnóstico quando a severidade é ativada via `.editorconfig`.
 
 ```ini
 [*.cs]
+dotnet_diagnostic.REL003.severity = info
 dotnet_diagnostic.ARC003.severity = info
-dotnet_diagnostic.ARC003.route_language = pt-BR
-dotnet_diagnostic.ARC003.additional_verbs = ["ativar", "inativar", "recalcular"]
+dotnet_diagnostic.TST001.severity = warning
 ```
 
-Exemplo para `ARC001`:
+Opções específicas ficam documentadas nas páginas das regras e dos pacotes.
 
-```ini
-[*.cs]
-dotnet_diagnostic.ARC001.allowed_routes = ["/internal/status", "/diagnostics/*"]
-dotnet_diagnostic.ARC001.allowed_methods = ["Ping"]
-dotnet_diagnostic.ARC001.ignored_namespaces = ["Sample.PublicEndpoints"]
+## Guias
+
+- [Adoção gradual](docs/adoption.md)
+- [Perfis de `.editorconfig`](docs/editorconfig-profiles.md)
+- [Migração da v1 para a v2](docs/migration-v2.md)
+- [Contribuindo com regras](docs/contributing-rules.md)
+- [Validações de release](docs/release.md)
+- [Sobreposição com analyzers externos](docs/reviews/rules-analyzer-overlap.md)
+
+## Contribuição
+
+Use a solução principal:
+
+```powershell
+dotnet restore ./Swa.Analyzers.slnx
+dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
+dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1
+powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1
 ```
 
-Exemplo para `ARC002`:
+Os samples ficam em `samples/Swa.Analyzers.*.Sample` e validam exemplos manuais por pacote.
 
-```ini
-[*.cs]
-dotnet_diagnostic.ARC002.core_namespace_patterns = "*.Domain;*.Application"
-dotnet_diagnostic.ARC002.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql"
-dotnet_diagnostic.ARC002.allowed_namespace_patterns =
-dotnet_diagnostic.ARC002.ignore_tests = true
-```
+## Publicação
 
-Exemplo para `ARC004`:
+Os três pacotes usam GitVersion como fonte única de versão. O workflow de release gera `Swa.Analyzers.Reliability`, `Swa.Analyzers.Architecture` e `Swa.Analyzers.Testing` com a mesma versão calculada.
 
-```ini
-[*.cs]
-dotnet_diagnostic.ARC004.severity = info
-dotnet_diagnostic.ARC004.entity_namespaces = ["MyApp.Domain.Entities", "MyApp.Domain.Aggregates"]
-dotnet_diagnostic.ARC004.entity_base_types = ["Entity", "AggregateRoot"]
-dotnet_diagnostic.ARC004.allow_internal_setters = false
-```
-
-Exemplo para `ARC005`:
-
-```ini
-[*.csproj]
-dotnet_diagnostic.ARC005.severity = info
-dotnet_diagnostic.ARC005.ignored_properties = ["TargetFramework", "TargetFrameworks", "AssemblyName", "RootNamespace"]
-dotnet_diagnostic.ARC005.compare_values = true
-```
-
-As paginas de cada regra documentam o fallback das opcoes publicas, incluindo valor default, tratamento de valores vazios, invalidos, casing inesperado e JSON malformado quando aplicavel. Em geral, arrays JSON malformados sao ignorados e booleanos invalidos voltam ao default da regra.
-
-## Como validar
-
-- **Restore**: `dotnet restore ./Swa.Analyzers.slnx`
-- **Build**: `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore`
-- **Testes**: `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1`
-- **Release check**: `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1`
-- **Manual**: compile os projetos em `samples/Swa.Analyzers.*.Sample` para validar exemplos por pacote.
-
-Detalhes das validacoes de release estao em [docs/release.md](docs/release.md).
-
-## Release e versionamento
-
-As releases usam GitVersion, configurado em [GitVersion.yml](GitVersion.yml), como fonte unica da versao publicada. O workflow de release usa a versao `semVer` calculada pelo GitVersion para o `PackageVersion` do NuGet, a tag `vX.Y.Z` e a GitHub Release.
-
-Nao atualize `VersionPrefix` manualmente para preparar releases. Commits semanticos determinam o incremento: `fix:` e `perf:` geram patch, `feat:` gera minor, e `!` ou `BREAKING CHANGE:` geram major. Commits `docs:`, `test:`, `style:`, `chore:` e `ci:` nao forcam incremento, salvo quando indicam breaking change.
-
-Os metadados de regras publicadas ficam em `src/Swa.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Shipped.md`; regras novas ainda nao publicadas ficam nos respectivos `AnalyzerReleases.Unshipped.md`. O release check valida que os IDs em `RuleIdentifiers.cs`, docs, README, testes, samples e metadados shipped/unshipped permanecam consistentes.
+A publicação no NuGet.org permanece comentada no workflow até que `NUGET_API_KEY` e o ambiente protegido sejam configurados explicitamente. Portanto, este repositório não afirma que os pacotes v2 já estão publicados.

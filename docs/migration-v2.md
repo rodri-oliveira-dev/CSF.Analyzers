@@ -1,24 +1,40 @@
-# Migracao para a v2
+# Migração para a v2
 
-## Aviso de breaking change
+## Breaking change
 
-A versao 2.0 renumera os diagnosticos ativos e divide o pacote unico em tres pacotes NuGet independentes. IDs antigos `ARCH###` nao sao emitidos pela implementacao v2.
+A versão 2.0 divide o pacote único da linha 1.x em três pacotes NuGet independentes e renumera todos os diagnósticos ativos. A implementação v2 não emite IDs `ARCH###`.
 
-Consumidores devem atualizar referencias de pacote, `.editorconfig`, suppressions, `NoWarn`, baselines e documentacao interna para os novos IDs.
+Consumidores devem atualizar referências de pacote, `.editorconfig`, suppressions, `NoWarn`, baselines, documentação interna e pipelines.
+
+## Instalação antes/depois
+
+Antes:
+
+```xml
+<PackageReference Include="Swa.Analyzers" PrivateAssets="all" />
+```
+
+Depois, escolha os pacotes necessários:
+
+```xml
+<PackageReference Include="Swa.Analyzers.Reliability" PrivateAssets="all" />
+<PackageReference Include="Swa.Analyzers.Architecture" PrivateAssets="all" />
+<PackageReference Include="Swa.Analyzers.Testing" PrivateAssets="all" />
+```
+
+Não há metapacote `Swa.Analyzers` na v2 inicial.
 
 ## Pacotes de destino
 
-| Pacote | IDs ativos na v2 |
-| ------ | ---------------- |
+| Pacote | IDs ativos |
+| ------ | ---------- |
 | `Swa.Analyzers.Reliability` | `REL001`, `REL002`, `REL003`, `REL004` |
 | `Swa.Analyzers.Architecture` | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005` |
 | `Swa.Analyzers.Testing` | `TST001`, `TST002` |
 
-Nao ha metapacote `Swa.Analyzers` na v2 inicial.
+## Mapeamento de regras mantidas
 
-## Mapeamento de IDs mantidos
-
-| ID v1 | ID v2 | Pacote v2 | Estado padrao v2 |
+| ID v1 | ID v2 | Pacote v2 | Estado padrão v2 |
 | ----- | ----- | --------- | ---------------- |
 | `ARCH016` | `REL001` | `Swa.Analyzers.Reliability` | habilitada, warning |
 | `ARCH017` | `REL002` | `Swa.Analyzers.Reliability` | habilitada, warning |
@@ -34,36 +50,15 @@ Nao ha metapacote `Swa.Analyzers` na v2 inicial.
 
 ## Regras removidas
 
-As regras abaixo nao possuem analyzer ativo na v2:
+As regras abaixo não possuem analyzer ativo na v2:
 
-| ID v1 | Destino |
-| ----- | ------- |
-| `ARCH001` | removida |
-| `ARCH002` | removida |
-| `ARCH003` | removida |
-| `ARCH004` | removida |
-| `ARCH007` | removida |
-| `ARCH008` | removida |
-| `ARCH009` | removida |
-| `ARCH010` | removida |
-| `ARCH011` | removida |
-| `ARCH012` | removida |
-| `ARCH013` | removida |
-| `ARCH014` | removida |
-| `ARCH018` | removida |
-| `ARCH019` | removida |
-| `ARCH023` | removida |
-| `ARCH024` | removida |
-| `ARCH025` | removida |
-| `ARCH026` | removida |
-| `ARCH028` | removida |
-| `ARCH030` | removida |
-| `ARCH031` | removida |
-| `ARCH033` | removida |
+`ARCH001`, `ARCH002`, `ARCH003`, `ARCH004`, `ARCH007`, `ARCH008`, `ARCH009`, `ARCH010`, `ARCH011`, `ARCH012`, `ARCH013`, `ARCH014`, `ARCH018`, `ARCH019`, `ARCH023`, `ARCH024`, `ARCH025`, `ARCH026`, `ARCH028`, `ARCH030`, `ARCH031`, `ARCH033`.
 
-## Mudancas de `.editorconfig`
+Remova suppressions, `NoWarn` e configurações dessas regras depois de confirmar que nenhum pacote v2 as emite.
 
-Atualize a parte do identificador do diagnostico e preserve o nome especifico da opcao.
+## `.editorconfig`
+
+Atualize a parte do ID e preserve o nome da opção quando a regra foi mantida.
 
 | Chave v1 | Chave v2 |
 | -------- | -------- |
@@ -82,16 +77,25 @@ Atualize a parte do identificador do diagnostico e preserve o nome especifico da
 | `dotnet_diagnostic.ARCH032.ignored_properties` | `dotnet_diagnostic.ARC005.ignored_properties` |
 | `dotnet_diagnostic.ARCH032.compare_values` | `dotnet_diagnostic.ARC005.compare_values` |
 
-Exemplos:
+Antes:
 
 ```ini
 [*.cs]
-dotnet_diagnostic.REL001.severity = warning
+dotnet_diagnostic.ARCH020.severity = warning
+dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Application"
+dotnet_diagnostic.ARCH005.severity = info
+```
+
+Depois:
+
+```ini
+[*.cs]
+dotnet_diagnostic.ARC001.severity = warning
 dotnet_diagnostic.ARC002.core_namespace_patterns = "*.Domain;*.Application"
 dotnet_diagnostic.TST001.severity = info
 ```
 
-Regras opt-in precisam de severidade explicita para emitir diagnosticos:
+Regras opt-in precisam de severidade explícita:
 
 ```ini
 [*.cs]
@@ -99,12 +103,47 @@ dotnet_diagnostic.REL003.severity = info
 dotnet_diagnostic.ARC003.severity = info
 dotnet_diagnostic.ARC004.severity = info
 dotnet_diagnostic.TST001.severity = info
+dotnet_diagnostic.TST002.severity = info
+
+[*.csproj]
+dotnet_diagnostic.ARC005.severity = info
 ```
 
-## Suppressions, NoWarn e baselines
+## Suppressions e `NoWarn`
 
-Suppressions em codigo, `GlobalSuppressions.cs`, `NoWarn`, baselines de CI e arquivos SARIF antigos que referenciam `ARCH###` nao afetam os novos diagnosticos. Migre cada suppression para o novo ID correspondente quando a regra foi mantida.
+Suppressions em código, `GlobalSuppressions.cs`, `NoWarn`, baselines de CI e SARIF antigos com `ARCH###` não suprimem diagnósticos `REL###`, `ARC###` ou `TST###`.
 
-Para regras removidas, remova suppressions e entradas `NoWarn` antigas depois de confirmar que nenhum pacote v2 emite o ID removido.
+Antes:
 
-Baselines gerados por ferramenta devem ser recriados ou transformados com a tabela de mapeamento acima. Um baseline com IDs antigos nao suprime `REL###`, `ARC###` ou `TST###`.
+```csharp
+#pragma warning disable ARCH020
+```
+
+Depois:
+
+```csharp
+#pragma warning disable ARC001
+```
+
+Para regras removidas, apague a suppression em vez de renumerar.
+
+## Pipelines
+
+Atualize etapas que empacotavam ou validavam `Swa.Analyzers` como pacote único. A v2 deve restaurar, compilar, testar e empacotar os três projetos ativos:
+
+```powershell
+dotnet restore ./Swa.Analyzers.slnx --locked-mode
+dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
+dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1
+powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1
+```
+
+## Checklist de migração
+
+1. Remova `Swa.Analyzers` da linha 1.x.
+2. Instale os pacotes v2 necessários.
+3. Troque IDs e opções de `.editorconfig` conforme a tabela.
+4. Recrie suppressions e `NoWarn` apenas para regras mantidas.
+5. Remova configurações de regras v1 removidas.
+6. Recrie baselines de CI ou SARIF.
+7. Confirme que regras opt-in foram ativadas somente quando representam política real do time.
