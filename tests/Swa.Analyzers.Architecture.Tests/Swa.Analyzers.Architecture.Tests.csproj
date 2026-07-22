@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Swa.Analyzers.Tests\Verifier.cs"
+    <Compile Include="..\Swa.Analyzers.TestSupport\Verifier.cs"
              Link="Verifier.cs" />
     <Using Include="Xunit" />
   </ItemGroup>

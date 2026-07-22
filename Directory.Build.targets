@@ -10,7 +10,7 @@
             '$(CI)' != 'true'
             And Exists('$(RepositoryRoot).git')
             And Exists('$(RepositoryRoot).githooks')
-            And '$(MSBuildProjectName)' == 'Swa.Analyzers.Core'">
+            And '$(MSBuildProjectName)' == 'Swa.Analyzers.Reliability'">
 
     <Message Text="Configurando Git hooks do repositório..."
              Importance="Low" />

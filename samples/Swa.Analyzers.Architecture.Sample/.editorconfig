@@ -1,0 +1,23 @@
+# Ajustes especificos para o sample de Architecture.
+
+[**/*.cs]
+dotnet_diagnostic.ARCH015.severity = warning
+dotnet_diagnostic.ARCH020.severity = warning
+dotnet_diagnostic.ARCH027.severity = warning
+dotnet_diagnostic.ARCH029.severity = warning
+dotnet_diagnostic.ARCH015.route_language = pt-BR
+dotnet_diagnostic.ARCH015.additional_verbs = ["ativar", "inativar"]
+dotnet_diagnostic.ARCH027.core_namespace_patterns = "*.Domain;*.Application"
+dotnet_diagnostic.ARCH027.forbidden_namespace_patterns = "Microsoft.EntityFrameworkCore;Microsoft.AspNetCore;StackExchange.Redis;Npgsql"
+dotnet_diagnostic.ARCH027.allowed_namespace_patterns =
+dotnet_diagnostic.ARCH027.ignore_tests = true
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.IDE0052.severity = none
+dotnet_diagnostic.IDE0290.severity = none
+
+[**/*.csproj]
+dotnet_diagnostic.ARCH032.severity = warning
+
+[Arch015/*.cs]
+dotnet_diagnostic.ARCH020.severity = none

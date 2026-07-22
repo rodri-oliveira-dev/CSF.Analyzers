@@ -82,8 +82,12 @@ jobs:
       - name: Test
         run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
 
-      - name: Pack analyzer
-        run: dotnet pack ./src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
+      - name: Pack analyzers
+        shell: bash
+        run: |
+          dotnet pack ./src/Swa.Analyzers.Reliability/Swa.Analyzers.Reliability.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
+          dotnet pack ./src/Swa.Analyzers.Architecture/Swa.Analyzers.Architecture.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
+          dotnet pack ./src/Swa.Analyzers.Testing/Swa.Analyzers.Testing.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
 
       - name: Attest NuGet packages
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26

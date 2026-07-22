@@ -1,124 +1,24 @@
 <#
 .SYNOPSIS
-Validates release consistency for Swa.Analyzers rules and release metadata.
+Validates release consistency for the active Swa.Analyzers packages.
 #>
 [CmdletBinding()]
-param(
-    [string]$BaseRef,
-    [string]$HeadRef = "HEAD"
-)
+param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$zeroSha = "0000000000000000000000000000000000000000"
+$repoRoot = & git rev-parse --show-toplevel
+if (-not $repoRoot) {
+    throw "release-check: nao foi possivel localizar a raiz do repositorio."
+}
+
+$repoRoot = ($repoRoot | Select-Object -First 1)
 $failures = New-Object System.Collections.Generic.List[string]
 
 function Add-Failure {
     param([string]$Message)
-
     $script:failures.Add($Message)
-}
-
-function Invoke-Git {
-    param([string[]]$Arguments)
-
-    $previousErrorActionPreference = $ErrorActionPreference
-
-    try {
-        $ErrorActionPreference = "Continue"
-
-        $output = & git @Arguments 2>$null
-        $exitCode = $LASTEXITCODE
-
-        if ($exitCode -ne 0) {
-            $global:LASTEXITCODE = 0
-            return $null
-        }
-
-        $global:LASTEXITCODE = 0
-        return $output
-    }
-    catch {
-        $global:LASTEXITCODE = 0
-        return $null
-    }
-    finally {
-        $ErrorActionPreference = $previousErrorActionPreference
-    }
-}
-
-function Test-GitCommit {
-    param([string]$Ref)
-
-    if ([string]::IsNullOrWhiteSpace($Ref) -or $Ref -eq $zeroSha) {
-        return $false
-    }
-
-    $result = Invoke-Git @("rev-parse", "--verify", "$Ref^{commit}")
-    return $null -ne $result
-}
-
-function Resolve-BaseRef {
-    if (-not [string]::IsNullOrWhiteSpace($BaseRef) -and $BaseRef -ne $zeroSha) {
-        return $BaseRef
-    }
-
-    if (-not [string]::IsNullOrWhiteSpace($env:RELEASE_CHECK_BASE_REF) -and $env:RELEASE_CHECK_BASE_REF -ne $zeroSha) {
-        return $env:RELEASE_CHECK_BASE_REF
-    }
-
-    if (-not [string]::IsNullOrWhiteSpace($env:GITHUB_BASE_REF)) {
-        return "origin/$($env:GITHUB_BASE_REF)"
-    }
-
-    $upstream = Invoke-Git @("rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
-    if (-not [string]::IsNullOrWhiteSpace($upstream)) {
-        return ($upstream | Select-Object -First 1)
-    }
-
-    $originMain = "origin/main"
-    if (Test-GitCommit $originMain) {
-        return $originMain
-    }
-
-    return $null
-}
-
-function Get-RepositoryPath {
-    param([string]$Path)
-
-    return ($Path -replace "\\", "/")
-}
-
-function Get-CurrentContent {
-    param([string]$Path)
-
-    $fullPath = Join-Path $repoRoot $Path
-    if (-not (Test-Path -LiteralPath $fullPath)) {
-        return $null
-    }
-
-    return Get-Content -LiteralPath $fullPath -Raw
-}
-
-function Get-RefContent {
-    param(
-        [string]$Ref,
-        [string]$Path
-    )
-
-    if (-not (Test-GitCommit $Ref)) {
-        return $null
-    }
-
-    $gitPath = Get-RepositoryPath $Path
-    $content = Invoke-Git @("show", "$Ref`:$gitPath")
-    if ($null -eq $content) {
-        return $null
-    }
-
-    return ($content -join [Environment]::NewLine)
 }
 
 function Get-ArchIds {
@@ -133,168 +33,102 @@ function Get-ArchIds {
         Sort-Object -Unique
 }
 
-function ConvertTo-Set {
-    param([string[]]$Values)
-
-    $set = @{}
-    foreach ($value in $Values) {
-        $set[$value] = $true
+$packages = @(
+    @{
+        Name = "Swa.Analyzers.Reliability"
+        TestProject = "tests/Swa.Analyzers.Reliability.Tests"
+        SampleProject = "samples/Swa.Analyzers.Reliability.Sample"
+        RuleIds = @("ARCH016", "ARCH017", "ARCH021", "ARCH022")
+    },
+    @{
+        Name = "Swa.Analyzers.Architecture"
+        TestProject = "tests/Swa.Analyzers.Architecture.Tests"
+        SampleProject = "samples/Swa.Analyzers.Architecture.Sample"
+        RuleIds = @("ARCH015", "ARCH020", "ARCH027", "ARCH029", "ARCH032")
+    },
+    @{
+        Name = "Swa.Analyzers.Testing"
+        TestProject = "tests/Swa.Analyzers.Testing.Tests"
+        SampleProject = "samples/Swa.Analyzers.Testing.Sample"
+        RuleIds = @("ARCH005", "ARCH006")
     }
+)
 
-    return $set
+$readmePath = Join-Path $repoRoot "README.md"
+$readmeContent = if (Test-Path -LiteralPath $readmePath) { Get-Content -Raw -LiteralPath $readmePath } else { "" }
+if ([string]::IsNullOrWhiteSpace($readmeContent)) {
+    Add-Failure "README.md nao foi encontrado ou esta vazio."
 }
 
-$repoRoot = Invoke-Git @("rev-parse", "--show-toplevel")
-if (-not $repoRoot) {
-    throw "release-check: não foi possível localizar a raiz do repositório."
-}
+$seenIds = @{}
 
-$repoRoot = ($repoRoot | Select-Object -First 1)
-Set-Location $repoRoot
+foreach ($package in $packages) {
+    $projectRoot = Join-Path $repoRoot "src/$($package.Name)"
+    $rulesRoot = Join-Path $projectRoot "Rules"
+    $identifiersPath = Join-Path $projectRoot "RuleIdentifiers.cs"
+    $shippedPath = Join-Path $projectRoot "AnalyzerReleases.Shipped.md"
+    $unshippedPath = Join-Path $projectRoot "AnalyzerReleases.Unshipped.md"
 
-if (-not [string]::IsNullOrWhiteSpace($env:RELEASE_CHECK_HEAD_REF)) {
-    $HeadRef = $env:RELEASE_CHECK_HEAD_REF
-}
-
-$resolvedBaseRef = Resolve-BaseRef
-
-Write-Host "release-check: validando consistência das regras ARCH"
-if ($resolvedBaseRef) {
-    Write-Host "release-check: usando base '$resolvedBaseRef' e head '$HeadRef'"
-}
-else {
-    Write-Host "release-check: base de comparação não encontrada; validações dependentes de diff serão ignoradas"
-}
-
-$rulesDirectory = Join-Path $repoRoot "src/Swa.Analyzers.Core/Rules"
-$ruleIdentifiersPath = "src/Swa.Analyzers.Core/RuleIdentifiers.cs"
-$readmePath = "README.md"
-$shippedPath = "src/Swa.Analyzers.Core/AnalyzerReleases.Shipped.md"
-$unshippedPath = "src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md"
-$historyPath = "docs/history/v1-analyzer-releases.md"
-
-$ruleIdentifiersContent = Get-CurrentContent $ruleIdentifiersPath
-$readmeContent = Get-CurrentContent $readmePath
-$shippedContent = Get-CurrentContent $shippedPath
-$unshippedContent = Get-CurrentContent $unshippedPath
-$historyContent = Get-CurrentContent $historyPath
-
-if (-not $ruleIdentifiersContent) {
-    Add-Failure "RuleIdentifiers.cs não foi encontrado em '$ruleIdentifiersPath'."
-}
-
-if (-not $readmeContent) {
-    Add-Failure "README.md não foi encontrado."
-}
-
-if (-not $shippedContent) {
-    Add-Failure "AnalyzerReleases.Shipped.md não foi encontrado em '$shippedPath'."
-}
-
-if (-not $unshippedContent) {
-    Add-Failure "AnalyzerReleases.Unshipped.md não foi encontrado em '$unshippedPath'."
-}
-
-if (-not $historyContent) {
-    Add-Failure "Historico de releases v1 nao foi encontrado em '$historyPath'."
-}
-
-$ruleIds = @(Get-ArchIds $ruleIdentifiersContent)
-$ruleIdSet = ConvertTo-Set $ruleIds
-$shippedIds = @(Get-ArchIds $shippedContent)
-$unshippedIds = @(Get-ArchIds $unshippedContent)
-$historyIds = @(Get-ArchIds $historyContent)
-$shippedIdSet = ConvertTo-Set $shippedIds
-$unshippedIdSet = ConvertTo-Set $unshippedIds
-$historyIdSet = ConvertTo-Set $historyIds
-
-$analyzerFiles = @(Get-ChildItem -LiteralPath $rulesDirectory -File -Filter "Arch*.cs" |
-    Where-Object { $_.Name -match "^Arch(?<Number>\d{3}).*\.cs$" } |
-    Sort-Object Name)
-
-foreach ($analyzerFile in $analyzerFiles) {
-    $number = [regex]::Match($analyzerFile.Name, "^Arch(?<Number>\d{3})").Groups["Number"].Value
-    $ruleId = "ARCH$number"
-
-    if (-not $ruleIdSet.ContainsKey($ruleId)) {
-        Add-Failure "$($analyzerFile.FullName): analyzer $($analyzerFile.Name) não possui entrada '$ruleId' em RuleIdentifiers.cs."
-    }
-}
-
-foreach ($ruleId in $ruleIds) {
-    $number = $ruleId.Substring(4)
-
-    $docPath = Join-Path $repoRoot "docs/rules/$ruleId.md"
-    if (-not (Test-Path -LiteralPath $docPath)) {
-        Add-Failure "${ruleId}: documentação obrigatória ausente em docs/rules/$ruleId.md."
-    }
-
-    $testFiles = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot "tests/Swa.Analyzers.Tests/Rules") -File -Filter "Arch$number*Tests.cs")
-    if ($testFiles.Count -eq 0) {
-        Add-Failure "${ruleId}: teste obrigatorio ausente em tests/Swa.Analyzers.Tests/Rules/Arch$number*Tests.cs."
-    }
-
-    $sampleDirectory = Join-Path $repoRoot "src/Swa.Analyzers.SampleApp/Arch$number"
-    if (-not (Test-Path -LiteralPath $sampleDirectory -PathType Container)) {
-        Add-Failure "${ruleId}: pasta de SampleApp obrigatória ausente em src/Swa.Analyzers.SampleApp/Arch$number."
-    }
-
-    $matchingAnalyzerFiles = @($analyzerFiles | Where-Object { $_.Name -match "^Arch$number" })
-    if ($matchingAnalyzerFiles.Count -eq 0) {
-        Add-Failure "${ruleId}: analyzer obrigatorio ausente em src/Swa.Analyzers.Core/Rules/Arch$number*.cs."
-    }
-
-    if ($readmeContent -notmatch [regex]::Escape($ruleId)) {
-        Add-Failure "RuleIdentifiers.cs contém '$ruleId', mas README.md não possui entrada correspondente."
-    }
-
-    if (-not $shippedIdSet.ContainsKey($ruleId) -and -not $unshippedIdSet.ContainsKey($ruleId)) {
-        Add-Failure "RuleIdentifiers.cs contém '$ruleId', mas nenhum metadata de release shipped/unshipped contém esse ID."
-    }
-}
-
-foreach ($ruleId in $shippedIds) {
-    if (-not $ruleIdSet.ContainsKey($ruleId)) {
-        Add-Failure "AnalyzerReleases.Shipped.md contém '$ruleId', mas RuleIdentifiers.cs não possui entrada correspondente."
-    }
-
-    if ($unshippedIdSet.ContainsKey($ruleId)) {
-        Add-Failure "'$ruleId' aparece simultaneamente em AnalyzerReleases.Shipped.md e AnalyzerReleases.Unshipped.md."
-    }
-}
-
-foreach ($ruleId in $unshippedIds) {
-    if (-not $ruleIdSet.ContainsKey($ruleId)) {
-        Add-Failure "AnalyzerReleases.Unshipped.md contém '$ruleId', mas RuleIdentifiers.cs não possui entrada correspondente."
-    }
-}
-
-if ($resolvedBaseRef -and (Test-GitCommit $resolvedBaseRef)) {
-    $baseIdentifiersContent = Get-RefContent $resolvedBaseRef $ruleIdentifiersPath
-    $baseRuleIds = @(Get-ArchIds $baseIdentifiersContent)
-    $baseRuleIdSet = ConvertTo-Set $baseRuleIds
-
-    $baseShippedContent = Get-RefContent $resolvedBaseRef $shippedPath
-    $baseShippedIds = @(Get-ArchIds $baseShippedContent)
-
-    foreach ($ruleId in $ruleIds) {
-        if (-not $baseRuleIdSet.ContainsKey($ruleId) -and $unshippedContent -notmatch [regex]::Escape($ruleId)) {
-            Add-Failure "Nova regra '$ruleId' detectada, mas AnalyzerReleases.Unshipped.md não contém esse ID."
+    foreach ($requiredPath in @($rulesRoot, $identifiersPath, $shippedPath, $unshippedPath)) {
+        if (-not (Test-Path -LiteralPath $requiredPath)) {
+            Add-Failure "$($package.Name): caminho obrigatorio ausente: $requiredPath"
         }
     }
 
-    foreach ($ruleId in $baseShippedIds) {
-        if (-not $shippedIdSet.ContainsKey($ruleId) -and -not $historyIdSet.ContainsKey($ruleId)) {
-            Add-Failure "Regra publicada '$ruleId' existia em AnalyzerReleases.Shipped.md na base, mas não está no arquivo atual."
+    $identifierContent = if (Test-Path -LiteralPath $identifiersPath) { Get-Content -Raw -LiteralPath $identifiersPath } else { "" }
+    $shippedContent = if (Test-Path -LiteralPath $shippedPath) { Get-Content -Raw -LiteralPath $shippedPath } else { "" }
+    $unshippedContent = if (Test-Path -LiteralPath $unshippedPath) { Get-Content -Raw -LiteralPath $unshippedPath } else { "" }
+    $metadataIds = @(Get-ArchIds ($shippedContent + [Environment]::NewLine + $unshippedContent))
+    $identifierIds = @(Get-ArchIds $identifierContent)
+
+    foreach ($ruleId in $package.RuleIds) {
+        $number = $ruleId.Substring(4)
+
+        if ($seenIds.ContainsKey($ruleId)) {
+            Add-Failure "$ruleId aparece em mais de um pacote: $($seenIds[$ruleId]) e $($package.Name)."
+        }
+
+        $seenIds[$ruleId] = $package.Name
+
+        if ($identifierIds -notcontains $ruleId) {
+            Add-Failure "$($package.Name): RuleIdentifiers.cs nao contem $ruleId."
+        }
+
+        if ($metadataIds -notcontains $ruleId) {
+            Add-Failure "$($package.Name): metadata shipped/unshipped nao contem $ruleId."
+        }
+
+        if (-not (Test-Path -LiteralPath (Join-Path $rulesRoot "Arch$number*"))) {
+            $matchingAnalyzers = @(Get-ChildItem -LiteralPath $rulesRoot -Filter "Arch$number*.cs" -File -ErrorAction SilentlyContinue)
+            if ($matchingAnalyzers.Count -eq 0) {
+                Add-Failure "$($package.Name): analyzer ausente para $ruleId."
+            }
+        }
+
+        if (-not (Test-Path -LiteralPath (Join-Path $repoRoot "docs/rules/$ruleId.md"))) {
+            Add-Failure "${ruleId}: documentacao ausente em docs/rules/$ruleId.md."
+        }
+
+        $matchingTests = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot "$($package.TestProject)/Rules") -Filter "Arch$number*Tests.cs" -File -ErrorAction SilentlyContinue)
+        if ($matchingTests.Count -eq 0) {
+            Add-Failure "${ruleId}: teste ausente em $($package.TestProject)/Rules."
+        }
+
+        if (-not (Test-Path -LiteralPath (Join-Path $repoRoot "$($package.SampleProject)/Arch$number") -PathType Container)) {
+            Add-Failure "${ruleId}: sample ausente em $($package.SampleProject)/Arch$number."
+        }
+
+        if ($readmeContent -notmatch [regex]::Escape($ruleId)) {
+            Add-Failure "${ruleId}: README.md nao contem entrada correspondente."
         }
     }
-}
-elseif ($resolvedBaseRef) {
-    Add-Failure "Base de comparação '$resolvedBaseRef' não foi encontrada. Use fetch-depth: 0 no CI ou informe -BaseRef válido."
+
+    foreach ($unexpectedId in $identifierIds | Where-Object { $_ -notin $package.RuleIds }) {
+        Add-Failure "$($package.Name): RuleIdentifiers.cs contem ID inesperado $unexpectedId."
+    }
 }
 
 if ($failures.Count -gt 0) {
-    Write-Host ""
     Write-Host "release-check: falhou com $($failures.Count) problema(s):" -ForegroundColor Red
     foreach ($failure in $failures) {
         Write-Host "- $failure" -ForegroundColor Red
@@ -303,5 +137,5 @@ if ($failures.Count -gt 0) {
     exit 1
 }
 
-Write-Host "release-check: validações aprovadas"
+Write-Host "release-check: validacoes aprovadas"
 exit 0

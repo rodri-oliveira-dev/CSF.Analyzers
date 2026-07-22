@@ -15,4 +15,9 @@
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="Arch032\Directory.Build.props.sample" />
+    <AdditionalFiles Include="Arch032\DuplicatedMsBuildProperties.csproj.sample" />
+  </ItemGroup>
+
 </Project>

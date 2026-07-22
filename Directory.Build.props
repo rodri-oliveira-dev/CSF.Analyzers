@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <IsSwaAnalyzerPackage Condition="
-      '$(MSBuildProjectName)' == 'Swa.Analyzers.Core'
-      Or '$(MSBuildProjectName)' == 'Swa.Analyzers.Reliability'
+      '$(MSBuildProjectName)' == 'Swa.Analyzers.Reliability'
       Or '$(MSBuildProjectName)' == 'Swa.Analyzers.Architecture'
       Or '$(MSBuildProjectName)' == 'Swa.Analyzers.Testing'">true</IsSwaAnalyzerPackage>
     <RepositoryUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</RepositoryUrl>
