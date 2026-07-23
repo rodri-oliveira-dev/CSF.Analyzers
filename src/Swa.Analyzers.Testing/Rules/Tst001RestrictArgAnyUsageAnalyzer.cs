@@ -21,12 +21,12 @@ public sealed class Tst001RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
 
     private static readonly DiagnosticDescriptor Rule = new(
         id: RuleIdentifiers.RestrictArgAnyUsage,
-        title: "Restrict usage of NSubstitute Arg.Any()",
-        messageFormat: "Avoid NSubstitute Arg.Any() outside the allowed convention. Use DidNotReceive/DidNotReceiveWithAnyArgs instead.",
+        title: "Restrict permissive NSubstitute argument matching",
+        messageFormat: "Avoid permissive NSubstitute argument matching outside the allowed negative-assertion convention",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: false,
-        description: "Arg.Any() is a very broad matcher that can hide intent and make tests less precise. This rule restricts Arg.Any() usage to specific negative-assertion conventions (DidNotReceive/DidNotReceiveWithAnyArgs), where broad matching is explicitly accepted.",
+        description: "Arg.Any() and AnyArgs APIs can hide intent and make tests less precise. This rule restricts broad argument matching to specific negative-assertion conventions (DidNotReceive/DidNotReceiveWithAnyArgs), where broad matching is explicitly accepted.",
         helpLinkUri: RuleHelpLinks.ForRule(RuleIdentifiers.RestrictArgAnyUsage));
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
@@ -68,6 +68,17 @@ public sealed class Tst001RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
     {
         var invocation = (IInvocationOperation)context.Operation;
         var targetMethod = invocation.TargetMethod;
+
+        if (IsRestrictedAnyArgsMethod(targetMethod))
+        {
+            if (!TestContextHelper.IsWithinTestContext(context.ContainingSymbol, testMethodAttributes, isTestTypeCache))
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, GetMethodLocation(invocation.Syntax)));
+            return;
+        }
 
         if (!string.Equals(targetMethod.Name, "Any", StringComparison.Ordinal))
         {
@@ -180,6 +191,32 @@ public sealed class Tst001RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
         return IsInNSubstituteNamespace(method.ContainingNamespace);
     }
 
+    private static bool IsRestrictedAnyArgsMethod(IMethodSymbol method)
+    {
+        if (!string.Equals(method.Name, "ReturnsForAnyArgs", StringComparison.Ordinal)
+            && !string.Equals(method.Name, "WhenForAnyArgs", StringComparison.Ordinal)
+            && !string.Equals(method.Name, "ReceivedWithAnyArgs", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var containingType = method.ContainingType;
+        if (containingType is null)
+        {
+            return false;
+        }
+
+        if (string.Equals(containingType.Name, "SubstituteExtensions", StringComparison.Ordinal)
+            && IsExactNamespace(containingType.ContainingNamespace, "NSubstitute"))
+        {
+            return true;
+        }
+
+        return string.Equals(method.Name, "ReceivedWithAnyArgs", StringComparison.Ordinal)
+            && string.Equals(containingType.Name, "ReceivedExtensions", StringComparison.Ordinal)
+            && IsExactNamespace(containingType.ContainingNamespace, "NSubstitute.ReceivedExtensions");
+    }
+
     private static bool IsInNSubstituteNamespace(INamespaceSymbol? @namespace)
     {
         for (var current = @namespace; current is not null && !current.IsGlobalNamespace; current = current.ContainingNamespace)
@@ -192,6 +229,12 @@ public sealed class Tst001RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
         }
 
         return false;
+    }
+
+    private static bool IsExactNamespace(INamespaceSymbol? @namespace, string metadataName)
+    {
+        return @namespace is not null
+            && string.Equals(@namespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), metadataName, StringComparison.Ordinal);
     }
 
     private static Location GetArgAnyLocation(SyntaxNode syntax)
@@ -210,4 +253,19 @@ public sealed class Tst001RestrictArgAnyUsageAnalyzer : DiagnosticAnalyzer
         };
     }
 
+    private static Location GetMethodLocation(SyntaxNode syntax)
+    {
+        return syntax switch
+        {
+            InvocationExpressionSyntax invocation => invocation.Expression switch
+            {
+                MemberAccessExpressionSyntax memberAccess => memberAccess.Name.GetLocation(),
+                MemberBindingExpressionSyntax memberBinding => memberBinding.Name.GetLocation(),
+                IdentifierNameSyntax identifierName => identifierName.Identifier.GetLocation(),
+                GenericNameSyntax genericName => genericName.Identifier.GetLocation(),
+                _ => invocation.GetLocation(),
+            },
+            _ => syntax.GetLocation(),
+        };
+    }
 }

@@ -35,4 +35,32 @@ public static class SubstituteExtensions
     {
         return substitute;
     }
+
+    public static T Received<T>(this T substitute) where T : class
+    {
+        return substitute;
+    }
+
+    public static T ReceivedWithAnyArgs<T>(this T substitute) where T : class
+    {
+        return substitute;
+    }
+
+    public static ConfiguredCall ReturnsForAnyArgs<T>(this T value, T returnThis, params T[] returnThese)
+    {
+        return default;
+    }
+
+    public static ConfiguredCall WhenForAnyArgs<T>(this T substitute, System.Action<T> substituteCall)
+        where T : class
+    {
+        return default;
+    }
+}
+
+public readonly struct ConfiguredCall
+{
+    public void Do(System.Action<object> callback)
+    {
+    }
 }

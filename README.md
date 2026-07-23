@@ -10,7 +10,7 @@ Analyzers genéricos do .NET, Roslyn, SonarAnalyzer ou Meziantou.Analyzer verifi
 | ------ | ------ | ------ |
 | [`Swa.Analyzers.Reliability`](docs/packages/reliability.md) | Confiabilidade e performance operacional em ASP.NET, hosted services e EF Core. | `REL001`, `REL002`, `REL003`, `REL004`, `REL005`, `REL006` |
 | [`Swa.Analyzers.Architecture`](docs/packages/architecture.md) | Políticas de autorização, rotas, dependências de camadas, DDD e MSBuild. | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005`, `ARC006` |
-| [`Swa.Analyzers.Testing`](docs/packages/testing.md) | Qualidade de testes com NSubstitute e FluentAssertions. | `TST001`, `TST002` |
+| [`Swa.Analyzers.Testing`](docs/packages/testing.md) | Qualidade de testes com NSubstitute (`Arg.Any`/`AnyArgs`) e FluentAssertions. | `TST001`, `TST002` |
 
 ## Instalação
 
