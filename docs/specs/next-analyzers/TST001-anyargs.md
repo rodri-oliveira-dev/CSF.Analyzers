@@ -5,7 +5,7 @@
 | Campo | Valor |
 | ----- | ----- |
 | ID | `TST001` |
-| Pacote | `Swa.Analyzers.Testing` |
+| Pacote | `CSF.Analyzers.Testing` |
 | Categoria | TestQuality |
 | Severidade | Info |
 | Estado padrao | Opt-in |
@@ -137,7 +137,7 @@ na primeira versao desta expansao.
 
 ## Sobreposicao com NSubstitute.Analyzers
 
-NSubstitute.Analyzers foca usos incorretos do framework, como substituir membros nao virtuais e outros erros de uso. Esta expansao permanece diferenciada porque codifica convencao de precisao de testes do `Swa.Analyzers.Testing`: evitar constructs que deixam argumentos irrelevantes em setups e asserts positivos.
+NSubstitute.Analyzers foca usos incorretos do framework, como substituir membros nao virtuais e outros erros de uso. Esta expansao permanece diferenciada porque codifica convencao de precisao de testes do `CSF.Analyzers.Testing`: evitar constructs que deixam argumentos irrelevantes em setups e asserts positivos.
 
 Fonte: <https://nsubstitute.github.io/help/nsubstitute-analysers/>
 
@@ -154,4 +154,4 @@ Fonte: <https://nsubstitute.github.io/help/nsubstitute-analysers/>
 
 ## Documentacao publica futura
 
-Quando implementada, atualizar [TST001](../../rules/testing/TST001.md), sample `samples/Swa.Analyzers.Testing.Sample/Tst001`, README, pagina do pacote Testing e `AnalyzerReleases.Unshipped.md` se a politica de release exigir registrar alteracao de regra existente.
+Quando implementada, atualizar [TST001](../../rules/testing/TST001.md), sample `samples/CSF.Analyzers.Testing.Sample/Tst001`, README, pagina do pacote Testing e `AnalyzerReleases.Unshipped.md` se a politica de release exigir registrar alteracao de regra existente.

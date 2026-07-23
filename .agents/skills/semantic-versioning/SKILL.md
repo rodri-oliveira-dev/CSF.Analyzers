@@ -1,11 +1,11 @@
 ---
 name: semantic-versioning
-description: Use esta skill ao alterar regras REL/ARC/TST, severidades, opcoes de .editorconfig, empacotamento NuGet ou documentacao de release do Swa.Analyzers.
+description: Use esta skill ao alterar regras REL/ARC/TST, severidades, opcoes de .editorconfig, empacotamento NuGet ou documentacao de release do CSF.Analyzers.
 ---
 
 # Objetivo
 
-Garantir que mudancas nos pacotes `Swa.Analyzers.Reliability`, `Swa.Analyzers.Architecture` e `Swa.Analyzers.Testing` sejam classificadas corretamente como PATCH, MINOR ou MAJOR, mantendo commits semanticos, `CHANGELOG.md` e documentacao coerentes.
+Garantir que mudancas nos pacotes `CSF.Analyzers.Reliability`, `CSF.Analyzers.Architecture` e `CSF.Analyzers.Testing` sejam classificadas corretamente como PATCH, MINOR ou MAJOR, mantendo commits semanticos, `CHANGELOG.md` e documentacao coerentes.
 
 # Fonte oficial da versao
 
@@ -27,13 +27,13 @@ O projeto segue Semantic Versioning.
 
 Ao criar ou alterar regra, atualize quando aplicavel:
 
-- `src/Swa.Analyzers.<Pacote>/RuleIdentifiers.cs`;
-- `src/Swa.Analyzers.<Pacote>/Rules`;
-- `tests/Swa.Analyzers.<Pacote>.Tests/Rules`;
+- `src/CSF.Analyzers.<Pacote>/RuleIdentifiers.cs`;
+- `src/CSF.Analyzers.<Pacote>/Rules`;
+- `tests/CSF.Analyzers.<Pacote>.Tests/Rules`;
 - `docs/rules/<grupo>/<ID>.md`;
-- `samples/Swa.Analyzers.<Pacote>.Sample/<ID em PascalCase>`;
+- `samples/CSF.Analyzers.<Pacote>.Sample/<ID em PascalCase>`;
 - `README.md`;
-- `src/Swa.Analyzers.<Pacote>/AnalyzerReleases.Unshipped.md`;
+- `src/CSF.Analyzers.<Pacote>/AnalyzerReleases.Unshipped.md`;
 - `CHANGELOG.md`.
 
 # Checklist antes de finalizar

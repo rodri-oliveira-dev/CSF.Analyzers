@@ -1,8 +1,8 @@
-# Swa.Analyzers.Architecture
+# CSF.Analyzers.Architecture
 
 ## Objetivo
 
-`Swa.Analyzers.Architecture` aplica políticas contextuais de autorização, rotas HTTP, dependências de camadas, entidades de domínio e centralização MSBuild.
+`CSF.Analyzers.Architecture` aplica políticas contextuais de autorização, rotas HTTP, dependências de camadas, entidades de domínio e centralização MSBuild.
 
 ## Público-alvo
 
@@ -13,7 +13,7 @@ Use em APIs ASP.NET, soluções com camadas core bem definidas, projetos com DDD
 Use este comando quando o pacote estiver publicado no NuGet.org ou disponível no feed privado/local configurado no projeto. A publicação no NuGet.org ainda não está habilitada no workflow de release.
 
 ```powershell
-dotnet add package Swa.Analyzers.Architecture
+dotnet add package CSF.Analyzers.Architecture
 ```
 
 Em projetos com Central Package Management, declare a versão em `Directory.Packages.props` e mantenha o `PackageReference` sem `Version`.

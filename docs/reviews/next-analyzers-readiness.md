@@ -6,10 +6,10 @@ Data: 2026-07-23
 
 | Regra | Pacote | Estado final |
 | ----- | ------ | ------------ |
-| `REL005` | `Swa.Analyzers.Reliability` | `Warning`, habilitada por padrao |
-| `REL006` | `Swa.Analyzers.Reliability` | `Warning`, habilitada por padrao para tipos conhecidos e configurados |
-| `ARC006` | `Swa.Analyzers.Architecture` | `Info`, opt-in |
-| `TST001` | `Swa.Analyzers.Testing` | `Info`, opt-in; cobertura ampliada para APIs `AnyArgs` |
+| `REL005` | `CSF.Analyzers.Reliability` | `Warning`, habilitada por padrao |
+| `REL006` | `CSF.Analyzers.Reliability` | `Warning`, habilitada por padrao para tipos conhecidos e configurados |
+| `ARC006` | `CSF.Analyzers.Architecture` | `Info`, opt-in |
+| `TST001` | `CSF.Analyzers.Testing` | `Info`, opt-in; cobertura ampliada para APIs `AnyArgs` |
 
 ## Comportamento final auditado
 
@@ -26,14 +26,14 @@ Foram revisados `README.md`, paginas dos tres pacotes, perfis de `.editorconfig`
 
 Validacao final executada:
 
-- `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1`: 246 testes aprovados, 0 falhas.
-- `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1 --settings ./coverlet.runsettings --collect:"XPlat Code Coverage" --results-directory ./artifacts/TestResults-next-analyzers-readiness`: 246 testes aprovados, 0 falhas.
+- `dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1`: 246 testes aprovados, 0 falhas.
+- `dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1 --settings ./coverlet.runsettings --collect:"XPlat Code Coverage" --results-directory ./artifacts/TestResults-next-analyzers-readiness`: 246 testes aprovados, 0 falhas.
 - Coverage consolidada da execucao limpa: 85.1% de linhas, 68.8% de branches e 94.4% de metodos.
 - Cobertura por regra nova/evoluida: `REL005` 82.4%, `REL006` 96.6%, `ARC006` 84.1%, `TST001` 87.9%.
 
 ## Performance
 
-`dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1 --filter FullyQualifiedName~Performance` passou com 6 testes de performance:
+`dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1 --filter FullyQualifiedName~Performance` passou com 6 testes de performance:
 
 - Reliability: 3 testes aprovados, incluindo guardrails para `REL005` e `REL006`.
 - Architecture: 1 teste aprovado, cobrindo o pacote com `ARC006`.
@@ -45,22 +45,22 @@ Nao houve evidencia de regressao relevante no tracking de simbolos de `REL005`, 
 
 Validado por teste automatizado e script:
 
-- `Swa.Analyzers.Reliability`: somente `REL001`-`REL006`.
-- `Swa.Analyzers.Architecture`: somente `ARC001`-`ARC006`.
-- `Swa.Analyzers.Testing`: somente `TST001`-`TST002`.
+- `CSF.Analyzers.Reliability`: somente `REL001`-`REL006`.
+- `CSF.Analyzers.Architecture`: somente `ARC001`-`ARC006`.
+- `CSF.Analyzers.Testing`: somente `TST001`-`TST002`.
 
 Comandos executados:
 
-- `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1`: `Swa.Analyzers.PackageValidation.Tests` aprovou 3/3.
+- `dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1`: `CSF.Analyzers.PackageValidation.Tests` aprovou 3/3.
 - `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-AnalyzerPackageIsolation.ps1 -PackageDirectory ./artifacts/final-validation -Version 1.0.0`: aprovado.
 
 ## Pack
 
-`dotnet pack ./Swa.Analyzers.slnx --configuration Release --no-build --output ./artifacts/final-validation` gerou com sucesso:
+`dotnet pack ./CSF.Analyzers.slnx --configuration Release --no-build --output ./artifacts/final-validation` gerou com sucesso:
 
-- `Swa.Analyzers.Reliability.1.0.0.nupkg` e `.snupkg`
-- `Swa.Analyzers.Architecture.1.0.0.nupkg` e `.snupkg`
-- `Swa.Analyzers.Testing.1.0.0.nupkg` e `.snupkg`
+- `CSF.Analyzers.Reliability.1.0.0.nupkg` e `.snupkg`
+- `CSF.Analyzers.Architecture.1.0.0.nupkg` e `.snupkg`
+- `CSF.Analyzers.Testing.1.0.0.nupkg` e `.snupkg`
 
 `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Inspect-NuGetPackages.ps1 -PackageDirectory ./artifacts/final-validation -Version 1.0.0` passou.
 

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Validates release consistency for the active Swa.Analyzers packages.
+Validates release consistency for the active CSF.Analyzers packages.
 #>
 [CmdletBinding()]
 param()
@@ -63,9 +63,9 @@ function Get-RulePackage {
     param([string]$RuleId)
 
     switch -Regex ($RuleId) {
-        "^REL\d{3}$" { return "Swa.Analyzers.Reliability" }
-        "^ARC\d{3}$" { return "Swa.Analyzers.Architecture" }
-        "^TST\d{3}$" { return "Swa.Analyzers.Testing" }
+        "^REL\d{3}$" { return "CSF.Analyzers.Reliability" }
+        "^ARC\d{3}$" { return "CSF.Analyzers.Architecture" }
+        "^TST\d{3}$" { return "CSF.Analyzers.Testing" }
         default { return $null }
     }
 }
@@ -123,24 +123,24 @@ function Get-ImplementedOptions {
 
 $packages = @(
     @{
-        Name = "Swa.Analyzers.Reliability"
+        Name = "CSF.Analyzers.Reliability"
         Prefix = "REL"
-        TestProject = "tests/Swa.Analyzers.Reliability.Tests"
-        SampleProject = "samples/Swa.Analyzers.Reliability.Sample"
+        TestProject = "tests/CSF.Analyzers.Reliability.Tests"
+        SampleProject = "samples/CSF.Analyzers.Reliability.Sample"
         RuleIds = @("REL001", "REL002", "REL003", "REL004", "REL005", "REL006")
     },
     @{
-        Name = "Swa.Analyzers.Architecture"
+        Name = "CSF.Analyzers.Architecture"
         Prefix = "ARC"
-        TestProject = "tests/Swa.Analyzers.Architecture.Tests"
-        SampleProject = "samples/Swa.Analyzers.Architecture.Sample"
+        TestProject = "tests/CSF.Analyzers.Architecture.Tests"
+        SampleProject = "samples/CSF.Analyzers.Architecture.Sample"
         RuleIds = @("ARC001", "ARC002", "ARC003", "ARC004", "ARC005", "ARC006")
     },
     @{
-        Name = "Swa.Analyzers.Testing"
+        Name = "CSF.Analyzers.Testing"
         Prefix = "TST"
-        TestProject = "tests/Swa.Analyzers.Testing.Tests"
-        SampleProject = "samples/Swa.Analyzers.Testing.Sample"
+        TestProject = "tests/CSF.Analyzers.Testing.Tests"
+        SampleProject = "samples/CSF.Analyzers.Testing.Sample"
         RuleIds = @("TST001", "TST002")
     }
 )
@@ -306,7 +306,7 @@ foreach ($historicalId in $activeHistoricalIds) {
     Add-Failure "ID historico $historicalId aparece em implementacao ativa; ARCH### deve permanecer apenas como historico/documentacao."
 }
 
-$helpLinksPath = Join-Path $repoRoot "src/Swa.Analyzers.Common/RuleHelpLinks.cs"
+$helpLinksPath = Join-Path $repoRoot "src/CSF.Analyzers.Common/RuleHelpLinks.cs"
 $helpLinksContent = Read-Text $helpLinksPath
 if ($helpLinksContent -notmatch "docs/rules/") {
     Add-Failure "RuleHelpLinks.cs nao aponta para docs/rules."

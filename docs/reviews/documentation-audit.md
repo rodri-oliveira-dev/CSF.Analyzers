@@ -20,9 +20,9 @@ Foram revisados:
 - `docs/rules/testing/TST001.md` e `TST002.md`;
 - `docs/reviews/rules-analyzer-overlap.md`;
 - documentos históricos e de revisão em `docs/history`, `docs/specs` e `docs/reviews`;
-- `src/Swa.Analyzers.{Reliability,Architecture,Testing}/RuleIdentifiers.cs`;
-- `src/Swa.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Shipped.md`;
-- `src/Swa.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Unshipped.md`;
+- `src/CSF.Analyzers.{Reliability,Architecture,Testing}/RuleIdentifiers.cs`;
+- `src/CSF.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Shipped.md`;
+- `src/CSF.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Unshipped.md`;
 - analyzers, testes e samples correspondentes às regras ativas;
 - `.editorconfig`, `samples/**/.editorconfig`, `Directory.Build.props`, `Directory.Packages.props`, `global.json`, workflows em `.github/workflows` e scripts de validação.
 

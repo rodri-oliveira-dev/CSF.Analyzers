@@ -1,8 +1,8 @@
-# Swa.Analyzers.Testing
+# CSF.Analyzers.Testing
 
 ## Objetivo
 
-`Swa.Analyzers.Testing` reúne regras opt-in para aumentar a precisão de testes com NSubstitute e FluentAssertions.
+`CSF.Analyzers.Testing` reúne regras opt-in para aumentar a precisão de testes com NSubstitute e FluentAssertions.
 
 ## Público-alvo
 
@@ -13,7 +13,7 @@ Use em projetos de teste que adotam convenções explícitas para matchers de mo
 Use este comando quando o pacote estiver publicado no NuGet.org ou disponível no feed privado/local configurado no projeto. A publicação no NuGet.org ainda não está habilitada no workflow de release.
 
 ```powershell
-dotnet add package Swa.Analyzers.Testing
+dotnet add package CSF.Analyzers.Testing
 ```
 
 Em projetos com Central Package Management, declare a versão em `Directory.Packages.props` e mantenha o `PackageReference` sem `Version`.

@@ -9,7 +9,7 @@
     "**/obj": true,
     "**/.vs": true
   },
-  "dotnet.defaultSolution": "Swa.Analyzers.slnx",
+  "dotnet.defaultSolution": "CSF.Analyzers.slnx",
   "dotnet.server.useOmnisharp": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

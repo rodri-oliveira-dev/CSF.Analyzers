@@ -6,8 +6,8 @@ O repositorio usa `scripts/Validate-Release.ps1` para validar consistencia entre
 
 O projeto separa os metadados de regras em dois arquivos por pacote:
 
-- `src/Swa.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Shipped.md`: regras ja publicadas em alguma versao estavel do pacote correspondente.
-- `src/Swa.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Unshipped.md`: regras novas ou alteracoes de regras ainda nao publicadas.
+- `src/CSF.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Shipped.md`: regras ja publicadas em alguma versao estavel do pacote correspondente.
+- `src/CSF.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Unshipped.md`: regras novas ou alteracoes de regras ainda nao publicadas.
 
 Na migracao para a versao 2.0, os IDs `REL###`, `ARC###` e `TST###` ficam em `AnalyzerReleases.Unshipped.md` ate a publicacao efetiva. O historico da linha 1.x fica preservado em `docs/history/v1-analyzer-releases.md` e `docs/migration-v2.md`.
 
@@ -27,12 +27,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.p
 ## Validacoes
 
 - Cada analyzer `Rel###*.cs`, `Arc###*.cs` ou `Tst###*.cs` precisa ter entrada no `RuleIdentifiers.cs` do pacote.
-- Cada ID declarado em `RuleIdentifiers.cs` precisa ter analyzer no pacote correspondente, documento em `docs/rules/<pacote>/<ID>.md`, teste em `tests/Swa.Analyzers.*.Tests/Rules/<Prefix><Number>*Tests.cs` e sample em `samples/Swa.Analyzers.*.Sample/<Prefix><Number>`.
+- Cada ID declarado em `RuleIdentifiers.cs` precisa ter analyzer no pacote correspondente, documento em `docs/rules/<pacote>/<ID>.md`, teste em `tests/CSF.Analyzers.*.Tests/Rules/<Prefix><Number>*Tests.cs` e sample em `samples/CSF.Analyzers.*.Sample/<Prefix><Number>`.
 - Cada ID declarado em `RuleIdentifiers.cs` precisa aparecer no `README.md`.
 - Cada ID declarado em `RuleIdentifiers.cs` precisa aparecer em exatamente um dos metadados de release: `AnalyzerReleases.Shipped.md` ou `AnalyzerReleases.Unshipped.md`.
 - Nenhum ID pode aparecer nos metadados de release sem entrada correspondente em `RuleIdentifiers.cs`.
 - Um ID nao pode aparecer simultaneamente em `Shipped` e `Unshipped`.
-- Cada prefixo precisa pertencer ao pacote correto: `REL###` em `Swa.Analyzers.Reliability`, `ARC###` em `Swa.Analyzers.Architecture` e `TST###` em `Swa.Analyzers.Testing`.
+- Cada prefixo precisa pertencer ao pacote correto: `REL###` em `CSF.Analyzers.Reliability`, `ARC###` em `CSF.Analyzers.Architecture` e `TST###` em `CSF.Analyzers.Testing`.
 - Nenhum ID pode aparecer duplicado globalmente entre pacotes.
 - IDs historicos `ARCH###` podem permanecer em documentos historicos e de migracao, mas nao sao exigidos como implementacao ativa.
 - Os help links dos analyzers devem usar `RuleHelpLinks.ForRule(...)` e apontar para a página da regra em `docs/rules/<pacote>/<ID>.md`.
@@ -48,12 +48,12 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Inspect-NuGetPackages.ps
 
 O diretório de pacotes deve conter exatamente:
 
-- `Swa.Analyzers.Reliability.<versao>.nupkg`
-- `Swa.Analyzers.Reliability.<versao>.snupkg`
-- `Swa.Analyzers.Architecture.<versao>.nupkg`
-- `Swa.Analyzers.Architecture.<versao>.snupkg`
-- `Swa.Analyzers.Testing.<versao>.nupkg`
-- `Swa.Analyzers.Testing.<versao>.snupkg`
+- `CSF.Analyzers.Reliability.<versao>.nupkg`
+- `CSF.Analyzers.Reliability.<versao>.snupkg`
+- `CSF.Analyzers.Architecture.<versao>.nupkg`
+- `CSF.Analyzers.Architecture.<versao>.snupkg`
+- `CSF.Analyzers.Testing.<versao>.nupkg`
+- `CSF.Analyzers.Testing.<versao>.snupkg`
 
 A inspeção abre cada arquivo e confirma package ID, versao, repository URL, metadata de README, assembly correto em `analyzers/dotnet/cs`, ausencia de DLLs compartilhadas ou legadas e simbolos no `.snupkg`.
 
@@ -61,7 +61,7 @@ O workflow `.github/workflows/release-check.yml` executa essas validacoes em `pu
 
 ## Versao de release
 
-O workflow `.github/workflows/release.yml` usa GitVersion como fonte unica da versao publicada. O job `validate` executa `gittools/actions/gitversion/setup` e `gittools/actions/gitversion/execute`, com checkout em `fetch-depth: 0`, e usa o output `semVer` para definir o `PackageVersion` do `dotnet pack`, o nome dos pacotes `.nupkg` e `.snupkg`, a tag `v{SemVer}` e o nome da GitHub Release `Swa.Analyzers v{SemVer}`.
+O workflow `.github/workflows/release.yml` usa GitVersion como fonte unica da versao publicada. O job `validate` executa `gittools/actions/gitversion/setup` e `gittools/actions/gitversion/execute`, com checkout em `fetch-depth: 0`, e usa o output `semVer` para definir o `PackageVersion` do `dotnet pack`, o nome dos pacotes `.nupkg` e `.snupkg`, a tag `v{SemVer}` e o nome da GitHub Release `CSF.Analyzers v{SemVer}`.
 
 O `GitVersion.yml` usa `workflow: TrunkBased/preview1`, que no GitVersion 6.x habilita a estrategia `Mainline`. A sintaxe antiga `mode: Mainline` nao e aceita pela CLI 6.x.
 

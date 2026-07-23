@@ -1,6 +1,6 @@
 # Adoção gradual
 
-Este guia ajuda a introduzir os pacotes `Swa.Analyzers.Reliability`, `Swa.Analyzers.Architecture` e `Swa.Analyzers.Testing` sem transformar a primeira execução em uma grande correção obrigatória.
+Este guia ajuda a introduzir os pacotes `CSF.Analyzers.Reliability`, `CSF.Analyzers.Architecture` e `CSF.Analyzers.Testing` sem transformar a primeira execução em uma grande correção obrigatória.
 
 ## Princípios
 

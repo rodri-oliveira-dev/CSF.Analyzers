@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsCsfAnalyzerPackage>true</IsCsfAnalyzerPackage>
+    <PackageId>CSF.Analyzers.Reliability</PackageId>
+    <Description>Roslyn analyzers for .NET reliability and operational performance conventions.</Description>
+    <PackageTags>roslyn;analyzers;reliability;performance;aspnetcore;entityframeworkcore</PackageTags>
+  </PropertyGroup>
+
+</Project>

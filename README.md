@@ -1,6 +1,6 @@
-# Swa.Analyzers
+# CSF.Analyzers
 
-`Swa.Analyzers` distribui analyzers Roslyn para políticas contextuais de projetos .NET. A v2 separa o produto em três pacotes independentes para que cada solução instale somente as regras que fazem sentido para seu risco operacional, arquitetura e padrão de testes.
+`CSF.Analyzers` distribui analyzers Roslyn para políticas contextuais de projetos .NET. A v2 separa o produto em três pacotes independentes para que cada solução instale somente as regras que fazem sentido para seu risco operacional, arquitetura e padrão de testes.
 
 Analyzers genéricos do .NET, Roslyn, SonarAnalyzer ou Meziantou.Analyzer verificam práticas amplas de linguagem e plataforma. Estes pacotes cobrem decisões de time que dependem de contexto: endpoints ASP.NET devem declarar autorização explicitamente, camadas core não devem depender de infraestrutura, entidades de domínio podem ter mutabilidade restrita e testes podem rejeitar matchers ou exclusões amplas.
 
@@ -8,24 +8,24 @@ Analyzers genéricos do .NET, Roslyn, SonarAnalyzer ou Meziantou.Analyzer verifi
 
 | Pacote | Escopo | Regras |
 | ------ | ------ | ------ |
-| [`Swa.Analyzers.Reliability`](docs/packages/reliability.md) | Confiabilidade e performance operacional em ASP.NET, hosted services e EF Core. | `REL001`, `REL002`, `REL003`, `REL004`, `REL005`, `REL006` |
-| [`Swa.Analyzers.Architecture`](docs/packages/architecture.md) | Políticas de autorização, rotas, dependências de camadas, DDD e MSBuild. | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005`, `ARC006` |
-| [`Swa.Analyzers.Testing`](docs/packages/testing.md) | Qualidade de testes com NSubstitute (`Arg.Any`/`AnyArgs`) e FluentAssertions. | `TST001`, `TST002` |
+| [`CSF.Analyzers.Reliability`](docs/packages/reliability.md) | Confiabilidade e performance operacional em ASP.NET, hosted services e EF Core. | `REL001`, `REL002`, `REL003`, `REL004`, `REL005`, `REL006` |
+| [`CSF.Analyzers.Architecture`](docs/packages/architecture.md) | Políticas de autorização, rotas, dependências de camadas, DDD e MSBuild. | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005`, `ARC006` |
+| [`CSF.Analyzers.Testing`](docs/packages/testing.md) | Qualidade de testes com NSubstitute (`Arg.Any`/`AnyArgs`) e FluentAssertions. | `TST001`, `TST002` |
 
 ## Status de publicação
 
-Os pacotes v2 são gerados pelo workflow de release e anexados à GitHub Release, mas a publicação no NuGet.org ainda está comentada até a configuração explícita de `NUGET_API_KEY` e de um ambiente protegido. Em 2026-07-23, a API pública do NuGet.org retorna `404` para `Swa.Analyzers.Reliability`, `Swa.Analyzers.Architecture` e `Swa.Analyzers.Testing`.
+Os pacotes v2 são gerados pelo workflow de release e anexados à GitHub Release, mas a publicação no NuGet.org ainda está comentada até a configuração explícita de `NUGET_API_KEY` e de um ambiente protegido. Em 2026-07-23, a API pública do NuGet.org retorna `404` para `CSF.Analyzers.Reliability`, `CSF.Analyzers.Architecture` e `CSF.Analyzers.Testing`.
 
 Os comandos abaixo são o formato esperado para consumo quando os pacotes estiverem publicados no NuGet.org ou disponíveis em um feed privado/local.
 
 ## Instalação
 
-Instale cada pacote no projeto que deve receber aquela política. Não há metapacote `Swa.Analyzers` na v2 inicial.
+Instale cada pacote no projeto que deve receber aquela política. Não há metapacote `CSF.Analyzers` na v2 inicial.
 
 ```powershell
-dotnet add package Swa.Analyzers.Reliability
-dotnet add package Swa.Analyzers.Architecture
-dotnet add package Swa.Analyzers.Testing
+dotnet add package CSF.Analyzers.Reliability
+dotnet add package CSF.Analyzers.Architecture
+dotnet add package CSF.Analyzers.Testing
 ```
 
 Em repositórios com Central Package Management, declare as versões em `Directory.Packages.props` e use `PackageReference` sem `Version`.
@@ -39,7 +39,7 @@ Em repositórios com Central Package Management, declare as versões em `Directo
 
 ## Exemplo mínimo
 
-Com `Swa.Analyzers.Architecture`, um endpoint sem decisão explícita de autorização emite `ARC001`:
+Com `CSF.Analyzers.Architecture`, um endpoint sem decisão explícita de autorização emite `ARC001`:
 
 ```csharp
 app.MapGet("/orders", () => Results.Ok());
@@ -108,16 +108,16 @@ Opções específicas ficam documentadas nas páginas das regras e dos pacotes.
 Use a solução principal:
 
 ```powershell
-dotnet restore ./Swa.Analyzers.slnx
-dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
-dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1
+dotnet restore ./CSF.Analyzers.slnx
+dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore
+dotnet test ./CSF.Analyzers.slnx --configuration Release -m:1
 powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1
 ```
 
-Os samples ficam em `samples/Swa.Analyzers.*.Sample` e validam exemplos manuais por pacote.
+Os samples ficam em `samples/CSF.Analyzers.*.Sample` e validam exemplos manuais por pacote.
 
 ## Publicação
 
-Os três pacotes usam GitVersion como fonte única de versão. O workflow de release gera `Swa.Analyzers.Reliability`, `Swa.Analyzers.Architecture` e `Swa.Analyzers.Testing` com a mesma versão calculada.
+Os três pacotes usam GitVersion como fonte única de versão. O workflow de release gera `CSF.Analyzers.Reliability`, `CSF.Analyzers.Architecture` e `CSF.Analyzers.Testing` com a mesma versão calculada.
 
 A publicação no NuGet.org permanece comentada no workflow até que `NUGET_API_KEY` e o ambiente protegido sejam configurados explicitamente. Portanto, este repositório não afirma que os pacotes v2 já estão publicados.

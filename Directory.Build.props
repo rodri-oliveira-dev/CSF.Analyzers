@@ -1,13 +1,13 @@
 <Project>
 
   <PropertyGroup>
-    <IsSwaAnalyzerPackage Condition="
-      '$(MSBuildProjectName)' == 'Swa.Analyzers.Reliability'
-      Or '$(MSBuildProjectName)' == 'Swa.Analyzers.Architecture'
-      Or '$(MSBuildProjectName)' == 'Swa.Analyzers.Testing'">true</IsSwaAnalyzerPackage>
-    <RepositoryUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</RepositoryUrl>
+    <IsCsfAnalyzerPackage Condition="
+      '$(MSBuildProjectName)' == 'CSF.Analyzers.Reliability'
+      Or '$(MSBuildProjectName)' == 'CSF.Analyzers.Architecture'
+      Or '$(MSBuildProjectName)' == 'CSF.Analyzers.Testing'">true</IsCsfAnalyzerPackage>
+    <RepositoryUrl>https://github.com/rodri-oliveira-dev/CSF.Analyzers</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/rodri-oliveira-dev/CSF.Analyzers</PackageProjectUrl>
     <Authors>Rodrigo Oliveira</Authors>
     <Company>Rodrigo Oliveira</Company>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -15,7 +15,7 @@
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(IsSwaAnalyzerPackage)' == 'true'">
+  <PropertyGroup Condition="'$(IsCsfAnalyzerPackage)' == 'true'">
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>13.0</LangVersion>
     <Nullable>enable</Nullable>
@@ -29,10 +29,10 @@
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(IsSwaAnalyzerPackage)' == 'true'">
+  <ItemGroup Condition="'$(IsCsfAnalyzerPackage)' == 'true'">
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
-    <Compile Include="$(MSBuildThisFileDirectory)src\Swa.Analyzers.Common\**\*.cs"
+    <Compile Include="$(MSBuildThisFileDirectory)src\CSF.Analyzers.Common\**\*.cs"
              LinkBase="Common" />
     <None Include="$(MSBuildThisFileDirectory)README.md"
           Pack="true"

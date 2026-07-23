@@ -5,7 +5,7 @@ description: Compatibilidade temporária. Este repositório não é um serviço 
 
 # Skill substituída para este repositório
 
-Este repositório é o `Swa.Analyzers`, um projeto de Roslyn analyzers reutilizáveis para .NET.
+Este repositório é o `CSF.Analyzers`, um projeto de Roslyn analyzers reutilizáveis para .NET.
 
 Não aplique orientações de serviços .NET neste repositório, como:
 
@@ -34,6 +34,6 @@ Use uma das skills abaixo conforme a tarefa:
 
 1. Leia `AGENTS.md`.
 2. Escolha a skill Roslyn mais específica.
-3. Trabalhe apenas nos arquivos relevantes ao projeto `Swa.Analyzers`.
-4. Considere a stack real do repositório: pacote `Swa.Analyzers` em versão `1.1.0`, SDK .NET `10.0.203`, analyzers em `netstandard2.0`, SampleApp e testes em `net10.0`.
-5. Valide com os comandos da solução `Swa.Analyzers.slnx`.
+3. Trabalhe apenas nos arquivos relevantes ao projeto `CSF.Analyzers`.
+4. Considere a stack real do repositório: pacote `CSF.Analyzers` em versão `1.1.0`, SDK .NET `10.0.203`, analyzers em `netstandard2.0`, SampleApp e testes em `net10.0`.
+5. Valide com os comandos da solução `CSF.Analyzers.slnx`.

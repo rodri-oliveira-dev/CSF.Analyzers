@@ -5,7 +5,7 @@ description: Use esta skill ao criar ou alterar regras Roslyn REL###, ARC### ou 
 
 # Objetivo
 
-Executar mudancas em regras Roslyn do projeto `Swa.Analyzers` com seguranca, baixo ruido e consistencia com os tres pacotes v2.
+Executar mudancas em regras Roslyn do projeto `CSF.Analyzers` com seguranca, baixo ruido e consistencia com os tres pacotes v2.
 
 # Quando usar
 
@@ -16,7 +16,7 @@ Use esta skill quando a tarefa envolver:
 - ajuste em `RuleIdentifiers`;
 - testes de analyzer;
 - documentacao em `docs/rules`;
-- exemplos em `samples/Swa.Analyzers.*.Sample`;
+- exemplos em `samples/CSF.Analyzers.*.Sample`;
 - atualizacao de `AnalyzerReleases.Unshipped.md`.
 
 # Antes de alterar
@@ -28,13 +28,13 @@ Use esta skill quando a tarefa envolver:
    - `.editorconfig`
    - `Directory.Packages.props`
    - `global.json`
-   - `src/Swa.Analyzers.<Pacote>/RuleIdentifiers.cs`
-   - `src/Swa.Analyzers.<Pacote>/Rules/`
-   - `tests/Swa.Analyzers.<Pacote>.Tests/Rules/`
-   - `tests/Swa.Analyzers.TestSupport/Verifier.cs`
+   - `src/CSF.Analyzers.<Pacote>/RuleIdentifiers.cs`
+   - `src/CSF.Analyzers.<Pacote>/Rules/`
+   - `tests/CSF.Analyzers.<Pacote>.Tests/Rules/`
+   - `tests/CSF.Analyzers.TestSupport/Verifier.cs`
    - `docs/rules/<grupo>/`
-   - `samples/Swa.Analyzers.<Pacote>.Sample/`
-   - `src/Swa.Analyzers.<Pacote>/AnalyzerReleases.Unshipped.md`
+   - `samples/CSF.Analyzers.<Pacote>.Sample/`
+   - `src/CSF.Analyzers.<Pacote>/AnalyzerReleases.Unshipped.md`
 
 # Regras de implementacao
 
@@ -55,9 +55,9 @@ Use esta skill quando a tarefa envolver:
 
 1. Escolher proximo ID no prefixo do pacote correto.
 2. Adicionar constante no `RuleIdentifiers.cs` do pacote.
-3. Criar analyzer em `src/Swa.Analyzers.<Pacote>/Rules/`.
+3. Criar analyzer em `src/CSF.Analyzers.<Pacote>/Rules/`.
 4. Definir `DiagnosticDescriptor`.
-5. Adicionar testes em `tests/Swa.Analyzers.<Pacote>.Tests/Rules/`.
+5. Adicionar testes em `tests/CSF.Analyzers.<Pacote>.Tests/Rules/`.
 6. Adicionar documentacao em `docs/rules/<grupo>/<ID>.md`.
 7. Adicionar exemplos validos e invalidos no sample do pacote quando ajudar.
 8. Atualizar `AnalyzerReleases.Unshipped.md` do pacote.
@@ -67,7 +67,7 @@ Use esta skill quando a tarefa envolver:
 # Validacao
 
 ```bash
-dotnet restore ./Swa.Analyzers.slnx
-dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
-dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1
+dotnet restore ./CSF.Analyzers.slnx
+dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore
+dotnet test ./CSF.Analyzers.slnx --configuration Release -m:1
 ```

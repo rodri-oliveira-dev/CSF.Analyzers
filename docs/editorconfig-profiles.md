@@ -89,7 +89,7 @@ dotnet_diagnostic.ARC002.ignore_tests = true
 
 ## testing
 
-Perfil para projetos que adotam as políticas de teste do pacote `Swa.Analyzers.Testing`.
+Perfil para projetos que adotam as políticas de teste do pacote `CSF.Analyzers.Testing`.
 
 ```ini
 [*.cs]

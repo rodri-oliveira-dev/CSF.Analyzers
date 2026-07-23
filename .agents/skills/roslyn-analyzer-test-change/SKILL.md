@@ -11,7 +11,7 @@ Criar testes de analyzer claros, pequenos e confiaveis, cobrindo diagnosticos es
 
 Use esta skill quando a tarefa envolver:
 
-- testes em `tests/Swa.Analyzers.*.Tests`;
+- testes em `tests/CSF.Analyzers.*.Tests`;
 - novos cenarios para uma regra `REL###`, `ARC###` ou `TST###`;
 - regressao de bug em analyzer;
 - stubs para frameworks externos;
@@ -19,9 +19,9 @@ Use esta skill quando a tarefa envolver:
 
 # Arquivos relevantes
 
-- `tests/Swa.Analyzers.TestSupport/Verifier.cs`
-- `tests/Swa.Analyzers.<Pacote>.Tests/Rules/`
-- `src/Swa.Analyzers.<Pacote>/Rules/`
+- `tests/CSF.Analyzers.TestSupport/Verifier.cs`
+- `tests/CSF.Analyzers.<Pacote>.Tests/Rules/`
+- `src/CSF.Analyzers.<Pacote>/Rules/`
 - `docs/rules/<grupo>/<ID>.md`
 - `.editorconfig`
 - `Directory.Packages.props`
@@ -39,6 +39,6 @@ Use esta skill quando a tarefa envolver:
 # Validacao
 
 ```bash
-dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1
-dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
+dotnet test ./CSF.Analyzers.slnx --configuration Release -m:1
+dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1
 ```

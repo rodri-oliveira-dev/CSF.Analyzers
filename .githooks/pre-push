@@ -144,15 +144,15 @@ fi
 run_release_check
 
 echo "==> pre-push: restaurando dependencias"
-dotnet restore ./Swa.Analyzers.slnx
+dotnet restore ./CSF.Analyzers.slnx
 
 echo "==> pre-push: executando build ($CONFIGURATION)"
-dotnet build ./Swa.Analyzers.slnx --configuration "$CONFIGURATION" --no-restore -m:1
+dotnet build ./CSF.Analyzers.slnx --configuration "$CONFIGURATION" --no-restore -m:1
 
 echo "==> pre-push: executando testes com cobertura"
 clean_pre_push_results
 
-dotnet test ./Swa.Analyzers.slnx \
+dotnet test ./CSF.Analyzers.slnx \
   --configuration "$CONFIGURATION" \
   --no-restore \
   --collect:"XPlat Code Coverage" \

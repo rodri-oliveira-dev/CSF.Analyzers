@@ -54,10 +54,10 @@ jobs:
         run: dotnet --info
 
       - name: Restore
-        run: dotnet restore ./Swa.Analyzers.slnx --locked-mode
+        run: dotnet restore ./CSF.Analyzers.slnx --locked-mode
 
       - name: Build
-        run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
+        run: dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore
 
       - name: Validate release consistency
         shell: pwsh
@@ -101,21 +101,21 @@ jobs:
         run: dotnet --info
 
       - name: Restore
-        run: dotnet restore ./Swa.Analyzers.slnx --locked-mode
+        run: dotnet restore ./CSF.Analyzers.slnx --locked-mode
 
       # dotnet test contra a .slnx atualmente falha antes da descoberta de testes quando
       # o MSBuild usa múltiplos nós. Mantemos a orquestração em nó único enquanto
       # preservamos a cobertura completa de testes da solução.
       - name: Test
-        run: dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1
+        run: dotnet test ./CSF.Analyzers.slnx --configuration Release -m:1
 
       - name: Test with coverage
-        run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1 --settings ./coverlet.runsettings --collect:"XPlat Code Coverage" --results-directory ./artifacts/TestResults
+        run: dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1 --settings ./coverlet.runsettings --collect:"XPlat Code Coverage" --results-directory ./artifacts/TestResults
 
       - name: Pack analyzers
         shell: bash
         run: |
-          dotnet pack ./Swa.Analyzers.slnx --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
+          dotnet pack ./CSF.Analyzers.slnx --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
 
       - name: Inspect NuGet packages
         shell: pwsh

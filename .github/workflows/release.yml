@@ -102,16 +102,16 @@ jobs:
         run: dotnet --info
 
       - name: Restore
-        run: dotnet restore ./Swa.Analyzers.slnx --locked-mode
+        run: dotnet restore ./CSF.Analyzers.slnx --locked-mode
 
       - name: Build
-        run: dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
+        run: dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore
 
       # dotnet test contra a .slnx atualmente falha antes da descoberta de testes quando
       # o MSBuild usa múltiplos nós. Mantemos a orquestração em nó único enquanto
       # preservamos a cobertura completa de testes da solução.
       - name: Test
-        run: dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
+        run: dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1
 
       - name: Validate release consistency
         shell: pwsh
@@ -121,9 +121,9 @@ jobs:
         shell: bash
         run: |
           rm -rf ./artifacts/packages
-          dotnet pack ./src/Swa.Analyzers.Reliability/Swa.Analyzers.Reliability.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
-          dotnet pack ./src/Swa.Analyzers.Architecture/Swa.Analyzers.Architecture.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
-          dotnet pack ./src/Swa.Analyzers.Testing/Swa.Analyzers.Testing.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
+          dotnet pack ./src/CSF.Analyzers.Reliability/CSF.Analyzers.Reliability.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
+          dotnet pack ./src/CSF.Analyzers.Architecture/CSF.Analyzers.Architecture.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
+          dotnet pack ./src/CSF.Analyzers.Testing/CSF.Analyzers.Testing.csproj --configuration Release --no-build --output ./artifacts/packages /p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
 
       - name: Inspect NuGet packages
         shell: pwsh
@@ -245,7 +245,7 @@ jobs:
               owner,
               repo,
               tag_name: tag,
-              name: `Swa.Analyzers ${tag}`,
+              name: `CSF.Analyzers ${tag}`,
               body: notes.data.body,
               target_commitish: context.sha,
               draft: false,
