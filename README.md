@@ -8,7 +8,7 @@ Analyzers genéricos do .NET, Roslyn, SonarAnalyzer ou Meziantou.Analyzer verifi
 
 | Pacote | Escopo | Regras |
 | ------ | ------ | ------ |
-| [`Swa.Analyzers.Reliability`](docs/packages/reliability.md) | Confiabilidade e performance operacional em ASP.NET e EF Core. | `REL001`, `REL002`, `REL003`, `REL004`, `REL005` |
+| [`Swa.Analyzers.Reliability`](docs/packages/reliability.md) | Confiabilidade e performance operacional em ASP.NET, hosted services e EF Core. | `REL001`, `REL002`, `REL003`, `REL004`, `REL005`, `REL006` |
 | [`Swa.Analyzers.Architecture`](docs/packages/architecture.md) | Políticas de autorização, rotas, dependências de camadas, DDD e MSBuild. | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005` |
 | [`Swa.Analyzers.Testing`](docs/packages/testing.md) | Qualidade de testes com NSubstitute e FluentAssertions. | `TST001`, `TST002` |
 
@@ -51,6 +51,7 @@ app.MapGet("/health", () => Results.Ok())
 | `REL003` | Reliability | Performance | `info`, opt-in | [REL003](docs/rules/reliability/REL003.md) |
 | `REL004` | Reliability | Performance | `warning`, habilitada | [REL004](docs/rules/reliability/REL004.md) |
 | `REL005` | Reliability | Reliability | `warning`, habilitada | [REL005](docs/rules/reliability/REL005.md) |
+| `REL006` | Reliability | Reliability | `warning`, habilitada | [REL006](docs/rules/reliability/REL006.md) |
 | `ARC001` | Architecture | Security | `warning`, habilitada | [ARC001](docs/rules/architecture/ARC001.md) |
 | `ARC002` | Architecture | Architecture | `warning`, habilitada | [ARC002](docs/rules/architecture/ARC002.md) |
 | `ARC003` | Architecture | Design | `info`, opt-in | [ARC003](docs/rules/architecture/ARC003.md) |
@@ -59,7 +60,7 @@ app.MapGet("/health", () => Results.Ok())
 | `TST001` | Testing | TestQuality | `info`, opt-in | [TST001](docs/rules/testing/TST001.md) |
 | `TST002` | Testing | TestQuality | `info`, opt-in | [TST002](docs/rules/testing/TST002.md) |
 
-Regras habilitadas por padrão: `REL001`, `REL002`, `REL004`, `REL005`, `ARC001`, `ARC002`.
+Regras habilitadas por padrão: `REL001`, `REL002`, `REL004`, `REL005`, `REL006`, `ARC001`, `ARC002`.
 
 Regras opt-in: `REL003`, `ARC003`, `ARC004`, `ARC005`, `TST001`, `TST002`. Elas só emitem diagnóstico quando a severidade é ativada via configuração de analyzer. Para regras de código-fonte, use `.editorconfig`; para `ARC005`, prefira `.globalconfig`, pois o diagnóstico é reportado em arquivos MSBuild passados como `AdditionalFiles`.
 

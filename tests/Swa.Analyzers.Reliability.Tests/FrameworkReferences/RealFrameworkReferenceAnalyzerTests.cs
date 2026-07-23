@@ -49,6 +49,51 @@ public sealed class OrdersQuery
             Expected(0, "ToListAsync"));
     }
 
+    [Fact]
+    public async Task Rel006_reports_real_hosting_EF_Core_and_options_symbols()
+    {
+        const string source = """
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+
+public sealed class OrdersDbContext : DbContext
+{
+}
+
+public sealed class WorkerOptions
+{
+}
+
+public sealed class OrdersWorker : BackgroundService
+{
+    private readonly OrdersDbContext _db;
+    private readonly IOptionsSnapshot<WorkerOptions> _options;
+
+    public OrdersWorker(OrdersDbContext {|#0:db|}, IOptionsSnapshot<WorkerOptions> {|#1:options|})
+    {
+        _db = db;
+        _options = options;
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask;
+}
+""";
+
+        await RealFrameworkVerifier<Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer>.VerifyAnalyzerAsync(
+            source,
+            EfCoreAssemblies,
+            AspNetCoreAppReferenceAssemblyPaths,
+            RealFrameworkVerifier<Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer>.Diagnostic("REL006")
+                .WithLocation(0)
+                .WithArguments("OrdersDbContext", "OrdersWorker"),
+            RealFrameworkVerifier<Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer>.Diagnostic("REL006")
+                .WithLocation(1)
+                .WithArguments("Microsoft.Extensions.Options.IOptionsSnapshot<WorkerOptions>", "OrdersWorker"));
+    }
+
     private static DiagnosticResult Expected(int location, string methodName)
     {
         return RealFrameworkVerifier<Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer>.Diagnostic("REL003")
@@ -62,4 +107,8 @@ public sealed class OrdersQuery
         typeof(DbSet<>).Assembly,
         typeof(EntityFrameworkQueryableExtensions).Assembly,
     ];
+
+    private static readonly string[] AspNetCoreAppReferenceAssemblyPaths = RealFrameworkVerifier<Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer>
+        .GetPackageReferenceAssemblyPaths("Microsoft.AspNetCore.App.Ref", "9.0.18", "net9.0")
+        .ToArray();
 }

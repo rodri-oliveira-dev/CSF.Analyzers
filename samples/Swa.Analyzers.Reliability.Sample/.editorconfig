@@ -6,6 +6,7 @@ dotnet_diagnostic.REL002.severity = warning
 dotnet_diagnostic.REL003.severity = warning
 dotnet_diagnostic.REL004.severity = warning
 dotnet_diagnostic.REL005.severity = warning
+dotnet_diagnostic.REL006.severity = warning
 dotnet_diagnostic.ARC001.severity = none
 dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.IDE0059.severity = none

@@ -7,3 +7,4 @@ REL002 | Reliability | Warning  | Novo ID v2. Proibe fire-and-forget em fluxos d
 REL003 | Performance | Disabled | Novo ID v2. Opt-in com severidade base Info; prefere `AsNoTracking` em consultas EF Core somente leitura.
 REL004 | Performance | Warning  | Novo ID v2. Evita materializacao prematura antes de filtro ou projecao.
 REL005 | Reliability | Warning  | Evita operacoes concorrentes no mesmo `DbContext`.
+REL006 | Reliability | Warning  | Evita captura de dependencias scoped conhecidas em hosted services.

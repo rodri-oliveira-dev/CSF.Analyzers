@@ -24,8 +24,9 @@ public sealed class AnalyzerPackageIsolationTests
                     new Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
                     new Rel004AvoidPrematureQueryMaterializationAnalyzer(),
                     new Rel005AvoidConcurrentDbContextOperationsAnalyzer(),
+                    new Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer(),
                 ],
-                ["REL001", "REL002", "REL003", "REL004", "REL005"]),
+                ["REL001", "REL002", "REL003", "REL004", "REL005", "REL006"]),
             new AnalyzerPackage(
                 "Swa.Analyzers.Architecture",
                 [
@@ -100,6 +101,7 @@ public sealed class AnalyzerPackageIsolationTests
                 new Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
                 new Rel004AvoidPrematureQueryMaterializationAnalyzer(),
                 new Rel005AvoidConcurrentDbContextOperationsAnalyzer(),
+                new Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer(),
                 new Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer(),
                 new Arc002PreventInfrastructureDependenciesInCoreLayersAnalyzer(),
                 new Arc003ProhibitVerbsInHttpRoutesAnalyzer(),

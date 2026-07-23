@@ -2,11 +2,11 @@
 
 ## Objetivo
 
-`Swa.Analyzers.Reliability` reúne regras de confiabilidade e performance operacional para fluxos ASP.NET e consultas EF Core.
+`Swa.Analyzers.Reliability` reúne regras de confiabilidade e performance operacional para fluxos ASP.NET, hosted services e consultas EF Core.
 
 ## Público-alvo
 
-Use em APIs, workers com endpoints HTTP, serviços ASP.NET Core e projetos que executam consultas EF Core em produção.
+Use em APIs, workers, hosted services, serviços ASP.NET Core e projetos que executam consultas EF Core em produção.
 
 ## Instalação
 
@@ -23,6 +23,7 @@ dotnet add package Swa.Analyzers.Reliability
 | [`REL003`](../rules/reliability/REL003.md) | Performance | `Info` | Opt-in |
 | [`REL004`](../rules/reliability/REL004.md) | Performance | `Warning` | Habilitada |
 | [`REL005`](../rules/reliability/REL005.md) | Reliability | `Warning` | Habilitada |
+| [`REL006`](../rules/reliability/REL006.md) | Reliability | `Warning` | Habilitada |
 
 ## Configuração
 
@@ -32,12 +33,16 @@ dotnet_diagnostic.REL001.severity = warning
 dotnet_diagnostic.REL002.severity = warning
 dotnet_diagnostic.REL004.severity = warning
 dotnet_diagnostic.REL005.severity = warning
+dotnet_diagnostic.REL006.severity = warning
 
 # Opt-in para política EF Core de leitura sem tracking.
 dotnet_diagnostic.REL003.severity = info
+
+# Tipos scoped customizados capturados por hosted services.
+dotnet_diagnostic.REL006.scoped_type_patterns = MyApp.Data.*;MyApp.Scoped.*
 ```
 
-As regras deste pacote não têm opções públicas além da severidade padrão de `.editorconfig`.
+`REL006` aceita `dotnet_diagnostic.REL006.scoped_type_patterns` para tipos scoped customizados. As demais regras deste pacote não têm opções públicas além da severidade padrão de `.editorconfig`.
 
 ## Limitações
 
