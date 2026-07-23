@@ -17,30 +17,46 @@ Exclusividade nao basta para justificar uma regra. Uma regra deve permanecer qua
 
 ## Matriz
 
-| Regra | Sobreposicao conhecida | Decisao |
-| ----- | ---------------------- | ------- |
-| `REL001` | Regras genericas de async de Meziantou.Analyzer e SonarAnalyzer sao relacionadas. | Manter pelo recorte ASP.NET request flow e exclusoes para testes/hosted services. |
-| `REL002` | Meziantou.Analyzer tem regra relacionada a tarefas nao observadas. | Manter pelo recorte de request ASP.NET, `Task`/`ValueTask` descartadas e ciclo de vida de request. |
-| `REL003` | Nao ha substituto externo confirmado para a heuristica local. | Manter como opt-in por depender de politica EF Core de leitura. |
-| `REL004` | Regras LINQ genericas podem apontar eficiencia, mas nao cobrem o mesmo recorte EF Core. | Manter pelo foco em materializacao antes de filtros/projecoes/paginacao. |
-| `REL005` | Orientacao oficial do EF Core cobre o risco, mas nao foi confirmado analyzer consolidado com rastreamento local da mesma raiz de `DbContext`. | Manter pelo reconhecimento semantico de operacoes EF Core concorrentes no mesmo simbolo raiz. |
-| `REL006` | Validacao de DI pode detectar alguns lifetimes em runtime, mas nao cobre a politica contextual de hosted services e tipos scoped conhecidos/configurados. | Manter pelo recorte de captura de scoped services em hosted services. |
-| `ARC001` | Nao ha substituto externo confirmado para exigir decisao explicita por endpoint. | Manter como politica contextual de seguranca. |
-| `ARC002` | Arquitetura de camadas costuma ser coberta por ferramentas de arquitetura, nao por analyzers genericos equivalentes. | Manter por configuracao de namespaces core/proibidos. |
-| `ARC003` | Regras de roteamento ASP.NET podem validar formato, mas nao a politica de verbos em segmentos. | Manter como opt-in para APIs orientadas a recursos. |
-| `ARC004` | Regras de design/imutabilidade sao relacionadas, mas nao identificam entidade de dominio com as mesmas opcoes. | Manter como opt-in para DDD. |
-| `ARC005` | Nao ha substituto externo confirmado para comparar `AdditionalFiles` MSBuild com `Directory.Build.props`. | Manter como opt-in para repositorios que centralizam MSBuild. |
-| `ARC006` | Analyzers ASP.NET podem validar binding, retornos ou serializacao, mas nao a politica local sobre tipos de dominio em contratos HTTP. | Manter como opt-in por depender de convencao arquitetural. |
-| `TST001` | NSubstitute.Analyzers cobre usos incorretos do framework, mas nao a convencao local de evitar `Arg.Any()` e APIs `*AnyArgs` em setups e expectativas positivas. | Manter como opt-in para times que adotam a convencao, preservando verificacoes negativas permissivas. |
-| `TST002` | Nao ha substituto externo confirmado para `Excluding*` dentro de `BeEquivalentTo()`. | Manter como opt-in para times que priorizam equivalencia estrita. |
+| Regra | Ferramenta relacionada | Equivalencia | Diferenciacao | Motivo para manter | Decisao |
+| ----- | ---------------------- | ------------ | ------------- | ------------------ | ------- |
+| `REL001` | Meziantou.Analyzer, SonarAnalyzer.CSharp | Parcial | Regras genericas de async/performance nao restringem o diagnostico ao fluxo de request ASP.NET. | Evita ruido em codigo fora de request, testes e hosted services. | Coexistir. |
+| `REL002` | Meziantou.Analyzer, SonarAnalyzer.CSharp | Parcial | Regras de tarefas nao observadas nao capturam a politica local de fire-and-forget em request ASP.NET com `Task` e `ValueTask`. | O risco operacional depende do ciclo de vida de request. | Coexistir. |
+| `REL003` | EF Core guidance, analyzers LINQ/performance | Parcial | A regra exige origem EF Core e politica explicita de leitura sem tracking. | Permanece opt-in para times que adotam leitura sem tracking por padrao. | Coexistir. |
+| `REL004` | Regras LINQ/performance de analyzers genericos | Parcial | O diagnostico depende de materializacao EF Core antes de filtro, projecao ou paginacao. | Entrega feedback mais contextual que uma regra LINQ ampla. | Coexistir. |
+| `REL005` | EF Core documentation; analyzers async genericos de Meziantou.Analyzer, Roslynator e SonarAnalyzer.CSharp | Parcial | Ferramentas relacionadas podem apontar padroes async amplos, mas nao foi identificado substituto consolidado que rastreie duas operacoes EF Core semanticamente resolvidas sobre a mesma raiz de `DbContext` em `Task.WhenAll` ou `Parallel.ForEachAsync`. | O bug e recorrente, EF Core documenta que a instancia nao suporta operacoes paralelas, e a regra limita o alerta a padroes locais de alta confianca. | Coexistir; nao substituir por analyzer generico. |
+| `REL006` | Validacao de DI do ASP.NET Core em runtime; documentacao .NET de `BackgroundService`; SonarAnalyzer.CSharp/Meziantou.Analyzer como cobertura geral de code quality | Parcial | A validacao de DI pode falhar em runtime para lifetimes, mas nao e uma regra Roslyn especifica para captura de `DbContext`, `IOptionsSnapshot<T>` ou tipos configurados em hosted services. | Antecipar captive dependencies em codigo-fonte reduz falhas de startup/runtime e documenta a politica de usar escopo ou factory. | Coexistir com validacao de DI; nao substituir. |
+| `ARC001` | ASP.NET Core analyzers e analyzers de seguranca | Parcial | Ferramentas externas cobrem APIs e seguranca geral, mas nao exigem decisao explicita por endpoint com allowlist local. | Politica contextual de seguranca de API. | Coexistir. |
+| `ARC002` | NetArchTest, ArchUnitNET, NDepend | Parcial | Ferramentas de arquitetura podem expressar dependencias entre camadas, mas normalmente rodam como testes/ferramentas externas, nao como diagnostico Roslyn calibrado por namespace no editor/build. | Feedback imediato para dependencias proibidas em camadas core. | Coexistir; pode ser substituida por suite arquitetural quando o projeto preferir governanca fora do compiler. |
+| `ARC003` | ASP.NET Core analyzers de rotas | Baixa | Validacoes de rota nao codificam a politica de evitar verbos em segmentos de APIs orientadas a recursos. | Politica opt-in de design HTTP. | Coexistir. |
+| `ARC004` | Regras de design/imutabilidade; NDepend/ArchUnitNET | Parcial | Regras genericas nao identificam entidades de dominio pelos mesmos marcadores e opcoes `ARC004`. | Politica DDD local e opt-in, com configuracao de namespaces e tipos base. | Coexistir. |
+| `ARC005` | MSBuild analyzers e validacoes customizadas de CI | Parcial | A regra compara projetos e `Directory.Build.props` recebidos como `AdditionalFiles`, com allowlist de propriedades. | Garante centralizacao MSBuild no build comum. | Coexistir; substituir apenas se o repo adotar uma validacao MSBuild dedicada equivalente. |
+| `ARC006` | ASP.NET Core analyzers; orientacao Microsoft sobre DTOs em Web API; ferramentas de arquitetura como NDepend/ArchUnitNET | Parcial | Ferramentas ASP.NET validam binding, retornos e uso de APIs; ferramentas de arquitetura podem verificar dependencias, mas nao combinam contexto HTTP com o classificador de entidade compartilhado com `ARC004`. | Politica DDD opt-in para evitar acoplamento de contratos HTTP ao dominio com baixo ruido e sem analise profunda de DTOs. | Coexistir; nao substituir por analyzer ASP.NET generico. |
+| `TST001` | NSubstitute.Analyzers; documentacao NSubstitute de argument matchers e `AnyArgs` | Parcial | NSubstitute.Analyzers foca uso incorreto do framework. `TST001` aplica convencao de precisao de teste: restringe `Arg.Any<T>()`, `ReturnsForAnyArgs`, `WhenForAnyArgs` e `ReceivedWithAnyArgs`, preservando `DidNotReceiveWithAnyArgs`. | A regra e opt-in e protege asserts/setups positivos contra matching amplo demais. | Coexistir com NSubstitute.Analyzers. |
+| `TST002` | FluentAssertions analyzers e revisoes de teste | Parcial | Ferramentas relacionadas ajudam uso da biblioteca, mas nao bloqueiam a politica local de evitar `Excluding*` em `BeEquivalentTo()`. | Convencao opt-in de equivalencia estrita. | Coexistir. |
 
 ## Substitutos externos
 
-- `REL001` e `REL002`: analyzers gerais de async podem complementar a cobertura, mas tendem a nao restringir o alerta ao fluxo de request ASP.NET.
-- `REL004`: analyzers LINQ e performance podem complementar, mas a regra local depende de origem `DbSet<T>` e materializadores EF Core.
-- `REL005`: analyzers async genericos podem apontar padroes de concorrencia, mas a regra local exige operacoes EF Core e mesma raiz semantica de `DbContext`.
-- `TST001`: NSubstitute.Analyzers pode complementar a cobertura de uso correto do framework, mas a regra local e uma convencao de precisao de teste para `Arg.Any()` e APIs `AnyArgs`.
-- `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005`, `ARC006` e `TST002`: nenhum substituto direto foi confirmado nesta revisao.
+- `REL005`: usar apenas analyzers async genericos deixaria escapar a condicao essencial: mesma instancia candidata de `DbContext` com operacoes EF Core concorrentes. A regra local deve coexistir com analyzers async e com a orientacao oficial do EF Core.
+- `REL006`: a validacao de DI em runtime continua recomendada, mas ela nao substitui feedback estatico em hosted services. A regra local deve coexistir com validacao do container e com revisoes de lifetime.
+- `ARC006`: analyzers ASP.NET Core e ferramentas de arquitetura sao complementares. A regra local so deve ser substituida por ferramenta externa se ela conseguir reconhecer contexto HTTP, wrappers de retorno e entidades segundo a mesma politica DDD configuravel.
+- `TST001`: NSubstitute.Analyzers deve coexistir porque valida erros de uso do framework; `TST001` valida uma convencao de precisao de testes.
+- Para regras sem substituto direto, a decisao de manter continua dependente de baixo ruido, documentacao precisa e testes de falso positivo.
+
+## Fontes externas revisadas em 2026-07-23
+
+- EF Core async e threading: <https://learn.microsoft.com/en-us/ef/core/miscellaneous/async>
+- EF Core `DbContext` lifetime/threading: <https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/>
+- .NET scoped services em `BackgroundService`: <https://learn.microsoft.com/en-us/dotnet/core/extensions/scoped-service>
+- ASP.NET Web API com DTOs: <https://learn.microsoft.com/en-us/aspnet/web-api/overview/data/using-web-api-with-entity-framework/part-5>
+- ASP.NET Core action return types: <https://learn.microsoft.com/en-us/aspnet/core/web-api/action-return-types>
+- NSubstitute argument matchers: <https://nsubstitute.github.io/help/argument-matchers/>
+- NSubstitute return for any args: <https://nsubstitute.github.io/help/return-for-any-args/>
+- NSubstitute received calls: <https://nsubstitute.github.io/help/received-calls/>
+- NSubstitute analyzers: <https://nsubstitute.github.io/help/nsubstitute-analysers/>
+- NSubstitute.Analyzers issue sobre `AnyArgs`: <https://github.com/nsubstitute/NSubstitute.Analyzers/issues/175>
+- Meziantou.Analyzer project listing: <https://www.meziantou.net/projects.htm>
+- SonarAnalyzer.CSharp package: <https://www.nuget.org/packages/SonarAnalyzer.CSharp/>
+- Roslynator project: <https://github.com/dotnet/roslynator>
 
 ## Apendice: regras v1 removidas
 

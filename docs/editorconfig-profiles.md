@@ -20,7 +20,7 @@ Regras opt-in permanecem desabilitadas nos perfis genéricos, salvo quando o per
 | `ARC004` | Architecture | opt-in `info` | Política DDD para entidades de domínio. |
 | `ARC005` | Architecture | opt-in `info` | Requer `AdditionalFiles` com projetos e `Directory.Build.props`. |
 | `ARC006` | Architecture | opt-in `info` | Política DDD para contratos HTTP desacoplados do domínio. |
-| `TST001` | Testing | opt-in `info` | Política de uso de `NSubstitute.Arg.Any()`. |
+| `TST001` | Testing | opt-in `info` | Política de uso de `NSubstitute.Arg.Any()` e APIs `AnyArgs`. |
 | `TST002` | Testing | opt-in `info` | Política de precisão em `BeEquivalentTo()`. |
 
 ## recommended
