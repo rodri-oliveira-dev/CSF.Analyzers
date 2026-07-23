@@ -2,16 +2,16 @@
 
 ## Objetivo
 
-Definir a especificacao de quatro evolucoes futuras dos pacotes v2 de `Swa.Analyzers`, sem implementar analyzers nesta etapa. Estes documentos sao a fonte de verdade para os proximos prompts.
+Definir a especificacao de quatro evolucoes futuras dos pacotes v2 de `CSF.Analyzers`, sem implementar analyzers nesta etapa. Estes documentos sao a fonte de verdade para os proximos prompts.
 
 ## Regras incluidas
 
 | ID | Pacote | Categoria | Severidade planejada | Estado padrao | Documento |
 | -- | ------ | --------- | -------------------- | ------------- | --------- |
-| `REL005` | `Swa.Analyzers.Reliability` | Reliability | Warning | Habilitada | [REL005.md](REL005.md) |
-| `REL006` | `Swa.Analyzers.Reliability` | Reliability | Warning | Habilitada para tipos conhecidos | [REL006.md](REL006.md) |
-| `ARC006` | `Swa.Analyzers.Architecture` | Architecture | Info | Opt-in | [ARC006.md](ARC006.md) |
-| `TST001` | `Swa.Analyzers.Testing` | TestQuality | Info | Opt-in | [TST001-anyargs.md](TST001-anyargs.md) |
+| `REL005` | `CSF.Analyzers.Reliability` | Reliability | Warning | Habilitada | [REL005.md](REL005.md) |
+| `REL006` | `CSF.Analyzers.Reliability` | Reliability | Warning | Habilitada para tipos conhecidos | [REL006.md](REL006.md) |
+| `ARC006` | `CSF.Analyzers.Architecture` | Architecture | Info | Opt-in | [ARC006.md](ARC006.md) |
+| `TST001` | `CSF.Analyzers.Testing` | TestQuality | Info | Opt-in | [TST001-anyargs.md](TST001-anyargs.md) |
 
 `TST001` nao cria novo diagnostico. A evolucao amplia a regra existente [TST001](../../rules/testing/TST001.md).
 

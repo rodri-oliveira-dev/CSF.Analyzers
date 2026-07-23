@@ -63,11 +63,11 @@ Required validation after the lock files are updated:
 
 ```powershell
 dotnet --info
-dotnet restore ./Swa.Analyzers.slnx
-dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
-dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1
+dotnet restore ./CSF.Analyzers.slnx
+dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore
+dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1
 powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1
-dotnet pack ./Swa.Analyzers.slnx --configuration Release --no-build
+dotnet pack ./CSF.Analyzers.slnx --configuration Release --no-build
 ```
 
 Package inspection should be run against the generated package version after pack artifacts exist.
@@ -80,13 +80,13 @@ Executed locally on 2026-07-22:
 | ------- | ------ |
 | `dotnet --info` | Passed; SDK `10.0.302`, runtime `10.0.10`. |
 | `dotnet tool restore` | Passed; restored `dotnet-reportgenerator-globaltool` `5.5.10`. |
-| `dotnet restore ./Swa.Analyzers.slnx` | Passed; lock files regenerated. |
-| `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore` | Passed; expected sample diagnostics were reported, and no new RS analyzer warnings appeared. |
-| `dotnet test ./Swa.Analyzers.slnx --configuration Release --no-build -m:1` | Passed; 178 tests passed. |
+| `dotnet restore ./CSF.Analyzers.slnx` | Passed; lock files regenerated. |
+| `dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore` | Passed; expected sample diagnostics were reported, and no new RS analyzer warnings appeared. |
+| `dotnet test ./CSF.Analyzers.slnx --configuration Release --no-build -m:1` | Passed; 178 tests passed. |
 | `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1` | Passed; `release-check: validacoes aprovadas`. |
-| `dotnet pack ./Swa.Analyzers.slnx --configuration Release --no-build --output ./artifacts/packages-verify` | Passed; generated the three `.nupkg` and three `.snupkg` files with version `1.0.0` in the local non-GitVersion pack. |
+| `dotnet pack ./CSF.Analyzers.slnx --configuration Release --no-build --output ./artifacts/packages-verify` | Passed; generated the three `.nupkg` and three `.snupkg` files with version `1.0.0` in the local non-GitVersion pack. |
 | `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Inspect-NuGetPackages.ps1 -PackageDirectory ./artifacts/packages-verify -Version 1.0.0` | Passed; package inspection approved all three packages and symbol packages. |
 | `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-AnalyzerPackageIsolation.ps1 -PackageDirectory ./artifacts/packages-verify -Version 1.0.0` | Passed; reran package validation tests and package inspection, then approved analyzer package isolation. |
-| `dotnet restore ./Swa.Analyzers.slnx --locked-mode` | Passed; updated lock files are consistent. |
+| `dotnet restore ./CSF.Analyzers.slnx --locked-mode` | Passed; updated lock files are consistent. |
 
 `pwsh` is not installed in this Windows environment, so PowerShell scripts were run with Windows PowerShell via `powershell`. The first package inspection against `artifacts/packages` failed only because old package artifacts were already present in that directory; a clean `artifacts/packages-verify` directory passed inspection.

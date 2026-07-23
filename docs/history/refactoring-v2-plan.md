@@ -1,6 +1,6 @@
 # Plano histórico de refatoração estrutural para a versão 2.0
 
-Este documento e a fonte de verdade persistente para a refatoracao estrutural da versao 2.0 do `Swa.Analyzers`. As proximas etapas podem ser executadas em outras janelas do Codex; portanto, qualquer decisao que oriente a migracao deve ser preservada aqui antes de ser implementada.
+Este documento e a fonte de verdade persistente para a refatoracao estrutural da versao 2.0 do `CSF.Analyzers`. As proximas etapas podem ser executadas em outras janelas do Codex; portanto, qualquer decisao que oriente a migracao deve ser preservada aqui antes de ser implementada.
 
 Esta etapa e apenas documental. Nao remove, move, renumera ou altera codigo produtivo, testes, SampleApp, workflows, scripts ou metadados de release.
 
@@ -8,28 +8,28 @@ Esta etapa e apenas documental. Nao remove, move, renumera ou altera codigo prod
 
 Inventario confirmado antes da criacao deste plano:
 
-- Solucao principal: `Swa.Analyzers.slnx`.
+- Solucao principal: `CSF.Analyzers.slnx`.
 - Projetos atuais:
-  - `src/Swa.Analyzers.Core`: projeto `netstandard2.0`, pacote atual `Swa.Analyzers`, analyzers, identificadores e release tracking.
-  - `src/Swa.Analyzers.CodeFixes`: projeto `netstandard2.0`, hoje usado pelo code fix da `ARCH001`.
-  - `tests/Swa.Analyzers.Tests`: projeto unico de testes automatizados em `net10.0`.
-  - `src/Swa.Analyzers.SampleApp`: app de console em `net10.0` usado como validacao manual.
+  - `src/CSF.Analyzers.Core`: projeto `netstandard2.0`, pacote atual `CSF.Analyzers`, analyzers, identificadores e release tracking.
+  - `src/CSF.Analyzers.CodeFixes`: projeto `netstandard2.0`, hoje usado pelo code fix da `ARCH001`.
+  - `tests/CSF.Analyzers.Tests`: projeto unico de testes automatizados em `net10.0`.
+  - `src/CSF.Analyzers.SampleApp`: app de console em `net10.0` usado como validacao manual.
 - Regras atuais:
-  - 33 IDs declarados em `src/Swa.Analyzers.Core/RuleIdentifiers.cs`, de `ARCH001` a `ARCH033`.
-  - 33 analyzers em `src/Swa.Analyzers.Core/Rules/Arch*.cs`.
+  - 33 IDs declarados em `src/CSF.Analyzers.Core/RuleIdentifiers.cs`, de `ARCH001` a `ARCH033`.
+  - 33 analyzers em `src/CSF.Analyzers.Core/Rules/Arch*.cs`.
   - 33 documentos em `docs/rules/ARCH###.md`.
-  - 33 pastas de exemplo em `src/Swa.Analyzers.SampleApp/Arch###`.
-  - testes automatizados para todos os analyzers em `tests/Swa.Analyzers.Tests/Rules`, alem de teste de code fix para `ARCH001`.
+  - 33 pastas de exemplo em `src/CSF.Analyzers.SampleApp/Arch###`.
+  - testes automatizados para todos os analyzers em `tests/CSF.Analyzers.Tests/Rules`, alem de teste de code fix para `ARCH001`.
 - Release tracking atual:
-  - `ARCH001` a `ARCH032` estao em `src/Swa.Analyzers.Core/AnalyzerReleases.Shipped.md` como baseline publicado da versao `1.0.0`.
-  - `ARCH033` esta em `src/Swa.Analyzers.Core/AnalyzerReleases.Unshipped.md`.
+  - `ARCH001` a `ARCH032` estao em `src/CSF.Analyzers.Core/AnalyzerReleases.Shipped.md` como baseline publicado da versao `1.0.0`.
+  - `ARCH033` esta em `src/CSF.Analyzers.Core/AnalyzerReleases.Unshipped.md`.
 - Empacotamento atual:
-  - `src/Swa.Analyzers.Core/Swa.Analyzers.Core.csproj` empacota o analyzer e a DLL de code fixes em `analyzers/dotnet/cs`.
+  - `src/CSF.Analyzers.Core/CSF.Analyzers.Core.csproj` empacota o analyzer e a DLL de code fixes em `analyzers/dotnet/cs`.
   - `IncludeBuildOutput=false` e `SuppressDependenciesWhenPacking=true` estao ativos.
   - As versoes de pacotes sao centralizadas em `Directory.Packages.props`.
 - Release e CI atuais:
   - `GitVersion.yml` e a fonte da versao publicada.
-  - Workflows usam `dotnet restore ./Swa.Analyzers.slnx --locked-mode`, build Release e testes com `-m:1` quando necessario.
+  - Workflows usam `dotnet restore ./CSF.Analyzers.slnx --locked-mode`, build Release e testes com `-m:1` quando necessario.
   - `scripts/Validate-Release.ps1` valida consistencia entre `ARCH###`, docs, testes, SampleApp e metadados shipped/unshipped.
 
 ## Decisao de produto e versionamento
@@ -38,7 +38,7 @@ A versao 2.0 e uma breaking change.
 
 Motivos:
 
-- O pacote unico `Swa.Analyzers` deixa de ser a unidade de distribuicao ativa.
+- O pacote unico `CSF.Analyzers` deixa de ser a unidade de distribuicao ativa.
 - IDs `ARCH###` serao substituidos pelos prefixos `REL###`, `ARC###` e `TST###`.
 - Parte das regras publicadas em 1.x sera removida da implementacao ativa.
 - Algumas regras mantidas mudarao o estado padrao para opt-in.
@@ -48,11 +48,11 @@ Os tres pacotes NuGet independentes da versao 2.0 serao:
 
 | Pacote | Escopo |
 | ------ | ------ |
-| `Swa.Analyzers.Reliability` | Regras de confiabilidade e performance operacional mantidas para fluxo ASP.NET e EF Core. |
-| `Swa.Analyzers.Architecture` | Regras arquiteturais, de autorizacao, rotas, camadas e consistencia de projeto mantidas. |
-| `Swa.Analyzers.Testing` | Regras de qualidade de testes mantidas. |
+| `CSF.Analyzers.Reliability` | Regras de confiabilidade e performance operacional mantidas para fluxo ASP.NET e EF Core. |
+| `CSF.Analyzers.Architecture` | Regras arquiteturais, de autorizacao, rotas, camadas e consistencia de projeto mantidas. |
+| `CSF.Analyzers.Testing` | Regras de qualidade de testes mantidas. |
 
-Nao criar metapacote `Swa.Analyzers` nesta etapa. A ausencia de metapacote tambem deve permanecer na implementacao inicial da v2, salvo decisao posterior registrada neste documento.
+Nao criar metapacote `CSF.Analyzers` nesta etapa. A ausencia de metapacote tambem deve permanecer na implementacao inicial da v2, salvo decisao posterior registrada neste documento.
 
 Os tres pacotes devem usar a mesma versao calculada pelo GitVersion. Nao deve haver `VersionPrefix` manual nem versao divergente entre pacotes.
 
@@ -62,17 +62,17 @@ As regras abaixo permanecem na implementacao ativa da versao 2.0, com novo ID, p
 
 | ID atual | Novo ID | Pacote | Estado padrao v2 |
 | -------- | ------- | ------ | ---------------- |
-| `ARCH016` | `REL001` | `Swa.Analyzers.Reliability` | habilitada, warning |
-| `ARCH017` | `REL002` | `Swa.Analyzers.Reliability` | habilitada, warning |
-| `ARCH021` | `REL003` | `Swa.Analyzers.Reliability` | opt-in, info |
-| `ARCH022` | `REL004` | `Swa.Analyzers.Reliability` | habilitada, warning |
-| `ARCH020` | `ARC001` | `Swa.Analyzers.Architecture` | habilitada, warning |
-| `ARCH027` | `ARC002` | `Swa.Analyzers.Architecture` | habilitada, warning |
-| `ARCH015` | `ARC003` | `Swa.Analyzers.Architecture` | opt-in, info |
-| `ARCH029` | `ARC004` | `Swa.Analyzers.Architecture` | opt-in, info |
-| `ARCH032` | `ARC005` | `Swa.Analyzers.Architecture` | opt-in, info |
-| `ARCH005` | `TST001` | `Swa.Analyzers.Testing` | opt-in, info |
-| `ARCH006` | `TST002` | `Swa.Analyzers.Testing` | opt-in, info |
+| `ARCH016` | `REL001` | `CSF.Analyzers.Reliability` | habilitada, warning |
+| `ARCH017` | `REL002` | `CSF.Analyzers.Reliability` | habilitada, warning |
+| `ARCH021` | `REL003` | `CSF.Analyzers.Reliability` | opt-in, info |
+| `ARCH022` | `REL004` | `CSF.Analyzers.Reliability` | habilitada, warning |
+| `ARCH020` | `ARC001` | `CSF.Analyzers.Architecture` | habilitada, warning |
+| `ARCH027` | `ARC002` | `CSF.Analyzers.Architecture` | habilitada, warning |
+| `ARCH015` | `ARC003` | `CSF.Analyzers.Architecture` | opt-in, info |
+| `ARCH029` | `ARC004` | `CSF.Analyzers.Architecture` | opt-in, info |
+| `ARCH032` | `ARC005` | `CSF.Analyzers.Architecture` | opt-in, info |
+| `ARCH005` | `TST001` | `CSF.Analyzers.Testing` | opt-in, info |
+| `ARCH006` | `TST002` | `CSF.Analyzers.Testing` | opt-in, info |
 
 Neste plano, "habilitada, warning" significa diagnostico ativo por padrao com severidade `Warning`. "Opt-in, info" significa regra desabilitada por padrao para consumidores e severidade base `Info` quando habilitada explicitamente via `.editorconfig`.
 
@@ -176,7 +176,7 @@ Nenhuma regra da versao 2.0 tera code fix inicialmente.
 Consequencias:
 
 - O code fix atual de `ARCH001` nao deve ser migrado, porque `ARCH001` sera removida da implementacao ativa.
-- O projeto `src/Swa.Analyzers.CodeFixes` deve ser removido quando ficar sem uso.
+- O projeto `src/CSF.Analyzers.CodeFixes` deve ser removido quando ficar sem uso.
 - Os pacotes v2 nao devem empacotar DLL de code fix.
 - Testes de code fix associados a regras removidas devem sair da suite ativa quando a remocao da regra for implementada.
 
@@ -186,7 +186,7 @@ Codigo compartilhado entre os pacotes deve ser compartilhado como codigo-fonte, 
 
 Diretriz de implementacao:
 
-- Preferir uma pasta de fonte compartilhada, por exemplo `src/Swa.Analyzers.Shared`, contendo helpers comuns de analyzers.
+- Preferir uma pasta de fonte compartilhada, por exemplo `src/CSF.Analyzers.Shared`, contendo helpers comuns de analyzers.
 - Incluir esses arquivos nos projetos dos pacotes por `Compile Include` ou mecanismo equivalente de compartilhamento de fonte.
 - Nao criar pacote ou assembly auxiliar obrigatorio para consumo dos analyzers.
 - Manter helpers compartilhados pequenos, sem acoplar regras de dominios diferentes quando o compartilhamento nao reduzir complexidade real.
@@ -197,27 +197,27 @@ Estrutura alvo sugerida para a v2:
 
 ```text
 src/
-  Swa.Analyzers.Shared/
+  CSF.Analyzers.Shared/
     Common/
-  Swa.Analyzers.Reliability/
+  CSF.Analyzers.Reliability/
     Rules/
     AnalyzerReleases.Shipped.md
     AnalyzerReleases.Unshipped.md
-  Swa.Analyzers.Architecture/
+  CSF.Analyzers.Architecture/
     Rules/
     AnalyzerReleases.Shipped.md
     AnalyzerReleases.Unshipped.md
-  Swa.Analyzers.Testing/
+  CSF.Analyzers.Testing/
     Rules/
     AnalyzerReleases.Shipped.md
     AnalyzerReleases.Unshipped.md
-  Swa.Analyzers.Reliability.SampleApp/
-  Swa.Analyzers.Architecture.SampleApp/
-  Swa.Analyzers.Testing.SampleApp/
+  CSF.Analyzers.Reliability.SampleApp/
+  CSF.Analyzers.Architecture.SampleApp/
+  CSF.Analyzers.Testing.SampleApp/
 tests/
-  Swa.Analyzers.Reliability.Tests/
-  Swa.Analyzers.Architecture.Tests/
-  Swa.Analyzers.Testing.Tests/
+  CSF.Analyzers.Reliability.Tests/
+  CSF.Analyzers.Architecture.Tests/
+  CSF.Analyzers.Testing.Tests/
 docs/
   rules/
     v1/
@@ -294,11 +294,11 @@ Buscas recomendadas:
 
 ```powershell
 rg "ARCH\d{3}|REL\d{3}|ARC\d{3}|TST\d{3}"
-rg "Swa\.Analyzers(\.Core|\.CodeFixes)?|Swa\.Analyzers\.Reliability|Swa\.Analyzers\.Architecture|Swa\.Analyzers\.Testing"
+rg "CSF\.Analyzers(\.Core|\.CodeFixes)?|CSF\.Analyzers\.Reliability|CSF\.Analyzers\.Architecture|CSF\.Analyzers\.Testing"
 rg "dotnet_diagnostic\.(ARCH|REL|ARC|TST)\d{3}"
 ```
 
-Qualquer referencia a IDs removidos deve estar em contexto historico, migracao ou changelog. Qualquer referencia a `Swa.Analyzers.Core` como pacote publico deve ser revisada na v2.
+Qualquer referencia a IDs removidos deve estar em contexto historico, migracao ou changelog. Qualquer referencia a `CSF.Analyzers.Core` como pacote publico deve ser revisada na v2.
 
 ## Politica para entrada de novas regras no futuro
 
@@ -347,7 +347,7 @@ Escopo:
 Aceite:
 
 - Documento registra os tres pacotes v2.
-- Documento registra que nao havera metapacote `Swa.Analyzers` nesta etapa.
+- Documento registra que nao havera metapacote `CSF.Analyzers` nesta etapa.
 - Documento classifica todos os 33 IDs atuais.
 - Documento registra os 11 mapeamentos novos.
 - Documento registra as 22 regras removidas da implementacao ativa.
@@ -424,9 +424,9 @@ Escopo:
 
 Aceite:
 
-- `dotnet restore ./Swa.Analyzers.slnx --locked-mode` passa.
-- `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore` passa.
-- `dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1` passa.
+- `dotnet restore ./CSF.Analyzers.slnx --locked-mode` passa.
+- `dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore` passa.
+- `dotnet test ./CSF.Analyzers.slnx --configuration Release -m:1` passa.
 - Release check passa.
 - Pack gera exatamente os tres pacotes v2 esperados.
 - Cada pacote contem apenas sua DLL de analyzer e regras do seu dominio.

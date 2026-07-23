@@ -1,6 +1,6 @@
 # Historico de regras da linha 1.x
 
-Este documento preserva o historico documental dos IDs `ARCH###` que existiam na linha 1.x do `Swa.Analyzers`.
+Este documento preserva o historico documental dos IDs `ARCH###` que existiam na linha 1.x do `CSF.Analyzers`.
 Esses IDs nao representam necessariamente regras ativas na linha 2.0.
 
 ## Release 1.0.0

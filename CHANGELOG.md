@@ -4,9 +4,9 @@
 
 ### Adicionado
 
-- Adicionada a regra opt-in `ARC006` ao pacote `Swa.Analyzers.Architecture` para evitar entidades de dominio diretamente em contratos HTTP.
-- Adicionado target `buildTransitive` ao pacote `Swa.Analyzers.Architecture` para fornecer `.csproj` e `Directory.Build.props` como `AdditionalFiles` para `ARC005` em consumo via NuGet.
-- Adicionados guardrails de performance para o pacote `Swa.Analyzers.Testing`.
+- Adicionada a regra opt-in `ARC006` ao pacote `CSF.Analyzers.Architecture` para evitar entidades de dominio diretamente em contratos HTTP.
+- Adicionado target `buildTransitive` ao pacote `CSF.Analyzers.Architecture` para fornecer `.csproj` e `Directory.Build.props` como `AdditionalFiles` para `ARC005` em consumo via NuGet.
+- Adicionados guardrails de performance para o pacote `CSF.Analyzers.Testing`.
 
 ### Alterado
 
@@ -28,11 +28,11 @@
 
 ## [1.0.0] - 2026-05-01
 
-Primeira versÃ£o estÃ¡vel do pacote `Swa.Analyzers`.
+Primeira versÃ£o estÃ¡vel do pacote `CSF.Analyzers`.
 
 ### Adicionado
 
-- IncluÃ­da documentaÃ§Ã£o de regras em `docs/rules` e exemplos manuais em `src/Swa.Analyzers.SampleApp`.
+- IncluÃ­da documentaÃ§Ã£o de regras em `docs/rules` e exemplos manuais em `src/CSF.Analyzers.SampleApp`.
 - Adicionada validaÃ§Ã£o local e de CI para regras ARCH, documentaÃ§Ã£o, testes, SampleApp, atualizaÃ§Ãµes de changelog e mudanÃ§as de versÃ£o do pacote.
 - Adicionado suporte no workflow de release para gerar pacotes `.nupkg` e `.snupkg` a partir do `VersionPrefix` do projeto.
 
