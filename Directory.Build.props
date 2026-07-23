@@ -5,9 +5,9 @@
       '$(MSBuildProjectName)' == 'CSF.Analyzers.Reliability'
       Or '$(MSBuildProjectName)' == 'CSF.Analyzers.Architecture'
       Or '$(MSBuildProjectName)' == 'CSF.Analyzers.Testing'">true</IsCsfAnalyzerPackage>
-    <RepositoryUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</RepositoryUrl>
+    <RepositoryUrl>https://github.com/rodri-oliveira-dev/CSF.Analyzers</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/rodri-oliveira-dev/Swa.Analyzers</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/rodri-oliveira-dev/CSF.Analyzers</PackageProjectUrl>
     <Authors>Rodrigo Oliveira</Authors>
     <Company>Rodrigo Oliveira</Company>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>

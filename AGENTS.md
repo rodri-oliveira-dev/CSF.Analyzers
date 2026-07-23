@@ -19,7 +19,7 @@ Antes de alterar qualquer coisa, consulte nesta ordem quando relevante:
 7. `global.json`
 8. `CSF.Analyzers.slnx`
 9. `src/CSF.Analyzers.{Reliability,Architecture,Testing}/AnalyzerReleases.Unshipped.md`
-10. `samples/Swa.Analyzers.*.Sample/`
+10. `samples/CSF.Analyzers.*.Sample/`
 
 ## Escopo do repositório
 
@@ -33,8 +33,8 @@ Os principais componentes estão organizados em:
 - `src/CSF.Analyzers.Architecture`: implementação, identificadores e metadados de release das regras `ARC###`.
 - `src/CSF.Analyzers.Testing`: implementação, identificadores e metadados de release das regras `TST###`.
 - `src/CSF.Analyzers.Common`: código-fonte compartilhado incluído nos pacotes de analyzer.
-- `tests/Swa.Analyzers.Reliability.Tests`, `tests/Swa.Analyzers.Architecture.Tests` e `tests/Swa.Analyzers.Testing.Tests`: testes automatizados por pacote.
-- `samples/Swa.Analyzers.Reliability.Sample`, `samples/Swa.Analyzers.Architecture.Sample` e `samples/Swa.Analyzers.Testing.Sample`: exemplos manuais válidos e inválidos por pacote.
+- `tests/CSF.Analyzers.Reliability.Tests`, `tests/CSF.Analyzers.Architecture.Tests` e `tests/CSF.Analyzers.Testing.Tests`: testes automatizados por pacote.
+- `samples/CSF.Analyzers.Reliability.Sample`, `samples/CSF.Analyzers.Architecture.Sample` e `samples/CSF.Analyzers.Testing.Sample`: exemplos manuais válidos e inválidos por pacote.
 - `docs/rules`: documentação de cada regra `REL###`, `ARC###` ou `TST###`.
 - `.agents/skills`: instrucoes especializadas para o Codex trabalhar neste repositório.
 
@@ -98,7 +98,7 @@ Não use skills genéricas de serviço .NET para este repositório. Este projeto
 
 ### Testes
 
-- Use `tests/Swa.Analyzers.TestSupport/Verifier.cs` como padrão.
+- Use `tests/CSF.Analyzers.TestSupport/Verifier.cs` como padrão.
 - Testes devem cobrir diagnósticos esperados e casos negativos relevantes.
 - Para regras com dependências externas, use stubs mínimos em string ou no SampleApp quando isso evitar dependência desnecessária.
 - Cubra falsos positivos antes de ampliar heurísticas.

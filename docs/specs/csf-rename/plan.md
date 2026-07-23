@@ -10,14 +10,14 @@ Este documento e a fonte de verdade para os proximos prompts da migracao. Qualqu
 
 - Identidade principal: `Swa.Analyzers`.
 - Repositorio publico referenciado em metadados: `https://github.com/rodri-oliveira-dev/Swa.Analyzers`.
-- Solucao principal: `Swa.Analyzers.slnx`.
+- Solucao principal: `CSF.Analyzers.slnx`.
 - Pacotes ativos:
   - `Swa.Analyzers.Reliability`
   - `Swa.Analyzers.Architecture`
   - `Swa.Analyzers.Testing`
 - Projetos de analyzer em `src/Swa.Analyzers.*`.
 - Testes em `tests/Swa.Analyzers.*`.
-- Samples em `samples/Swa.Analyzers.*.Sample`.
+- Samples em `samples/CSF.Analyzers.*.Sample`.
 - Namespaces publicos/internos usam `Swa.Analyzers.*`.
 - Scripts e workflows validam explicitamente nomes de pacotes, assemblies, PDBs, caminhos, release names e repository URL com `Swa.Analyzers`.
 - Ha arquivos de IDE `.vs` e `.vscode` rastreados no Git que contem ou carregam a identidade atual, mas deveriam ser tratados antes da migracao de produto.
@@ -49,7 +49,7 @@ Nao aplicar substituicao cega em palavras nao relacionadas. Exemplo: `csharp_sty
 
 - Renomear identidade de produto em codigo, namespaces, usings, assemblies, projetos, solucao, pacotes, docs, samples, testes, scripts, hooks e workflows.
 - Atualizar metadados NuGet/MSBuild: `PackageId`, `RepositoryUrl`, `PackageProjectUrl`, `AssemblyName`, caminhos de analyzer, targets e validacoes de pacote.
-- Atualizar comandos de build/test/pack/release que apontam para `Swa.Analyzers.slnx` ou projetos `Swa.Analyzers.*`.
+- Atualizar comandos de build/test/pack/release que apontam para `CSF.Analyzers.slnx` ou projetos `Swa.Analyzers.*`.
 - Atualizar docs publicas e internas para a nova identidade.
 - Atualizar instrucoes de agentes e skills locais depois que a nova estrutura existir.
 - Ajustar arquivos de workspace/configuracao quando forem deliberadamente mantidos no repositorio.
@@ -97,10 +97,10 @@ As categorias abaixo nao sao mutuamente exclusivas; um mesmo arquivo pode aparec
 | Categoria | Arquivos no escopo | Arquivos com ocorrencias | Ocorrencias | Exemplos relevantes |
 | --------- | ------------------ | ------------------------ | ----------- | ------------------- |
 | source code | 38 | 32 | 80 | `src/Swa.Analyzers.*`, `RuleIdentifiers.cs`, `RuleHelpLinks.cs`, `AnalyzerReleases.*.md` |
-| namespaces/usings | 103 | 94 | 163 | namespaces `Swa.Analyzers.*`, usings de testes, namespaces `Swa.Analyzers.SampleApp.*` |
-| solution/projects | 11 | 11 | 51 | `Swa.Analyzers.slnx`, `*.csproj` de src/tests/samples |
-| tests | 43 | 43 | 91 | `tests/Swa.Analyzers.*.Tests`, `tests/Swa.Analyzers.TestSupport` |
-| samples | 58 | 35 | 38 | `samples/Swa.Analyzers.*.Sample`, namespaces `Swa.Analyzers.SampleApp.*` |
+| namespaces/usings | 103 | 94 | 163 | namespaces `Swa.Analyzers.*`, usings de testes, namespaces `CSF.Analyzers.SampleApp.*` |
+| solution/projects | 11 | 11 | 51 | `CSF.Analyzers.slnx`, `*.csproj` de src/tests/samples |
+| tests | 43 | 43 | 91 | `tests/CSF.Analyzers.*.Tests`, `tests/CSF.Analyzers.TestSupport` |
+| samples | 58 | 35 | 38 | `samples/CSF.Analyzers.*.Sample`, namespaces `CSF.Analyzers.SampleApp.*` |
 | NuGet/MSBuild | 25 | 17 | 56 | `Directory.Build.props`, `Directory.Build.targets`, `packages.lock.json`, `buildTransitive/*.targets`, csproj |
 | scripts | 3 | 3 | 30 | `Validate-Release.ps1`, `Inspect-NuGetPackages.ps1`, `Validate-AnalyzerPackageIsolation.ps1` |
 | CI/workflows/hooks | 8 | 4 | 21 | `.github/workflows/dotnet.yml`, `release.yml`, `codeql.yml`, `.githooks/pre-push` |
@@ -108,7 +108,7 @@ As categorias abaixo nao sao mutuamente exclusivas; um mesmo arquivo pode aparec
 | configuracao | 18 | 13 | 494 | `.editorconfig`, `.gitignore`, `Swa.Analyzers.code-workspace`, `.vs`, `.vscode` |
 | URLs | 227 | 14 | 52 | repository URL, package project URL, links externos em docs/specs |
 | instrucoes de agentes | 7 | 6 | 45 | `.agents/skills/*/SKILL.md` |
-| nomes de arquivos/diretorios | 156 | 156 | 156 | `Swa.Analyzers.slnx`, `src/Swa.Analyzers.*`, `tests/Swa.Analyzers.*`, `samples/Swa.Analyzers.*`, `.vs/Swa.Analyzers.slnx` |
+| nomes de arquivos/diretorios | 156 | 156 | 156 | `CSF.Analyzers.slnx`, `src/Swa.Analyzers.*`, `tests/Swa.Analyzers.*`, `samples/Swa.Analyzers.*`, `.vs/CSF.Analyzers.slnx` |
 | arquivos rastreados que deveriam estar ignorados | 13 | 13 | 13 | `.vs/*`, `.vscode/*` |
 
 ### Arquivos rastreados que deveriam estar ignorados
@@ -118,12 +118,12 @@ Os seguintes arquivos estao rastreados e devem ser tratados em etapa propria ant
 - `.vs/ProjectEvaluation/swa.analyzers.metadata.v10.bin`
 - `.vs/ProjectEvaluation/swa.analyzers.projects.v10.bin`
 - `.vs/ProjectEvaluation/swa.analyzers.strings.v10.bin`
-- `.vs/Swa.Analyzers.slnx/DesignTimeBuild/.dtbcache.v2`
-- `.vs/Swa.Analyzers.slnx/FileContentIndex/cf511b9d-91b3-4172-9aa0-77a8ed253c99.vsidx`
-- `.vs/Swa.Analyzers.slnx/v18/.futdcache.v2`
-- `.vs/Swa.Analyzers.slnx/v18/.suo`
-- `.vs/Swa.Analyzers.slnx/v18/DocumentLayout.backup.json`
-- `.vs/Swa.Analyzers.slnx/v18/DocumentLayout.json`
+- `.vs/CSF.Analyzers.slnx/DesignTimeBuild/.dtbcache.v2`
+- `.vs/CSF.Analyzers.slnx/FileContentIndex/cf511b9d-91b3-4172-9aa0-77a8ed253c99.vsidx`
+- `.vs/CSF.Analyzers.slnx/v18/.futdcache.v2`
+- `.vs/CSF.Analyzers.slnx/v18/.suo`
+- `.vs/CSF.Analyzers.slnx/v18/DocumentLayout.backup.json`
+- `.vs/CSF.Analyzers.slnx/v18/DocumentLayout.json`
 - `.vscode/extensions.json`
 - `.vscode/launch.json`
 - `.vscode/settings.json`
@@ -134,7 +134,7 @@ Arquivos ignorados presentes no checkout apos o baseline: 1408 no total, agrupad
 ## Arquivos e diretorios afetados
 
 - Raiz:
-  - `Swa.Analyzers.slnx`
+  - `CSF.Analyzers.slnx`
   - `Swa.Analyzers.code-workspace`
   - `README.md`
   - `CHANGELOG.md`
@@ -152,15 +152,15 @@ Arquivos ignorados presentes no checkout apos o baseline: 1408 no total, agrupad
   - `src/Swa.Analyzers.Common`
   - `src/Swa.Analyzers.Architecture/buildTransitive/Swa.Analyzers.Architecture.targets`
 - Tests:
-  - `tests/Swa.Analyzers.Reliability.Tests`
-  - `tests/Swa.Analyzers.Architecture.Tests`
-  - `tests/Swa.Analyzers.Testing.Tests`
-  - `tests/Swa.Analyzers.PackageValidation.Tests`
-  - `tests/Swa.Analyzers.TestSupport`
+  - `tests/CSF.Analyzers.Reliability.Tests`
+  - `tests/CSF.Analyzers.Architecture.Tests`
+  - `tests/CSF.Analyzers.Testing.Tests`
+  - `tests/CSF.Analyzers.PackageValidation.Tests`
+  - `tests/CSF.Analyzers.TestSupport`
 - Samples:
-  - `samples/Swa.Analyzers.Reliability.Sample`
-  - `samples/Swa.Analyzers.Architecture.Sample`
-  - `samples/Swa.Analyzers.Testing.Sample`
+  - `samples/CSF.Analyzers.Reliability.Sample`
+  - `samples/CSF.Analyzers.Architecture.Sample`
+  - `samples/CSF.Analyzers.Testing.Sample`
 - Scripts:
   - `scripts/Validate-Release.ps1`
   - `scripts/Inspect-NuGetPackages.ps1`
@@ -234,7 +234,8 @@ Arquivos ignorados presentes no checkout apos o baseline: 1408 no total, agrupad
 
 - Etapa 1 concluida no commit `docs: specify CSF rename migration`.
 - Etapa 2 pendente; arquivos `.vs/**` e `.vscode/**` rastreados continuam fora da fonte de verdade.
-- Etapa 3 parcialmente concluida em `docs/specs/csf-rename/02-source-projects.md`: solucao, diretorios e arquivos de projeto em `src` foram renomeados para `CSF.Analyzers.*`; tests e samples ainda nao foram renomeados por limite explicito desta etapa, mas suas referencias para source foram atualizadas.
+- Etapa 3 concluida em `docs/specs/csf-rename/03-tests-samples.md`: diretorios, projetos, namespaces e referencias de tests e samples foram renomeados para `CSF.Analyzers.*`.
+- Etapa 4 concluida em `docs/specs/csf-rename/04-packaging-release.md`: PackageIds, metadata NuGet, scripts, workflows, hooks, package validation e docs operacionais de release foram migrados para `CSF.Analyzers.*`.
 
 ## Riscos
 
@@ -266,11 +267,11 @@ Baseline executado nesta etapa em 2026-07-23:
 
 | Comando | Resultado |
 | ------- | --------- |
-| `dotnet restore ./Swa.Analyzers.slnx` | Aprovado; todos os projetos atualizados para restauracao. |
-| `dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore` | Aprovado; 0 avisos, 0 erros. |
-| `dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1` | Aprovado; 246 testes, 0 falhas. |
+| `dotnet restore ./CSF.Analyzers.slnx` | Aprovado; todos os projetos atualizados para restauracao. |
+| `dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore` | Aprovado; 0 avisos, 0 erros. |
+| `dotnet test ./CSF.Analyzers.slnx --configuration Release -m:1` | Aprovado; 246 testes, 0 falhas. |
 | `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-Release.ps1` | Aprovado; `release-check: validacoes aprovadas`. |
-| `dotnet pack ./Swa.Analyzers.slnx --configuration Release --no-build --output ./artifacts/csf-rename-baseline /p:PackageVersion=0.0.0-csf-baseline` | Aprovado; 3 `.nupkg` e 3 `.snupkg` gerados. |
+| `dotnet pack ./CSF.Analyzers.slnx --configuration Release --no-build --output ./artifacts/csf-rename-baseline /p:PackageVersion=0.0.0-csf-baseline` | Aprovado; 3 `.nupkg` e 3 `.snupkg` gerados. |
 | `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Inspect-NuGetPackages.ps1 -PackageDirectory ./artifacts/csf-rename-baseline -Version '0.0.0-csf-baseline'` | Aprovado; package inspection aprovada. |
 | `powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/Validate-AnalyzerPackageIsolation.ps1 -PackageDirectory ./artifacts/csf-rename-baseline -Version '0.0.0-csf-baseline'` | Aprovado; 3 testes de isolamento e package inspection aprovados. |
 

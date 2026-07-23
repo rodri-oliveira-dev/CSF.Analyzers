@@ -1,8 +1,8 @@
-# Swa.Analyzers.Reliability
+# CSF.Analyzers.Reliability
 
 ## Objetivo
 
-`Swa.Analyzers.Reliability` reúne regras de confiabilidade e performance operacional para fluxos ASP.NET, hosted services e consultas EF Core.
+`CSF.Analyzers.Reliability` reúne regras de confiabilidade e performance operacional para fluxos ASP.NET, hosted services e consultas EF Core.
 
 ## Público-alvo
 
@@ -13,7 +13,7 @@ Use em APIs, workers, hosted services, serviços ASP.NET Core e projetos que exe
 Use este comando quando o pacote estiver publicado no NuGet.org ou disponível no feed privado/local configurado no projeto. A publicação no NuGet.org ainda não está habilitada no workflow de release.
 
 ```powershell
-dotnet add package Swa.Analyzers.Reliability
+dotnet add package CSF.Analyzers.Reliability
 ```
 
 Em projetos com Central Package Management, declare a versão em `Directory.Packages.props` e mantenha o `PackageReference` sem `Version`.

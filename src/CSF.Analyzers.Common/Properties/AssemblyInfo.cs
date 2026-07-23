@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Swa.Analyzers.Tests")]
-[assembly: InternalsVisibleTo("Swa.Analyzers.Reliability.Tests")]
-[assembly: InternalsVisibleTo("Swa.Analyzers.Architecture.Tests")]
-[assembly: InternalsVisibleTo("Swa.Analyzers.Testing.Tests")]
+[assembly: InternalsVisibleTo("CSF.Analyzers.Tests")]
+[assembly: InternalsVisibleTo("CSF.Analyzers.Reliability.Tests")]
+[assembly: InternalsVisibleTo("CSF.Analyzers.Architecture.Tests")]
+[assembly: InternalsVisibleTo("CSF.Analyzers.Testing.Tests")]

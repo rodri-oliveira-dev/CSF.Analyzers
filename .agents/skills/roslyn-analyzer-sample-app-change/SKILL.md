@@ -11,14 +11,14 @@ Manter os samples uteis para validacao manual e demonstracao dos analyzers, sem 
 
 Use esta skill quando a tarefa envolver:
 
-- `samples/Swa.Analyzers.*.Sample`;
+- `samples/CSF.Analyzers.*.Sample`;
 - exemplos validos ou invalidos de regras `REL###`, `ARC###` ou `TST###`;
 - stubs para frameworks externos;
 - ajustes de `.editorconfig` dos samples.
 
 # Organizacao
 
-- Exemplos devem ficar em `samples/Swa.Analyzers.<Pacote>.Sample/<Prefixo><Numero>/`.
+- Exemplos devem ficar em `samples/CSF.Analyzers.<Pacote>.Sample/<Prefixo><Numero>/`.
 - Use `*_Invalid.cs` para codigo intencionalmente nao conforme.
 - Use `*_Valid.cs` para codigo conforme.
 - Use `Stubs/` apenas quando necessario para habilitar reconhecimento simbolico.
@@ -27,10 +27,10 @@ Use esta skill quando a tarefa envolver:
 
 - Nao adicione pacotes reais quando stubs minimos forem suficientes.
 - Nao deixe exemplos invalidos quebrarem a compilacao como erro, salvo quando isso for explicito.
-- Nao use samples como suite principal de testes; a fonte de verdade fica em `tests/Swa.Analyzers.*.Tests`.
+- Nao use samples como suite principal de testes; a fonte de verdade fica em `tests/CSF.Analyzers.*.Tests`.
 
 # Validacao manual
 
 ```bash
-dotnet build samples/Swa.Analyzers.<Pacote>.Sample/Swa.Analyzers.<Pacote>.Sample.csproj
+dotnet build samples/CSF.Analyzers.<Pacote>.Sample/CSF.Analyzers.<Pacote>.Sample.csproj
 ```

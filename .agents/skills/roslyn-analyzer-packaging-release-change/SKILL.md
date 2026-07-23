@@ -5,13 +5,13 @@ description: Use esta skill ao alterar empacotamento, release metadata, NuGet, C
 
 # Objetivo
 
-Preservar a distribuicao correta dos pacotes `Swa.Analyzers.Reliability`, `Swa.Analyzers.Architecture` e `Swa.Analyzers.Testing`, evitando dependencias vazadas para consumidores e mantendo CI, lock file e metadados consistentes.
+Preservar a distribuicao correta dos pacotes `CSF.Analyzers.Reliability`, `CSF.Analyzers.Architecture` e `CSF.Analyzers.Testing`, evitando dependencias vazadas para consumidores e mantendo CI, lock file e metadados consistentes.
 
 # Quando usar
 
 Use esta skill quando a tarefa envolver:
 
-- projetos em `src/Swa.Analyzers.{Reliability,Architecture,Testing}`;
+- projetos em `src/CSF.Analyzers.{Reliability,Architecture,Testing}`;
 - `Directory.Packages.props`;
 - `packages.lock.json`;
 - `AnalyzerReleases.Unshipped.md`;
@@ -37,8 +37,8 @@ Use esta skill quando a tarefa envolver:
 # Validacao
 
 ```bash
-dotnet restore ./Swa.Analyzers.slnx --locked-mode
-dotnet build ./Swa.Analyzers.slnx --configuration Release --no-restore
-dotnet test ./Swa.Analyzers.slnx --configuration Release -m:1
-dotnet pack ./Swa.Analyzers.slnx --configuration Release --no-build
+dotnet restore ./CSF.Analyzers.slnx --locked-mode
+dotnet build ./CSF.Analyzers.slnx --configuration Release --no-restore
+dotnet test ./CSF.Analyzers.slnx --configuration Release -m:1
+dotnet pack ./CSF.Analyzers.slnx --configuration Release --no-build
 ```

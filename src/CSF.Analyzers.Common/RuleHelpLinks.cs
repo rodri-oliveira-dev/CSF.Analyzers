@@ -2,7 +2,7 @@ namespace CSF.Analyzers.Common;
 
 internal static class RuleHelpLinks
 {
-    private const string RulesBaseUrl = "https://github.com/rodri-oliveira-dev/Swa.Analyzers/blob/main/docs/rules/";
+    private const string RulesBaseUrl = "https://github.com/rodri-oliveira-dev/CSF.Analyzers/blob/main/docs/rules/";
 
     public static string ForRule(string ruleId) => RulesBaseUrl + GetRuleGroup(ruleId) + "/" + ruleId + ".md";
 
