@@ -237,6 +237,7 @@ Arquivos ignorados presentes no checkout apos o baseline: 1408 no total, agrupad
 - Etapa 3 concluida em `docs/specs/csf-rename/03-tests-samples.md`: diretorios, projetos, namespaces e referencias de tests e samples foram renomeados para `CSF.Analyzers.*`.
 - Etapa 4 concluida em `docs/specs/csf-rename/04-packaging-release.md`: PackageIds, metadata NuGet, scripts, workflows, hooks, package validation e docs operacionais de release foram migrados para `CSF.Analyzers.*`.
 - Etapa 5 documental concluida em `docs/specs/csf-rename/05-documentation.md`: README, CHANGELOG, docs publicas, docs de pacote, docs de regras, guias, reviews, history, specs de proximos analyzers e instrucoes de agentes foram atualizados para a identidade `CSF`, preservando apenas referencias migratorias deliberadas e URLs temporarias do slug remoto atual.
+- Etapa 6 concluida em `docs/specs/csf-rename/06-github-repository.md`: repositorio GitHub renomeado para `rodri-oliveira-dev/CSF.Analyzers`, `origin` local atualizado explicitamente e URLs ativas confirmadas no slug novo.
 
 ## Riscos
 

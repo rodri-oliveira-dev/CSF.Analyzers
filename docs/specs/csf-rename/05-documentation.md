@@ -5,7 +5,7 @@
 - Worktree limpo antes da implementacao.
 - A etapa anterior concluiu a migracao de PackageIds, scripts, workflows, hooks e validacoes de release para `CSF.Analyzers.*`.
 - `README.md`, `CHANGELOG.md`, `docs/**`, `AGENTS.md` e `.agents/skills/**` ainda continham referencias textuais ao nome antigo em documentacao publica, historica, specs e comandos.
-- O repositorio remoto ainda nao foi renomeado. URLs cujo hostname/path dependem do slug atual `rodri-oliveira-dev/Swa.Analyzers` permanecem como excecao temporaria nesta etapa.
+- O repositorio remoto ainda nao tinha sido renomeado nesta etapa. URLs cujo hostname/path dependiam do slug `rodri-oliveira-dev/Swa.Analyzers` permaneceram como excecao temporaria ate a etapa 06.
 
 ## Inventario antes das alteracoes
 
@@ -53,9 +53,9 @@ dotnet add package CSF.Analyzers.Testing
 - Atualizado o comando de busca em `docs/history/refactoring-v2-plan.md` para procurar a identidade `CSF`.
 - Preservadas specs anteriores de `docs/specs/csf-rename` como registro migratorio de origem/destino, evitando transformar evidencias historicas em tabelas `CSF -> CSF`.
 
-## Excecoes temporarias de URL
+## Excecoes temporarias de URL resolvidas na etapa 06
 
-As ocorrencias abaixo permanecem porque o slug remoto ainda depende do nome atual do repositorio GitHub. Nao foram criadas URLs `CSF.Analyzers` nesta etapa.
+As ocorrencias abaixo permaneceram nesta etapa porque o slug remoto ainda dependia do nome anterior do repositorio GitHub. A etapa 06 renomeou o repositorio remoto e removeu essa excecao temporaria para URLs ativas.
 
 | Arquivo | Ocorrencia |
 | ------- | ---------- |

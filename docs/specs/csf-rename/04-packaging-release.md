@@ -99,8 +99,8 @@ Deve ser validado:
 
 ## Exceções temporárias de URL
 
-- `https://github.com/rodri-oliveira-dev/Swa.Analyzers` pode permanecer somente onde documentar historico da migracao ou onde for necessario manter links funcionais antes do rename remoto.
-- Nesta etapa, a URL ativa de package metadata e help links sera migrada para `https://github.com/rodri-oliveira-dev/CSF.Analyzers`, mesmo que o rename remoto ainda nao tenha ocorrido. Risco: links podem retornar 404 ate o repositorio remoto ser renomeado.
+- `https://github.com/rodri-oliveira-dev/Swa.Analyzers` podia permanecer somente onde documentasse historico da migracao ou onde fosse necessario manter links funcionais antes do rename remoto.
+- Nesta etapa, a URL ativa de package metadata e help links foi migrada para `https://github.com/rodri-oliveira-dev/CSF.Analyzers`, mesmo que o rename remoto ainda nao tivesse ocorrido. A etapa 06 removeu esse risco ao renomear o repositorio GitHub.
 - O plano historico em `docs/specs/csf-rename/plan.md` e specs anteriores podem manter referencias `Swa.Analyzers` como registro do estado anterior.
 
 ## Riscos de contrato externo
