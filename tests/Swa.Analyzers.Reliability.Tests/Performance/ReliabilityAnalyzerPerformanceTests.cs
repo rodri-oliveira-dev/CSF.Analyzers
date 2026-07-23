@@ -36,6 +36,33 @@ public sealed class ReliabilityAnalyzerPerformanceTests
             $"REL003 took {result.Elapsed.TotalSeconds:n2}s, above the {ConservativeLimit.TotalSeconds:n0}s guardrail.");
     }
 
+    [Fact]
+    public async Task REL005_handles_many_local_concurrency_patterns_within_guardrail()
+    {
+        var sources = new[]
+            {
+                ("EfCoreStubs.cs", EfCoreStubs),
+            }
+            .Concat(AnalyzerPerformanceRunner.CreateNumberedSources(
+                "ConcurrentEfQueries",
+                36,
+                CreateConcurrentEfQuerySource));
+
+        var result = await AnalyzerPerformanceRunner.MeasureAsync(
+            new Rel005AvoidConcurrentDbContextOperationsAnalyzer(),
+            sources,
+            new Dictionary<string, ReportDiagnostic>
+            {
+                ["REL005"] = ReportDiagnostic.Warn,
+            });
+
+        Assert.Equal(36, result.Diagnostics.Length);
+        Assert.All(result.Diagnostics, diagnostic => Assert.Equal("REL005", diagnostic.Id));
+        Assert.True(
+            result.Elapsed < ConservativeLimit,
+            $"REL005 took {result.Elapsed.TotalSeconds:n2}s, above the {ConservativeLimit.TotalSeconds:n0}s guardrail.");
+    }
+
     private static string CreateEfQuerySource(int index)
     {
         return $$"""
@@ -82,6 +109,48 @@ public sealed class OrdersQuery{{index}}
         var customer = await _db.Customers.FirstOrDefaultAsync();
         var customerIds = await _db.Customers.Select(customer => customer.Id).ToListAsync();
         var projectedOrders = await _db.Orders.Select(order => order).ToListAsync();
+    }
+}
+""";
+    }
+
+    private static string CreateConcurrentEfQuerySource(int index)
+    {
+        return $$"""
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
+namespace Performance.EfCore.ConcurrentQueries{{index}};
+
+public sealed class OrdersDbContext{{index}} : DbContext
+{
+    public DbSet<Order{{index}}> Orders => throw new System.NotImplementedException();
+    public DbSet<Customer{{index}}> Customers => throw new System.NotImplementedException();
+}
+
+public sealed class Order{{index}}
+{
+}
+
+public sealed class Customer{{index}}
+{
+}
+
+public sealed class OrdersQuery{{index}}
+{
+    private readonly OrdersDbContext{{index}} _db;
+
+    public OrdersQuery{{index}}(OrdersDbContext{{index}} db)
+    {
+        _db = db;
+    }
+
+    public async Task ExecuteAsync()
+    {
+        var firstTask = _db.Orders.ToListAsync();
+        var secondTask = _db.Customers.ToListAsync();
+
+        await Task.WhenAll(firstTask, secondTask);
     }
 }
 """;

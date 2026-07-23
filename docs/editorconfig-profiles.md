@@ -12,6 +12,7 @@ Regras opt-in permanecem desabilitadas nos perfis genéricos, salvo quando o per
 | `REL002` | Reliability | `warning` | Boa candidata a bloqueio após inventário. |
 | `REL003` | Reliability | opt-in `info` | Ative em projetos EF Core com política de leitura sem tracking. |
 | `REL004` | Reliability | `warning` | Útil para consultas EF Core materializadas cedo demais. |
+| `REL005` | Reliability | `warning` | Evita operacoes concorrentes no mesmo `DbContext`. |
 | `ARC001` | Architecture | `warning` | Exige decisão explícita de autorização. |
 | `ARC002` | Architecture | `warning` | Configure namespaces antes de elevar severidade. |
 | `ARC003` | Architecture | opt-in `info` | Política de API orientada a recursos. |
@@ -29,6 +30,7 @@ Perfil inicial para projetos ativos. Mantém somente regras já habilitadas por 
 dotnet_diagnostic.REL001.severity = info
 dotnet_diagnostic.REL002.severity = warning
 dotnet_diagnostic.REL004.severity = info
+dotnet_diagnostic.REL005.severity = warning
 dotnet_diagnostic.ARC001.severity = warning
 dotnet_diagnostic.ARC002.severity = info
 ```
@@ -42,6 +44,7 @@ Perfil para bases novas ou já saneadas. Não ativa regras opt-in de política l
 dotnet_diagnostic.REL001.severity = warning
 dotnet_diagnostic.REL002.severity = error
 dotnet_diagnostic.REL004.severity = warning
+dotnet_diagnostic.REL005.severity = error
 dotnet_diagnostic.ARC001.severity = error
 dotnet_diagnostic.ARC002.severity = warning
 ```
@@ -55,6 +58,7 @@ Perfil para serviços ASP.NET e projetos com EF Core.
 dotnet_diagnostic.REL001.severity = warning
 dotnet_diagnostic.REL002.severity = warning
 dotnet_diagnostic.REL004.severity = warning
+dotnet_diagnostic.REL005.severity = warning
 
 # Ative quando consultas de leitura devem explicitar ausência de tracking.
 dotnet_diagnostic.REL003.severity = info
@@ -107,6 +111,7 @@ dotnet_diagnostic.REL001.severity = info
 dotnet_diagnostic.REL002.severity = info
 dotnet_diagnostic.REL003.severity = none
 dotnet_diagnostic.REL004.severity = info
+dotnet_diagnostic.REL005.severity = info
 dotnet_diagnostic.ARC001.severity = info
 dotnet_diagnostic.ARC002.severity = info
 dotnet_diagnostic.ARC003.severity = none

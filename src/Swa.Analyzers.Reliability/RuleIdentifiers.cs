@@ -6,4 +6,5 @@ internal static class RuleIdentifiers
     public const string ProhibitFireAndForgetInRequestFlow = "REL002";
     public const string PreferAsNoTrackingForReadOnlyQueries = "REL003";
     public const string AvoidPrematureQueryMaterialization = "REL004";
+    public const string AvoidConcurrentDbContextOperations = "REL005";
 }

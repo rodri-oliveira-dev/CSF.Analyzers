@@ -22,6 +22,7 @@ dotnet add package Swa.Analyzers.Reliability
 | [`REL002`](../rules/reliability/REL002.md) | Reliability | `Warning` | Habilitada |
 | [`REL003`](../rules/reliability/REL003.md) | Performance | `Info` | Opt-in |
 | [`REL004`](../rules/reliability/REL004.md) | Performance | `Warning` | Habilitada |
+| [`REL005`](../rules/reliability/REL005.md) | Reliability | `Warning` | Habilitada |
 
 ## Configuração
 
@@ -30,6 +31,7 @@ dotnet add package Swa.Analyzers.Reliability
 dotnet_diagnostic.REL001.severity = warning
 dotnet_diagnostic.REL002.severity = warning
 dotnet_diagnostic.REL004.severity = warning
+dotnet_diagnostic.REL005.severity = warning
 
 # Opt-in para política EF Core de leitura sem tracking.
 dotnet_diagnostic.REL003.severity = info
