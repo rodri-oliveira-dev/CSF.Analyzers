@@ -2,13 +2,13 @@
 
 ## Objetivo
 
-`Swa.Analyzers.Testing` reúne regras opt-in para aumentar precisão de testes com NSubstitute e FluentAssertions.
+`Swa.Analyzers.Testing` reune regras opt-in para aumentar precisao de testes com NSubstitute e FluentAssertions.
 
-## Público-alvo
+## Publico-alvo
 
-Use em projetos de teste que adotam convenções explícitas para matchers de mocks e comparações de equivalência.
+Use em projetos de teste que adotam convencoes explicitas para matchers de mocks e comparacoes de equivalencia.
 
-## Instalação
+## Instalacao
 
 ```powershell
 dotnet add package Swa.Analyzers.Testing
@@ -21,7 +21,7 @@ dotnet add package Swa.Analyzers.Testing
 | [`TST001`](../rules/testing/TST001.md) | TestQuality | `Info` | Opt-in |
 | [`TST002`](../rules/testing/TST002.md) | TestQuality | `Info` | Opt-in |
 
-## Configuração
+## Configuracao
 
 ```ini
 [*.cs]
@@ -29,16 +29,16 @@ dotnet_diagnostic.TST001.severity = warning
 dotnet_diagnostic.TST002.severity = warning
 ```
 
-As regras deste pacote não têm opções públicas além da severidade.
+As regras deste pacote nao tem opcoes publicas alem da severidade.
 
-## Limitações
+## Limitacoes
 
-As regras só rodam em contexto de teste reconhecido por atributos conhecidos. `TST001` exige referência a `NSubstitute.Arg`; `TST002` confirma que `BeEquivalentTo` vem de namespace `FluentAssertions` e que `Excluding*` vem de `FluentAssertions.Equivalency`.
+As regras so rodam em contexto de teste reconhecido por atributos conhecidos. `TST001` exige referencia a `NSubstitute.Arg` e resolve semanticamente `Arg.Any<T>()`, `ReturnsForAnyArgs`, `WhenForAnyArgs` e `ReceivedWithAnyArgs`; `TST002` confirma que `BeEquivalentTo` vem de namespace `FluentAssertions` e que `Excluding*` vem de `FluentAssertions.Equivalency`.
 
-## Relação com analyzers externos
+## Relacao com analyzers externos
 
-Analyzers de teste externos podem complementar o pacote. Estas regras cobrem convenções específicas de uso de NSubstitute e FluentAssertions.
+Analyzers de teste externos podem complementar o pacote. `TST001` cobre a convencao local de evitar matching amplo em setups e expectativas positivas do NSubstitute, preservando verificacoes negativas deliberadamente permissivas. `TST002` cobre convencoes especificas de equivalencia com FluentAssertions.
 
-## Quando não usar
+## Quando nao usar
 
-Não instale em projetos de produção. Não ative se o time aceita `Arg.Any()` amplo ou exclusões em equivalência como prática normal.
+Nao instale em projetos de producao. Nao ative se o time aceita `Arg.Any()` ou APIs `*AnyArgs` amplas em setups e expectativas positivas, ou exclusoes em equivalencia como pratica normal.

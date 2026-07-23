@@ -23,8 +23,10 @@ public sealed class AnalyzerPackageIsolationTests
                     new Rel002ProhibitFireAndForgetInRequestFlowAnalyzer(),
                     new Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
                     new Rel004AvoidPrematureQueryMaterializationAnalyzer(),
+                    new Rel005AvoidConcurrentDbContextOperationsAnalyzer(),
+                    new Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer(),
                 ],
-                ["REL001", "REL002", "REL003", "REL004"]),
+                ["REL001", "REL002", "REL003", "REL004", "REL005", "REL006"]),
             new AnalyzerPackage(
                 "Swa.Analyzers.Architecture",
                 [
@@ -33,8 +35,9 @@ public sealed class AnalyzerPackageIsolationTests
                     new Arc003ProhibitVerbsInHttpRoutesAnalyzer(),
                     new Arc004ProhibitPublicSettersInDomainEntitiesAnalyzer(),
                     new Arc005AvoidDuplicatedMsBuildPropertiesAnalyzer(),
+                    new Arc006AvoidDomainEntitiesInHttpContractsAnalyzer(),
                 ],
-                ["ARC001", "ARC002", "ARC003", "ARC004", "ARC005"]),
+                ["ARC001", "ARC002", "ARC003", "ARC004", "ARC005", "ARC006"]),
             new AnalyzerPackage(
                 "Swa.Analyzers.Testing",
                 [
@@ -76,13 +79,14 @@ public sealed class AnalyzerPackageIsolationTests
                 new Arc003ProhibitVerbsInHttpRoutesAnalyzer(),
                 new Arc004ProhibitPublicSettersInDomainEntitiesAnalyzer(),
                 new Arc005AvoidDuplicatedMsBuildPropertiesAnalyzer(),
+                new Arc006AvoidDomainEntitiesInHttpContractsAnalyzer(),
                 new Tst001RestrictArgAnyUsageAnalyzer(),
                 new Tst002WarnOnExcludingInBeEquivalentToAnalyzer(),
             }
             .SelectMany(static analyzer => analyzer.SupportedDiagnostics)
             .ToDictionary(static descriptor => descriptor.Id, StringComparer.Ordinal);
 
-        foreach (var diagnosticId in new[] { "REL003", "ARC003", "ARC004", "ARC005", "TST001", "TST002" })
+        foreach (var diagnosticId in new[] { "REL003", "ARC003", "ARC004", "ARC005", "ARC006", "TST001", "TST002" })
         {
             Assert.False(descriptors[diagnosticId].IsEnabledByDefault);
             Assert.Equal(DiagnosticSeverity.Info, descriptors[diagnosticId].DefaultSeverity);
@@ -98,11 +102,14 @@ public sealed class AnalyzerPackageIsolationTests
                 new Rel002ProhibitFireAndForgetInRequestFlowAnalyzer(),
                 new Rel003PreferAsNoTrackingForReadOnlyQueriesAnalyzer(),
                 new Rel004AvoidPrematureQueryMaterializationAnalyzer(),
+                new Rel005AvoidConcurrentDbContextOperationsAnalyzer(),
+                new Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer(),
                 new Arc001RequireExplicitAuthorizationOnHttpEndpointsAnalyzer(),
                 new Arc002PreventInfrastructureDependenciesInCoreLayersAnalyzer(),
                 new Arc003ProhibitVerbsInHttpRoutesAnalyzer(),
                 new Arc004ProhibitPublicSettersInDomainEntitiesAnalyzer(),
                 new Arc005AvoidDuplicatedMsBuildPropertiesAnalyzer(),
+                new Arc006AvoidDomainEntitiesInHttpContractsAnalyzer(),
                 new Tst001RestrictArgAnyUsageAnalyzer(),
                 new Tst002WarnOnExcludingInBeEquivalentToAnalyzer(),
             }

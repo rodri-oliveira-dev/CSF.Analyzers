@@ -7,4 +7,5 @@ internal static class RuleIdentifiers
     public const string PreventInfrastructureDependenciesInCoreLayers = "ARC002";
     public const string ProhibitPublicSettersInDomainEntities = "ARC004";
     public const string AvoidDuplicatedMsBuildProperties = "ARC005";
+    public const string AvoidDomainEntitiesInHttpContracts = "ARC006";
 }

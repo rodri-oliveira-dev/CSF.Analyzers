@@ -4,6 +4,7 @@
 
 ### Adicionado
 
+- Adicionada a regra opt-in `ARC006` ao pacote `Swa.Analyzers.Architecture` para evitar entidades de dominio diretamente em contratos HTTP.
 - Adicionado target `buildTransitive` ao pacote `Swa.Analyzers.Architecture` para fornecer `.csproj` e `Directory.Build.props` como `AdditionalFiles` para `ARC005` em consumo via NuGet.
 - Adicionados guardrails de performance para o pacote `Swa.Analyzers.Testing`.
 

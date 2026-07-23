@@ -127,14 +127,14 @@ $packages = @(
         Prefix = "REL"
         TestProject = "tests/Swa.Analyzers.Reliability.Tests"
         SampleProject = "samples/Swa.Analyzers.Reliability.Sample"
-        RuleIds = @("REL001", "REL002", "REL003", "REL004")
+        RuleIds = @("REL001", "REL002", "REL003", "REL004", "REL005", "REL006")
     },
     @{
         Name = "Swa.Analyzers.Architecture"
         Prefix = "ARC"
         TestProject = "tests/Swa.Analyzers.Architecture.Tests"
         SampleProject = "samples/Swa.Analyzers.Architecture.Sample"
-        RuleIds = @("ARC001", "ARC002", "ARC003", "ARC004", "ARC005")
+        RuleIds = @("ARC001", "ARC002", "ARC003", "ARC004", "ARC005", "ARC006")
     },
     @{
         Name = "Swa.Analyzers.Testing"

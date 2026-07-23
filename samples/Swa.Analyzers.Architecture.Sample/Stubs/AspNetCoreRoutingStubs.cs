@@ -8,6 +8,19 @@ namespace Microsoft.AspNetCore.Mvc
     {
     }
 
+    public interface IActionResult
+    {
+    }
+
+    public class ActionResult<T>
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public sealed class FromServicesAttribute : Attribute
+    {
+    }
+
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     public class RouteAttribute : Attribute
     {
@@ -104,7 +117,13 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IEndpointConventionBuilder MapGet(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => new EndpointConventionBuilder();
 
+        public static IEndpointConventionBuilder MapGet<TResponse>(this IEndpointRouteBuilder endpoints, string pattern, Func<TResponse> handler) => new EndpointConventionBuilder();
+
+        public static IEndpointConventionBuilder MapGet<TRequest, TResponse>(this IEndpointRouteBuilder endpoints, string pattern, Func<TRequest, TResponse> handler) => new EndpointConventionBuilder();
+
         public static IEndpointConventionBuilder MapPost(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => new EndpointConventionBuilder();
+
+        public static IEndpointConventionBuilder MapPost<TRequest, TResponse>(this IEndpointRouteBuilder endpoints, string pattern, Func<TRequest, TResponse> handler) => new EndpointConventionBuilder();
 
         public static IEndpointConventionBuilder MapPut(this IEndpointRouteBuilder endpoints, string pattern, Action handler) => new EndpointConventionBuilder();
 
@@ -128,6 +147,34 @@ namespace Microsoft.AspNetCore.Routing
 {
     public interface IEndpointRouteBuilder
     {
+    }
+}
+
+namespace Microsoft.AspNetCore.Http.HttpResults
+{
+    public sealed class Ok
+    {
+    }
+
+    public sealed class Ok<T>
+    {
+    }
+
+    public sealed class Created<T>
+    {
+    }
+}
+
+namespace Microsoft.AspNetCore.Http
+{
+    public static class Results
+    {
+        public static HttpResults.Ok Ok() => new();
+    }
+
+    public static class TypedResults
+    {
+        public static HttpResults.Ok<T> Ok<T>(T value) => new();
     }
 }
 

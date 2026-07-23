@@ -10,12 +10,24 @@ namespace Microsoft.EntityFrameworkCore;
 
 public abstract class DbContext
 {
+    public DbSet<TEntity> Set<TEntity>()
+        where TEntity : class
+    {
+        throw new NotImplementedException();
+    }
+
     public int SaveChanges() => 0;
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return Task.FromResult(0);
     }
+}
+
+public interface IDbContextFactory<TContext>
+    where TContext : DbContext
+{
+    ValueTask<TContext> CreateDbContextAsync(CancellationToken cancellationToken = default);
 }
 
 public abstract class DbSet<TEntity> : IQueryable<TEntity>

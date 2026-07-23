@@ -4,9 +4,7 @@ namespace Swa.Analyzers.SampleApp.Tst001;
 
 internal sealed class ArgAnyAllowedConvention_Valid
 {
-    // Exemplos que NÃO devem gerar diagnóstico TST001.
-
-    private readonly IMessageSender _sender = NSubstitute.Substitute.For<IMessageSender>();
+    private readonly IMessageSender _sender = Substitute.For<IMessageSender>();
 
     [Xunit.Fact]
     public void PreferConcreteValues_WhenPossible()
@@ -17,8 +15,19 @@ internal sealed class ArgAnyAllowedConvention_Valid
     [Xunit.Fact]
     public void ArgAny_IsAllowed_InDidNotReceiveConvention()
     {
-        // Convenção permitida: Arg.Any() como argumento direto em chamada precedida por DidNotReceive().
         _sender.DidNotReceive().Send(Arg.Any<string>());
+    }
+
+    [Xunit.Fact]
+    public void ArgAny_IsAllowed_InDidNotReceiveWithAnyArgsConvention()
+    {
+        _sender.DidNotReceiveWithAnyArgs().Send(Arg.Any<string>());
+    }
+
+    [Xunit.Fact]
+    public void DidNotReceiveWithAnyArgs_IsAllowed_AsDeliberateNegativeAssertion()
+    {
+        _sender.DidNotReceiveWithAnyArgs().Send(default!);
     }
 
     internal interface IMessageSender
