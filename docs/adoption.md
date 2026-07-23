@@ -6,9 +6,22 @@ Este guia ajuda a introduzir os pacotes `Swa.Analyzers.Reliability`, `Swa.Analyz
 
 - Instale somente os pacotes que representam políticas reais do projeto.
 - Comece com inventário em `info` ou `suggestion` quando houver risco de legado.
+- Compile uma vez antes de promover qualquer regra para `error`.
 - Promova poucas regras por vez para `warning` ou `error`.
 - Trate suppressions como exceções documentadas, não como forma padrão de adoção.
 - Diferencie prática geral de política organizacional. Regras opt-in existem porque dependem de contexto.
+
+## Projeto novo
+
+Em um projeto novo, instale apenas os pacotes necessários e mantenha as regras habilitadas por padrão como `warning` durante a primeira implementação. Ative regras opt-in quando a decisão já estiver escrita na convenção do time, por exemplo rotas orientadas a recursos (`ARC003`), DDD (`ARC004`/`ARC006`) ou precisão de testes (`TST001`/`TST002`).
+
+Promova para `error` depois que o time confirmar que o volume de diagnóstico é baixo e que os exemplos inválidos representam problemas reais no projeto.
+
+## Projeto legado
+
+Em uma base existente, faça primeiro um inventário sem quebrar o build. Reduza severidades para `info`, ajuste opções públicas e só depois escolha um subconjunto pequeno para `warning`.
+
+Evite ativar todas as regras opt-in de uma vez. Elas podem codificar políticas corretas para um time e inadequadas para outro.
 
 ## Fase 1: visibilidade
 

@@ -10,9 +10,13 @@ Use em APIs ASP.NET, soluções com camadas core bem definidas, projetos com DDD
 
 ## Instalação
 
+Use este comando quando o pacote estiver publicado no NuGet.org ou disponível no feed privado/local configurado no projeto. A publicação no NuGet.org ainda não está habilitada no workflow de release.
+
 ```powershell
 dotnet add package Swa.Analyzers.Architecture
 ```
+
+Em projetos com Central Package Management, declare a versão em `Directory.Packages.props` e mantenha o `PackageReference` sem `Version`.
 
 ## Regras
 
@@ -50,6 +54,14 @@ No consumo via NuGet, o pacote adiciona o `.csproj` e o `Directory.Build.props` 
 is_global = true
 dotnet_diagnostic.ARC005.severity = info
 ```
+
+`ARC004` e `ARC006` compartilham o mesmo classificador de entidades de domínio. Configure `dotnet_diagnostic.ARC004.entity_namespaces` e `dotnet_diagnostic.ARC004.entity_base_types` uma vez quando os marcadores padrão não forem suficientes.
+
+## Quando instalar
+
+Instale em APIs ASP.NET e soluções com políticas explícitas de autorização, fronteiras de camada, DDD ou centralização de propriedades MSBuild.
+
+`ARC001` e `ARC002` são habilitadas por padrão. `ARC003`, `ARC004`, `ARC005` e `ARC006` são opt-in porque representam convenções de arquitetura ou governança que precisam ser calibradas para cada solução.
 
 ## Limitações
 

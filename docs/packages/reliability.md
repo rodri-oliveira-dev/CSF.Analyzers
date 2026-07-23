@@ -10,9 +10,13 @@ Use em APIs, workers, hosted services, serviços ASP.NET Core e projetos que exe
 
 ## Instalação
 
+Use este comando quando o pacote estiver publicado no NuGet.org ou disponível no feed privado/local configurado no projeto. A publicação no NuGet.org ainda não está habilitada no workflow de release.
+
 ```powershell
 dotnet add package Swa.Analyzers.Reliability
 ```
+
+Em projetos com Central Package Management, declare a versão em `Directory.Packages.props` e mantenha o `PackageReference` sem `Version`.
 
 ## Regras
 
@@ -43,6 +47,12 @@ dotnet_diagnostic.REL006.scoped_type_patterns = MyApp.Data.*;MyApp.Scoped.*
 ```
 
 `REL006` aceita `dotnet_diagnostic.REL006.scoped_type_patterns` para tipos scoped customizados. As demais regras deste pacote não têm opções públicas além da severidade padrão de `.editorconfig`.
+
+## Quando instalar
+
+Instale em projetos que executam requests ASP.NET, hosted services ou consultas EF Core e querem feedback no editor/build sobre riscos operacionais recorrentes.
+
+`REL001`, `REL002`, `REL004`, `REL005` e `REL006` são habilitadas por padrão. `REL003` é opt-in porque a exigência de `AsNoTracking()` em leituras depende da política do time e do modelo de uso do EF Core.
 
 ## Limitações
 

@@ -12,6 +12,12 @@ Analyzers genéricos do .NET, Roslyn, SonarAnalyzer ou Meziantou.Analyzer verifi
 | [`Swa.Analyzers.Architecture`](docs/packages/architecture.md) | Políticas de autorização, rotas, dependências de camadas, DDD e MSBuild. | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005`, `ARC006` |
 | [`Swa.Analyzers.Testing`](docs/packages/testing.md) | Qualidade de testes com NSubstitute (`Arg.Any`/`AnyArgs`) e FluentAssertions. | `TST001`, `TST002` |
 
+## Status de publicação
+
+Os pacotes v2 são gerados pelo workflow de release e anexados à GitHub Release, mas a publicação no NuGet.org ainda está comentada até a configuração explícita de `NUGET_API_KEY` e de um ambiente protegido. Em 2026-07-23, a API pública do NuGet.org retorna `404` para `Swa.Analyzers.Reliability`, `Swa.Analyzers.Architecture` e `Swa.Analyzers.Testing`.
+
+Os comandos abaixo são o formato esperado para consumo quando os pacotes estiverem publicados no NuGet.org ou disponíveis em um feed privado/local.
+
 ## Instalação
 
 Instale cada pacote no projeto que deve receber aquela política. Não há metapacote `Swa.Analyzers` na v2 inicial.
@@ -23,6 +29,13 @@ dotnet add package Swa.Analyzers.Testing
 ```
 
 Em repositórios com Central Package Management, declare as versões em `Directory.Packages.props` e use `PackageReference` sem `Version`.
+
+## Quick start
+
+1. Escolha o pacote que representa a política que você quer validar.
+2. Instale a partir do NuGet.org quando publicado, ou a partir do feed privado/local usado pelo repositório.
+3. Compile o projeto e revise os diagnósticos habilitados por padrão.
+4. Ative regras opt-in apenas quando elas representarem uma política real do time.
 
 ## Exemplo mínimo
 

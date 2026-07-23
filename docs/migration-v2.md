@@ -28,8 +28,8 @@ Não há metapacote `Swa.Analyzers` na v2 inicial.
 
 | Pacote | IDs ativos |
 | ------ | ---------- |
-| `Swa.Analyzers.Reliability` | `REL001`, `REL002`, `REL003`, `REL004` |
-| `Swa.Analyzers.Architecture` | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005` |
+| `Swa.Analyzers.Reliability` | `REL001`, `REL002`, `REL003`, `REL004`, `REL005`, `REL006` |
+| `Swa.Analyzers.Architecture` | `ARC001`, `ARC002`, `ARC003`, `ARC004`, `ARC005`, `ARC006` |
 | `Swa.Analyzers.Testing` | `TST001`, `TST002` |
 
 ## Mapeamento de regras mantidas
@@ -47,6 +47,16 @@ Não há metapacote `Swa.Analyzers` na v2 inicial.
 | `ARCH032` | `ARC005` | `Swa.Analyzers.Architecture` | opt-in, info |
 | `ARCH005` | `TST001` | `Swa.Analyzers.Testing` | opt-in, info |
 | `ARCH006` | `TST002` | `Swa.Analyzers.Testing` | opt-in, info |
+
+## Regras novas na linha v2
+
+As regras abaixo não têm ID v1 equivalente. Trate-as como novas políticas ao migrar:
+
+| ID v2 | Pacote v2 | Estado padrão v2 |
+| ----- | --------- | ---------------- |
+| `REL005` | `Swa.Analyzers.Reliability` | habilitada, warning |
+| `REL006` | `Swa.Analyzers.Reliability` | habilitada, warning |
+| `ARC006` | `Swa.Analyzers.Architecture` | opt-in, info |
 
 ## Regras removidas
 
@@ -102,6 +112,7 @@ Regras opt-in precisam de severidade explícita:
 dotnet_diagnostic.REL003.severity = info
 dotnet_diagnostic.ARC003.severity = info
 dotnet_diagnostic.ARC004.severity = info
+dotnet_diagnostic.ARC006.severity = info
 dotnet_diagnostic.TST001.severity = info
 dotnet_diagnostic.TST002.severity = info
 

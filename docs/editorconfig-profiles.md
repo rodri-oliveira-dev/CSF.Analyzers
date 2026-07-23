@@ -12,8 +12,8 @@ Regras opt-in permanecem desabilitadas nos perfis genéricos, salvo quando o per
 | `REL002` | Reliability | `warning` | Boa candidata a bloqueio após inventário. |
 | `REL003` | Reliability | opt-in `info` | Ative em projetos EF Core com política de leitura sem tracking. |
 | `REL004` | Reliability | `warning` | Útil para consultas EF Core materializadas cedo demais. |
-| `REL005` | Reliability | `warning` | Evita operacoes concorrentes no mesmo `DbContext`. |
-| `REL006` | Reliability | `warning` | Evita captura de dependencias scoped conhecidas em hosted services. |
+| `REL005` | Reliability | `warning` | Evita operações concorrentes no mesmo `DbContext`. |
+| `REL006` | Reliability | `warning` | Evita captura de dependências scoped conhecidas em hosted services. |
 | `ARC001` | Architecture | `warning` | Exige decisão explícita de autorização. |
 | `ARC002` | Architecture | `warning` | Configure namespaces antes de elevar severidade. |
 | `ARC003` | Architecture | opt-in `info` | Política de API orientada a recursos. |
