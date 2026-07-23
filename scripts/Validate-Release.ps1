@@ -134,7 +134,7 @@ $packages = @(
         Prefix = "ARC"
         TestProject = "tests/Swa.Analyzers.Architecture.Tests"
         SampleProject = "samples/Swa.Analyzers.Architecture.Sample"
-        RuleIds = @("ARC001", "ARC002", "ARC003", "ARC004", "ARC005")
+        RuleIds = @("ARC001", "ARC002", "ARC003", "ARC004", "ARC005", "ARC006")
     },
     @{
         Name = "Swa.Analyzers.Testing"

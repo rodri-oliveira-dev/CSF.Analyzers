@@ -17,6 +17,7 @@ internal static class Verifier<TAnalyzer>
         "ARC003",
         "ARC004",
         "ARC005",
+        "ARC006",
         "TST001",
         "TST002",
     ];

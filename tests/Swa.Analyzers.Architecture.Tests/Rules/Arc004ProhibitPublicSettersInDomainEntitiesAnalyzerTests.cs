@@ -223,6 +223,21 @@ public sealed class CustomerDto
     }
 
     [Fact]
+    public async Task Does_not_report_namespace_that_only_starts_with_entity_marker_text()
+    {
+        const string source = """
+namespace MyApp.Domain.EntitiesLike;
+
+public sealed class Customer
+{
+    public string Name { get; set; } = "";
+}
+""";
+
+        await VerifyAsync(source);
+    }
+
+    [Fact]
     public async Task Ignores_invalid_json_array_configuration()
     {
         const string editorConfig = """

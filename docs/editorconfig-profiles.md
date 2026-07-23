@@ -19,6 +19,7 @@ Regras opt-in permanecem desabilitadas nos perfis genéricos, salvo quando o per
 | `ARC003` | Architecture | opt-in `info` | Política de API orientada a recursos. |
 | `ARC004` | Architecture | opt-in `info` | Política DDD para entidades de domínio. |
 | `ARC005` | Architecture | opt-in `info` | Requer `AdditionalFiles` com projetos e `Directory.Build.props`. |
+| `ARC006` | Architecture | opt-in `info` | Política DDD para contratos HTTP desacoplados do domínio. |
 | `TST001` | Testing | opt-in `info` | Política de uso de `NSubstitute.Arg.Any()`. |
 | `TST002` | Testing | opt-in `info` | Política de precisão em `BeEquivalentTo()`. |
 
@@ -103,6 +104,7 @@ Perfil para projetos com entidades de domínio e agregados.
 ```ini
 [*.cs]
 dotnet_diagnostic.ARC004.severity = warning
+dotnet_diagnostic.ARC006.severity = warning
 dotnet_diagnostic.ARC004.entity_namespaces = ["MyApp.Domain.Entities", "MyApp.Domain.Aggregates"]
 dotnet_diagnostic.ARC004.entity_base_types = ["Entity", "AggregateRoot"]
 dotnet_diagnostic.ARC004.allow_internal_setters = false
@@ -124,6 +126,7 @@ dotnet_diagnostic.ARC001.severity = info
 dotnet_diagnostic.ARC002.severity = info
 dotnet_diagnostic.ARC003.severity = none
 dotnet_diagnostic.ARC004.severity = none
+dotnet_diagnostic.ARC006.severity = none
 dotnet_diagnostic.TST001.severity = none
 dotnet_diagnostic.TST002.severity = none
 

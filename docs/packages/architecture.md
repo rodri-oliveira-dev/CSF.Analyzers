@@ -23,6 +23,7 @@ dotnet add package Swa.Analyzers.Architecture
 | [`ARC003`](../rules/architecture/ARC003.md) | Design | `Info` | Opt-in |
 | [`ARC004`](../rules/architecture/ARC004.md) | Design | `Info` | Opt-in |
 | [`ARC005`](../rules/architecture/ARC005.md) | Maintainability | `Info` | Opt-in |
+| [`ARC006`](../rules/architecture/ARC006.md) | Architecture | `Info` | Opt-in |
 
 ## Configuração
 
@@ -37,6 +38,7 @@ dotnet_diagnostic.ARC002.ignore_tests = true
 # Opt-in para políticas organizacionais.
 dotnet_diagnostic.ARC003.severity = info
 dotnet_diagnostic.ARC004.severity = info
+dotnet_diagnostic.ARC006.severity = info
 
 [*.csproj]
 dotnet_diagnostic.ARC005.severity = info
@@ -59,4 +61,4 @@ Analyzers externos podem cobrir práticas gerais de segurança, design ou build.
 
 ## Quando não usar
 
-Não use `ARC002`, `ARC003`, `ARC004` ou `ARC005` como regra universal sem calibrar a arquitetura real. Em bibliotecas sem endpoints HTTP, `ARC001` e `ARC003` normalmente não agregam valor.
+Não use `ARC002`, `ARC003`, `ARC004`, `ARC005` ou `ARC006` como regra universal sem calibrar a arquitetura real. Em bibliotecas sem endpoints HTTP, `ARC001`, `ARC003` e `ARC006` normalmente não agregam valor.
