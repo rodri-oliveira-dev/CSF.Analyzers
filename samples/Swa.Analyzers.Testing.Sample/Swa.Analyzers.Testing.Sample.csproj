@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Swa.Analyzers.Testing\Swa.Analyzers.Testing.csproj"
+    <ProjectReference Include="..\..\src\CSF.Analyzers.Testing\CSF.Analyzers.Testing.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>

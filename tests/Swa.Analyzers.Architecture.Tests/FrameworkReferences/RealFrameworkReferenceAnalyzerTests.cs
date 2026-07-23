@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis.Testing;
 
-using Swa.Analyzers.Architecture.Rules;
+using CSF.Analyzers.Architecture.Rules;
 
 namespace Swa.Analyzers.Tests.FrameworkReferences;
 

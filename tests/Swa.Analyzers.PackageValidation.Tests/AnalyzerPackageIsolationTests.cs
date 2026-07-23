@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-using Swa.Analyzers.Architecture.Rules;
-using Swa.Analyzers.Reliability.Rules;
-using Swa.Analyzers.Testing.Rules;
+using CSF.Analyzers.Architecture.Rules;
+using CSF.Analyzers.Reliability.Rules;
+using CSF.Analyzers.Testing.Rules;
 
 namespace Swa.Analyzers.PackageValidation.Tests;
 

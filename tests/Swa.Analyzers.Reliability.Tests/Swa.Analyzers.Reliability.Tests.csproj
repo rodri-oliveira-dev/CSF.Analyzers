@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Swa.Analyzers.Reliability\Swa.Analyzers.Reliability.csproj" />
+    <ProjectReference Include="..\..\src\CSF.Analyzers.Reliability\CSF.Analyzers.Reliability.csproj" />
   </ItemGroup>
 
   <ItemGroup>

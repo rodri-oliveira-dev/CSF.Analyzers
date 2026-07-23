@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis;
 
-using Swa.Analyzers.Reliability.Rules;
+using CSF.Analyzers.Reliability.Rules;
 
 namespace Swa.Analyzers.Tests.Performance;
 

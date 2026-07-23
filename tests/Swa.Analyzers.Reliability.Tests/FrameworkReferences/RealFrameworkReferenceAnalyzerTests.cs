@@ -3,7 +3,7 @@ using System.Reflection;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.EntityFrameworkCore;
 
-using Swa.Analyzers.Reliability.Rules;
+using CSF.Analyzers.Reliability.Rules;
 
 namespace Swa.Analyzers.Tests.FrameworkReferences;
 

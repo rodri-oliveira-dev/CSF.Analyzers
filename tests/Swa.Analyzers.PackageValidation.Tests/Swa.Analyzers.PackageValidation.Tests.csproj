@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Swa.Analyzers.Reliability\Swa.Analyzers.Reliability.csproj" />
-    <ProjectReference Include="..\..\src\Swa.Analyzers.Architecture\Swa.Analyzers.Architecture.csproj" />
-    <ProjectReference Include="..\..\src\Swa.Analyzers.Testing\Swa.Analyzers.Testing.csproj" />
+    <ProjectReference Include="..\..\src\CSF.Analyzers.Reliability\CSF.Analyzers.Reliability.csproj" />
+    <ProjectReference Include="..\..\src\CSF.Analyzers.Architecture\CSF.Analyzers.Architecture.csproj" />
+    <ProjectReference Include="..\..\src\CSF.Analyzers.Testing\CSF.Analyzers.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

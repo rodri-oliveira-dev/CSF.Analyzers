@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 
-using Swa.Analyzers.Common.Common;
+using CSF.Analyzers.Common.Common;
 
 namespace Swa.Analyzers.Tests.Common;
 

@@ -1,4 +1,4 @@
-using Swa.Analyzers.Testing.Rules;
+using CSF.Analyzers.Testing.Rules;
 
 namespace Swa.Analyzers.Tests.Rules;
 

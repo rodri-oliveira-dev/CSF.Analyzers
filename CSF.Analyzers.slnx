@@ -1,0 +1,12 @@
+<Solution>
+  <Project Path="src/CSF.Analyzers.Reliability/CSF.Analyzers.Reliability.csproj" />
+  <Project Path="src/CSF.Analyzers.Architecture/CSF.Analyzers.Architecture.csproj" />
+  <Project Path="src/CSF.Analyzers.Testing/CSF.Analyzers.Testing.csproj" />
+  <Project Path="samples/Swa.Analyzers.Reliability.Sample/Swa.Analyzers.Reliability.Sample.csproj" />
+  <Project Path="samples/Swa.Analyzers.Architecture.Sample/Swa.Analyzers.Architecture.Sample.csproj" />
+  <Project Path="samples/Swa.Analyzers.Testing.Sample/Swa.Analyzers.Testing.Sample.csproj" />
+  <Project Path="tests/Swa.Analyzers.Reliability.Tests/Swa.Analyzers.Reliability.Tests.csproj" />
+  <Project Path="tests/Swa.Analyzers.Architecture.Tests/Swa.Analyzers.Architecture.Tests.csproj" />
+  <Project Path="tests/Swa.Analyzers.Testing.Tests/Swa.Analyzers.Testing.Tests.csproj" />
+  <Project Path="tests/Swa.Analyzers.PackageValidation.Tests/Swa.Analyzers.PackageValidation.Tests.csproj" />
+</Solution>

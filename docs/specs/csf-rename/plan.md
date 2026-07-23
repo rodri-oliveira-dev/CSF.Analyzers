@@ -230,6 +230,12 @@ Arquivos ignorados presentes no checkout apos o baseline: 1408 no total, agrupad
 9. Executar validacao completa local: restore locked, build, tests, release validation, pack e package inspection.
 10. Criar guia de migracao externa de `Swa.Analyzers.*` para `CSF.Analyzers.*`, incluindo decisoes de SemVer e compatibilidade.
 
+## Status das etapas
+
+- Etapa 1 concluida no commit `docs: specify CSF rename migration`.
+- Etapa 2 pendente; arquivos `.vs/**` e `.vscode/**` rastreados continuam fora da fonte de verdade.
+- Etapa 3 parcialmente concluida em `docs/specs/csf-rename/02-source-projects.md`: solucao, diretorios e arquivos de projeto em `src` foram renomeados para `CSF.Analyzers.*`; tests e samples ainda nao foram renomeados por limite explicito desta etapa, mas suas referencias para source foram atualizadas.
+
 ## Riscos
 
 - Breaking change de NuGet package IDs para consumidores.

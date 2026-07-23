@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <CsfAnalyzersArchitectureDirectoryBuildProps>$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildProjectDirectory)'))</CsfAnalyzersArchitectureDirectoryBuildProps>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildProjectFullPath)"
+                     Visible="false" />
+    <AdditionalFiles Include="$(CsfAnalyzersArchitectureDirectoryBuildProps)"
+                     Condition="'$(CsfAnalyzersArchitectureDirectoryBuildProps)' != ''"
+                     Visible="false" />
+  </ItemGroup>
+</Project>

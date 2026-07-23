@@ -1,4 +1,4 @@
-using Swa.Analyzers.Architecture.Rules;
+using CSF.Analyzers.Architecture.Rules;
 
 namespace Swa.Analyzers.Tests.Performance;
 

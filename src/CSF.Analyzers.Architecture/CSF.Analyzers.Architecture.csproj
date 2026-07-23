@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsCsfAnalyzerPackage>true</IsCsfAnalyzerPackage>
+    <PackageId>Swa.Analyzers.Architecture</PackageId>
+    <Description>Roslyn analyzers for .NET architecture, authorization, routing and layer dependency conventions.</Description>
+    <PackageTags>roslyn;analyzers;architecture;authorization;routing;layers</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="buildTransitive\CSF.Analyzers.Architecture.targets"
+          Pack="true"
+          PackagePath="buildTransitive" />
+  </ItemGroup>
+
+</Project>

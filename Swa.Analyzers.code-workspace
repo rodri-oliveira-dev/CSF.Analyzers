@@ -6,7 +6,7 @@
         }
     ],
     "settings": {
-        "dotnet.defaultSolution": "Swa.Analyzers.slnx",
+        "dotnet.defaultSolution": "CSF.Analyzers.slnx",
         "files.exclude": {
             "**/bin": true,
             "**/obj": true,
