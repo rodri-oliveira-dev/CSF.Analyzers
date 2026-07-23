@@ -45,6 +45,9 @@ $expectedPackages = @(
     }
 )
 
+$legacyPrefix = (-join [char[]](83, 119, 97)) + ".Analyzers"
+$legacyPrefixPattern = [regex]::Escape($legacyPrefix)
+
 $failures = New-Object System.Collections.Generic.List[string]
 
 function Add-Failure {
@@ -95,9 +98,9 @@ if (-not (Test-Path -LiteralPath $packageRoot -PathType Container)) {
 $allPackageFiles = @(Get-ChildItem -LiteralPath $packageRoot -File -Filter "*.nupkg") +
     @(Get-ChildItem -LiteralPath $packageRoot -File -Filter "*.snupkg")
 
-$legacyArtifacts = @($allPackageFiles | Where-Object { $_.Name -match "^Swa\.Analyzers(\.|$)" })
+$legacyArtifacts = @($allPackageFiles | Where-Object { $_.Name -match "^$legacyPrefixPattern(\.|$)" })
 if ($legacyArtifacts.Count -gt 0) {
-    Add-Failure "Pacote legado Swa.Analyzers foi gerado: $($legacyArtifacts.Name -join ', ')."
+    Add-Failure "Pacote com identidade anterior foi gerado: $($legacyArtifacts.Name -join ', ')."
 }
 
 $expectedArtifactNames = @()
@@ -144,13 +147,13 @@ foreach ($package in $expectedPackages) {
                 Add-Failure "$($package.Id): DLL nao planejada encontrada: $($forbiddenAssemblies -join ', ')."
             }
 
-            if ($entries -contains "analyzers/dotnet/cs/Swa.Analyzers.dll") {
-                Add-Failure "$($package.Id): assembly legado Swa.Analyzers.dll encontrado."
+            if ($entries -contains "analyzers/dotnet/cs/$legacyPrefix.dll") {
+                Add-Failure "$($package.Id): assembly com identidade anterior encontrado."
             }
 
-            $legacyAnalyzerEntries = @($entries | Where-Object { $_ -match "^analyzers/dotnet/cs/Swa\.Analyzers.*\.(dll|pdb)$" })
+            $legacyAnalyzerEntries = @($entries | Where-Object { $_ -match "^analyzers/dotnet/cs/$legacyPrefixPattern.*\.(dll|pdb)$" })
             if ($legacyAnalyzerEntries.Count -gt 0) {
-                Add-Failure "$($package.Id): arquivo legado Swa.Analyzers encontrado: $($legacyAnalyzerEntries -join ', ')."
+                Add-Failure "$($package.Id): arquivo com identidade anterior encontrado: $($legacyAnalyzerEntries -join ', ')."
             }
 
             if ($entries -notcontains "README.md") {

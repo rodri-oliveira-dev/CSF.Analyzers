@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Swa.Analyzers.SampleApp (dotnet run)",
+            "name": "CSF.Analyzers.Reliability.Sample (dotnet run)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -10,7 +10,7 @@
             "args": [
                 "run",
                 "--project",
-                "${workspaceFolder}/src/Swa.Analyzers.SampleApp/Swa.Analyzers.SampleApp.csproj"
+                "${workspaceFolder}/samples/CSF.Analyzers.Reliability.Sample/CSF.Analyzers.Reliability.Sample.csproj"
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",

@@ -7,7 +7,7 @@
             "command": "dotnet",
             "args": [
                 "restore",
-                "${workspaceFolder}/Swa.Analyzers.slnx"
+                "${workspaceFolder}/CSF.Analyzers.slnx"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -17,7 +17,7 @@
             "command": "dotnet",
             "args": [
                 "build",
-                "${workspaceFolder}/Swa.Analyzers.slnx",
+                "${workspaceFolder}/CSF.Analyzers.slnx",
                 "-c",
                 "Debug",
                 "-m:1"
@@ -34,7 +34,7 @@
             "command": "dotnet",
             "args": [
                 "test",
-                "${workspaceFolder}/Swa.Analyzers.slnx",
+                "${workspaceFolder}/CSF.Analyzers.slnx",
                 "-c",
                 "Debug",
                 "-m:1"

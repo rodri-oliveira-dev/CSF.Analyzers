@@ -5,7 +5,7 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Include>[Swa.Analyzers.Reliability]*,[Swa.Analyzers.Architecture]*,[Swa.Analyzers.Testing]*</Include>
+          <Include>[CSF.Analyzers.Reliability]*,[CSF.Analyzers.Architecture]*,[CSF.Analyzers.Testing]*</Include>
           <ExcludeByAttribute>CompilerGeneratedAttribute,GeneratedCodeAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
           <ExcludeByFile>**/obj/**,**/bin/**</ExcludeByFile>
         </Configuration>
