@@ -10,7 +10,11 @@ namespace CSF.Analyzers.Tests;
 internal static class Verifier<TAnalyzer>
     where TAnalyzer : DiagnosticAnalyzer, new()
 {
-    private static readonly ReferenceAssemblies TargetReferenceAssemblies = ReferenceAssemblies.Net.Net90;
+    private static readonly ReferenceAssemblies TargetReferenceAssemblies = new(
+        "net10.0",
+        new PackageIdentity("Microsoft.NETCore.App.Ref", "10.0.11"),
+        Path.Combine("ref", "net10.0"));
+
     private static readonly HashSet<string> OptInDiagnosticIds =
     [
         "REL003",
