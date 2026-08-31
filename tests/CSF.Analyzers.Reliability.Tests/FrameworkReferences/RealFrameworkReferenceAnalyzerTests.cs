@@ -109,6 +109,6 @@ public sealed class OrdersWorker : BackgroundService
     ];
 
     private static readonly string[] AspNetCoreAppReferenceAssemblyPaths = RealFrameworkVerifier<Rel006AvoidScopedDependencyCaptureInHostedServicesAnalyzer>
-        .GetPackageReferenceAssemblyPaths("Microsoft.AspNetCore.App.Ref", "9.0.18", "net9.0")
+        .GetPackageReferenceAssemblyPaths("Microsoft.AspNetCore.App.Ref", "10.0.11", "net10.0")
         .ToArray();
 }
