@@ -19,7 +19,7 @@ permissions:
 jobs:
   validate:
     name: Validate Release Consistency
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_OS }}
     timeout-minutes: 10
 
     steps:
