@@ -18,7 +18,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze C#
-    runs-on: ${{ vars.RUNNER_OS }}
+    runs-on: ${{ vars.RUNNER_OS || 'ubuntu-26.04' }}
 
     steps:
       - name: Checkout
