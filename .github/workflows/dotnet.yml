@@ -19,7 +19,7 @@ permissions:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_OS }}
     timeout-minutes: 15
 
     steps:
@@ -65,7 +65,7 @@ jobs:
 
   test:
     name: Test, Pack and Inspect
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_OS }}
     needs: build
     timeout-minutes: 15
 
