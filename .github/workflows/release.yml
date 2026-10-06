@@ -14,7 +14,7 @@ permissions: {}
 jobs:
   validate:
     name: Validate
-    runs-on: ${{ vars.RUNNER_OS }}
+    runs-on: ${{ vars.RUNNER_OS || 'ubuntu-26.04' }}
     permissions:
       contents: read
       attestations: write
@@ -148,7 +148,7 @@ jobs:
 
   release:
     name: Release
-    runs-on: ${{ vars.RUNNER_OS }}
+    runs-on: ${{ vars.RUNNER_OS || 'ubuntu-26.04' }}
     needs: validate
     if: github.ref == 'refs/heads/main'
     permissions:
