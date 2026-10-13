@@ -122,7 +122,7 @@ jobs:
         run: ./scripts/Inspect-NuGetPackages.ps1 -PackageDirectory ./artifacts/packages -Version '${{ steps.gitversion.outputs.semVer }}'
 
       - name: Upload coverage
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: coverage
           path: artifacts/TestResults
@@ -130,7 +130,7 @@ jobs:
           retention-days: 7
 
       - name: Upload NuGet packages
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: nuget-packages
           path: |
